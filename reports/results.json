@@ -157,5 +157,425 @@
     "bottom_decile_mean_pell": 0.374,
     "top_decile_private_share": 0.664,
     "bottom_decile_private_share": 0.7
+  },
+  "step7": {
+    "n_top": 140,
+    "n_bottom": 140,
+    "profile_medians": {
+      "top 10%": {
+        "ugds": 1938.0,
+        "pctpell": 0.364,
+        "adm_rate": 0.789,
+        "first_gen": 0.341,
+        "private": 1.0,
+        "fte_total": 2504.5,
+        "firstgen_comp_orig_yr6_rt": 0.675,
+        "predicted": 0.476
+      },
+      "bottom 10%": {
+        "ugds": 2265.5,
+        "pctpell": 0.347,
+        "adm_rate": 0.705,
+        "first_gen": 0.328,
+        "private": 1.0,
+        "fte_total": 2445.0,
+        "firstgen_comp_orig_yr6_rt": 0.307,
+        "predicted": 0.505
+      }
+    },
+    "per_fte": {
+      "Instruction": {
+        "top10_median_$": 12137.4804,
+        "bottom10_median_$": 8554.198,
+        "median_diff_$": 3583.2824,
+        "median_ratio": 1.4189,
+        "top10_mean_$": 16008.6462,
+        "bottom10_mean_$": 9102.4876,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Academic support": {
+        "top10_median_$": 3026.5256,
+        "bottom10_median_$": 1840.0011,
+        "median_diff_$": 1186.5245,
+        "median_ratio": 1.6448,
+        "top10_mean_$": 5297.5949,
+        "bottom10_mean_$": 2418.9483,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Student services": {
+        "top10_median_$": 4798.9668,
+        "bottom10_median_$": 4571.3665,
+        "median_diff_$": 227.6003,
+        "median_ratio": 1.0498,
+        "top10_mean_$": 6053.7771,
+        "bottom10_mean_$": 5001.4554,
+        "welch_p_log": 0.0423,
+        "mann_whitney_p": 0.1809
+      },
+      "Institutional support": {
+        "top10_median_$": 6154.4561,
+        "bottom10_median_$": 4653.5464,
+        "median_diff_$": 1500.9097,
+        "median_ratio": 1.3225,
+        "top10_mean_$": 7637.9652,
+        "bottom10_mean_$": 5349.8673,
+        "welch_p_log": 0.0124,
+        "mann_whitney_p": 0.0006
+      },
+      "Research": {
+        "top10_median_$": 78.6625,
+        "bottom10_median_$": 0.0,
+        "median_diff_$": 78.6625,
+        "median_ratio": null,
+        "top10_mean_$": 3618.0751,
+        "bottom10_mean_$": 1458.7978,
+        "welch_p_log": 0.035,
+        "mann_whitney_p": 0.0332
+      },
+      "Public service": {
+        "top10_median_$": 0.0,
+        "bottom10_median_$": 0.0,
+        "median_diff_$": 0.0,
+        "median_ratio": null,
+        "top10_mean_$": 464.7534,
+        "bottom10_mean_$": 719.7402,
+        "welch_p_log": 0.8517,
+        "mann_whitney_p": 0.8008
+      },
+      "Scholarships (expensed)": {
+        "top10_median_$": 0.0,
+        "bottom10_median_$": 0.0,
+        "median_diff_$": 0.0,
+        "median_ratio": null,
+        "top10_mean_$": 1058.7743,
+        "bottom10_mean_$": 694.0785,
+        "welch_p_log": 0.6343,
+        "mann_whitney_p": 0.3924
+      },
+      "Auxiliary enterprises": {
+        "top10_median_$": 3720.0038,
+        "bottom10_median_$": 3749.6218,
+        "median_diff_$": -29.618,
+        "median_ratio": 0.9921,
+        "top10_mean_$": 4942.5397,
+        "bottom10_mean_$": 3939.0917,
+        "welch_p_log": 0.1247,
+        "mann_whitney_p": 0.8253
+      },
+      "Core (4 categories)": {
+        "top10_median_$": 26839.6558,
+        "bottom10_median_$": 20690.4713,
+        "median_diff_$": 6149.1845,
+        "median_ratio": 1.2972,
+        "top10_mean_$": 34997.9834,
+        "bottom10_mean_$": 21872.7586,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Total expenses": {
+        "top10_median_$": 33707.1649,
+        "bottom10_median_$": 28256.7843,
+        "median_diff_$": 5450.3806,
+        "median_ratio": 1.1929,
+        "top10_mean_$": 49245.6128,
+        "bottom10_mean_$": 29512.8753,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      }
+    },
+    "share_core": {
+      "Instruction": {
+        "top10_mean_share": 0.4586,
+        "bottom10_mean_share": 0.4247,
+        "diff_pct_pts": 3.3905,
+        "welch_p": 0.0106
+      },
+      "Academic support": {
+        "top10_mean_share": 0.1348,
+        "bottom10_mean_share": 0.1114,
+        "diff_pct_pts": 2.3315,
+        "welch_p": 0.009
+      },
+      "Student services": {
+        "top10_mean_share": 0.183,
+        "bottom10_mean_share": 0.228,
+        "diff_pct_pts": -4.4984,
+        "welch_p": 0.0001
+      },
+      "Institutional support": {
+        "top10_mean_share": 0.2236,
+        "bottom10_mean_share": 0.2358,
+        "diff_pct_pts": -1.2236,
+        "welch_p": 0.1996
+      }
+    },
+    "within_control": {
+      "Public": {
+        "n_top": 47,
+        "n_bottom": 42,
+        "per_fte": {
+          "Instruction": {
+            "top10_median_$": 9704.6039,
+            "bottom10_median_$": 8988.8161,
+            "median_diff_$": 715.7878,
+            "median_ratio": 1.0796,
+            "top10_mean_$": 12242.6414,
+            "bottom10_mean_$": 9729.4488,
+            "welch_p_log": 0.0451,
+            "mann_whitney_p": 0.0428
+          },
+          "Academic support": {
+            "top10_median_$": 2614.3754,
+            "bottom10_median_$": 2389.4832,
+            "median_diff_$": 224.8923,
+            "median_ratio": 1.0941,
+            "top10_mean_$": 3924.0206,
+            "bottom10_mean_$": 2745.6423,
+            "welch_p_log": 0.0395,
+            "mann_whitney_p": 0.1194
+          },
+          "Student services": {
+            "top10_median_$": 3448.5361,
+            "bottom10_median_$": 2583.6341,
+            "median_diff_$": 864.902,
+            "median_ratio": 1.3348,
+            "top10_mean_$": 3711.4634,
+            "bottom10_mean_$": 2941.5451,
+            "welch_p_log": 0.0174,
+            "mann_whitney_p": 0.0173
+          },
+          "Institutional support": {
+            "top10_median_$": 3498.3392,
+            "bottom10_median_$": 2824.5452,
+            "median_diff_$": 673.7939,
+            "median_ratio": 1.2385,
+            "top10_mean_$": 4565.4997,
+            "bottom10_mean_$": 3395.6372,
+            "welch_p_log": 0.7257,
+            "mann_whitney_p": 0.0836
+          },
+          "Research": {
+            "top10_median_$": 298.7564,
+            "bottom10_median_$": 574.2908,
+            "median_diff_$": -275.5344,
+            "median_ratio": 0.5202,
+            "top10_mean_$": 2802.1854,
+            "bottom10_mean_$": 3675.9436,
+            "welch_p_log": 0.2874,
+            "mann_whitney_p": 0.4277
+          },
+          "Public service": {
+            "top10_median_$": 152.6273,
+            "bottom10_median_$": 1016.2434,
+            "median_diff_$": -863.6161,
+            "median_ratio": 0.1502,
+            "top10_mean_$": 793.7823,
+            "bottom10_mean_$": 1941.3863,
+            "welch_p_log": 0.0005,
+            "mann_whitney_p": 0.0003
+          },
+          "Scholarships (expensed)": {
+            "top10_median_$": 2519.62,
+            "bottom10_median_$": 1700.6741,
+            "median_diff_$": 818.9459,
+            "median_ratio": 1.4815,
+            "top10_mean_$": 2471.4403,
+            "bottom10_mean_$": 1983.1138,
+            "welch_p_log": 0.2309,
+            "mann_whitney_p": 0.0604
+          },
+          "Auxiliary enterprises": {
+            "top10_median_$": 3087.3146,
+            "bottom10_median_$": 3131.1132,
+            "median_diff_$": -43.7987,
+            "median_ratio": 0.986,
+            "top10_mean_$": 4126.3374,
+            "bottom10_mean_$": 2985.7864,
+            "welch_p_log": 0.9026,
+            "mann_whitney_p": 0.3681
+          },
+          "Core (4 categories)": {
+            "top10_median_$": 19720.9759,
+            "bottom10_median_$": 17696.6928,
+            "median_diff_$": 2024.2831,
+            "median_ratio": 1.1144,
+            "top10_mean_$": 24443.6251,
+            "bottom10_mean_$": 18812.2733,
+            "welch_p_log": 0.0074,
+            "mann_whitney_p": 0.0102
+          },
+          "Total expenses": {
+            "top10_median_$": 28920.6021,
+            "bottom10_median_$": 27453.3333,
+            "median_diff_$": 1467.2688,
+            "median_ratio": 1.0534,
+            "top10_mean_$": 43258.0307,
+            "bottom10_mean_$": 30754.1075,
+            "welch_p_log": 0.04,
+            "mann_whitney_p": 0.0428
+          }
+        },
+        "share_core": {
+          "Instruction": {
+            "top10_mean_share": 0.5004,
+            "bottom10_mean_share": 0.5138,
+            "diff_pct_pts": -1.3402,
+            "welch_p": 0.5002
+          },
+          "Academic support": {
+            "top10_mean_share": 0.1518,
+            "bottom10_mean_share": 0.1418,
+            "diff_pct_pts": 1.0087,
+            "welch_p": 0.3799
+          },
+          "Student services": {
+            "top10_mean_share": 0.1643,
+            "bottom10_mean_share": 0.1648,
+            "diff_pct_pts": -0.0539,
+            "welch_p": 0.9733
+          },
+          "Institutional support": {
+            "top10_mean_share": 0.1835,
+            "bottom10_mean_share": 0.1796,
+            "diff_pct_pts": 0.3853,
+            "welch_p": 0.8026
+          }
+        }
+      },
+      "Private nonprofit": {
+        "n_top": 93,
+        "n_bottom": 98,
+        "per_fte": {
+          "Instruction": {
+            "top10_median_$": 12613.3998,
+            "bottom10_median_$": 8255.4176,
+            "median_diff_$": 4357.9822,
+            "median_ratio": 1.5279,
+            "top10_mean_$": 17911.8959,
+            "bottom10_mean_$": 8833.7899,
+            "welch_p_log": 0.0,
+            "mann_whitney_p": 0.0
+          },
+          "Academic support": {
+            "top10_median_$": 3542.7915,
+            "bottom10_median_$": 1622.2804,
+            "median_diff_$": 1920.5111,
+            "median_ratio": 2.1838,
+            "top10_mean_$": 5991.7669,
+            "bottom10_mean_$": 2278.9365,
+            "welch_p_log": 0.0,
+            "mann_whitney_p": 0.0
+          },
+          "Student services": {
+            "top10_median_$": 5980.833,
+            "bottom10_median_$": 5617.1293,
+            "median_diff_$": 363.7037,
+            "median_ratio": 1.0647,
+            "top10_mean_$": 7237.5271,
+            "bottom10_mean_$": 5884.2742,
+            "welch_p_log": 0.1028,
+            "mann_whitney_p": 0.253
+          },
+          "Institutional support": {
+            "top10_median_$": 7991.4703,
+            "bottom10_median_$": 5973.1832,
+            "median_diff_$": 2018.2871,
+            "median_ratio": 1.3379,
+            "top10_mean_$": 9190.7166,
+            "bottom10_mean_$": 6187.3945,
+            "welch_p_log": 0.0007,
+            "mann_whitney_p": 0.0002
+          },
+          "Research": {
+            "top10_median_$": 0.0,
+            "bottom10_median_$": 0.0,
+            "median_diff_$": 0.0,
+            "median_ratio": null,
+            "top10_mean_$": 4030.4065,
+            "bottom10_mean_$": 508.5925,
+            "welch_p_log": 0.0039,
+            "mann_whitney_p": 0.0055
+          },
+          "Public service": {
+            "top10_median_$": 0.0,
+            "bottom10_median_$": 0.0,
+            "median_diff_$": 0.0,
+            "median_ratio": null,
+            "top10_mean_$": 298.47,
+            "bottom10_mean_$": 196.1775,
+            "welch_p_log": 0.1793,
+            "mann_whitney_p": 0.1716
+          },
+          "Scholarships (expensed)": {
+            "top10_median_$": 0.0,
+            "bottom10_median_$": 0.0,
+            "median_diff_$": 0.0,
+            "median_ratio": null,
+            "top10_mean_$": 344.8462,
+            "bottom10_mean_$": 141.6348,
+            "welch_p_log": 0.5556,
+            "mann_whitney_p": 0.6903
+          },
+          "Auxiliary enterprises": {
+            "top10_median_$": 3841.8193,
+            "bottom10_median_$": 4206.1349,
+            "median_diff_$": -364.3155,
+            "median_ratio": 0.9134,
+            "top10_mean_$": 5355.029,
+            "bottom10_mean_$": 4347.6512,
+            "welch_p_log": 0.0899,
+            "mann_whitney_p": 0.9301
+          },
+          "Core (4 categories)": {
+            "top10_median_$": 30527.5317,
+            "bottom10_median_$": 22533.8193,
+            "median_diff_$": 7993.7124,
+            "median_ratio": 1.3547,
+            "top10_mean_$": 40331.9064,
+            "bottom10_mean_$": 23184.3951,
+            "welch_p_log": 0.0,
+            "mann_whitney_p": 0.0
+          },
+          "Total expenses": {
+            "top10_median_$": 35049.5681,
+            "bottom10_median_$": 28489.9751,
+            "median_diff_$": 6559.593,
+            "median_ratio": 1.2302,
+            "top10_mean_$": 52271.5952,
+            "bottom10_mean_$": 28980.9186,
+            "welch_p_log": 0.0,
+            "mann_whitney_p": 0.0
+          }
+        },
+        "share_core": {
+          "Instruction": {
+            "top10_mean_share": 0.4375,
+            "bottom10_mean_share": 0.3865,
+            "diff_pct_pts": 5.0969,
+            "welch_p": 0.0008
+          },
+          "Academic support": {
+            "top10_mean_share": 0.1261,
+            "bottom10_mean_share": 0.0985,
+            "diff_pct_pts": 2.7672,
+            "welch_p": 0.0169
+          },
+          "Student services": {
+            "top10_mean_share": 0.1925,
+            "bottom10_mean_share": 0.2551,
+            "diff_pct_pts": -6.259,
+            "welch_p": 0.0
+          },
+          "Institutional support": {
+            "top10_mean_share": 0.2439,
+            "bottom10_mean_share": 0.2599,
+            "diff_pct_pts": -1.605,
+            "welch_p": 0.1246
+          }
+        }
+      }
+    }
   }
 }

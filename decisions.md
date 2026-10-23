@@ -24,3 +24,6 @@ One line per decision: what was chosen and why.
 - OLS with HC3 robust standard errors instead of plain OLS SEs: Breusch-Pagan rejects constant variance (p < 1e-8); HC3 keeps inference honest without changing coefficients.
 - Unweighted OLS (one school = one observation): the question ranks schools, so each school should count once; weighting by cohort size would let large universities dominate the fit.
 - Linear probability model on a 0-1 rate instead of logit/fractional logit: outcome is a proportion between 0.07 and 0.95 with no pile-up at the bounds, coefficients are directly in percentage points, and residuals (the ranking tool) are easiest to explain; a fractional logit is a listed extension.
+- Top/bottom 10% compared on medians and on log-scale Welch t-tests plus Mann-Whitney, not raw means: per-student spending has a long right tail (Yale-type schools) that would let a few schools drive a mean difference.
+- Spending comparison repeated within public and within private nonprofit: privates spend roughly twice as much per student as publics, so a pooled comparison could reflect sector mix rather than what over-performers do differently.
+- Spending reported both as dollars per FTE and as share of core spending: dollars answer "do they spend more?", shares answer "do they allocate differently?", and the two can disagree.
