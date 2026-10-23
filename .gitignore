@@ -1,0 +1,13 @@
+# raw data is large and re-downloadable
+data/raw/
+# python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# duckdb scratch
+*.duckdb
+*.duckdb.wal
+# OS
+.DS_Store
+!data/raw/.gitkeep
