@@ -9,3 +9,4 @@ pyarrow>=17
 requests>=2.32
 kaleido>=0.2
 matplotlib>=3.9
+openpyxl>=3.1

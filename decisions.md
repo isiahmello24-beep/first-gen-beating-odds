@@ -5,3 +5,11 @@ One line per decision: what was chosen and why.
 - Project folder `firstgen-college-analysis` under home, own git repo: keeps the portfolio project self-contained and pushable to GitHub as-is.
 - Python 3.14 virtual environment in `.venv` (gitignored): isolates dependencies so the project reproduces on a reviewer's machine from `requirements.txt`.
 - Numbered scripts in `src/` instead of one notebook: each build step is re-runnable and reviewable on its own; notebooks are kept for exploration only.
+- Data vintages: Scorecard most-recent-cohorts file (downloaded 2026-10-23), IPEDS 2023 collection (HD2023, IC2023, EFIA2023, F2223 finance = fiscal year 2022-23), OI mrc_table2: latest IPEDS finance file available at download time was F2223; HD/IC/EFIA chosen from the same collection year so all IPEDS fields describe the same academic year.
+- Opportunity Insights joined through OPEID (mrc_table11 → Scorecard OPEID6 → UNITID): OI publishes no UNITID, so a two-hop key is the only way to honor the UNITID join requirement.
+- Outcome = FIRSTGEN_COMP_ORIG_YR6_RT (first-gen completion at the same institution within 6 years): the question is about what a school does for its own students, so transfers-out are excluded from the numerator; 4-year and 8-year windows kept as sensitivity options.
+- Selectivity = ADM_RATE with open-admission schools (IPEDS OPENADMP = 1) set to 1.0: SAT_AVG is missing for ~45% of 4-year schools, and a missing admission rate at an open-admission school means "admits everyone", not "unknown".
+- Size = log(UGDS): enrollment is heavily right-skewed; logs make a 10% enrollment difference mean the same thing at a 1,000-student and a 40,000-student school.
+- Spending per student = IPEDS functional expenses ÷ total 12-month FTE (undergrad + grad + professional): instruction and support spending serve all students, and this matches how Scorecard builds INEXPFTE, which we use as a cross-check.
+- For-profit 4-year schools excluded: they file IPEDS finance form F3, which collapses academic support, student services and institutional support into one line, so their spending is not comparable.
+- Column selection lives in src/columns.py and the report is generated from it: one source of truth so the docs cannot drift from the code.
