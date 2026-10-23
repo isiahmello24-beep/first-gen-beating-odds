@@ -1,0 +1,55 @@
+{
+  "step5": {
+    "n": 1397,
+    "r2_A": 0.5415,
+    "adj_r2_A": 0.5389,
+    "resid_sd_A": 0.1103,
+    "coef_A": {
+      "Intercept": 0.53223,
+      "pctpell": -0.26812,
+      "adm_rate": -0.16177,
+      "log_ugds": 0.03798,
+      "pptug_ef": -0.20407,
+      "first_gen": -0.35138,
+      "private": 0.05411,
+      "hbcu_flag": -0.06712,
+      "distance_only": 0.07017
+    },
+    "p_A": {
+      "Intercept": 0.0,
+      "pctpell": 0.0,
+      "adm_rate": 0.0,
+      "log_ugds": 0.0,
+      "pptug_ef": 0.0,
+      "first_gen": 0.0,
+      "private": 0.0,
+      "hbcu_flag": 0.0,
+      "distance_only": 0.46234
+    },
+    "se_A": {
+      "Intercept": 0.04243,
+      "pctpell": 0.02996,
+      "adm_rate": 0.01803,
+      "log_ugds": 0.00382,
+      "pptug_ef": 0.03714,
+      "first_gen": 0.05009,
+      "private": 0.00832,
+      "hbcu_flag": 0.01375,
+      "distance_only": 0.09547
+    },
+    "r2_B": 0.5919,
+    "coef_B_log_core": 0.09825,
+    "p_B_log_core": 0.0,
+    "pp_per_10pct_spending": 0.936,
+    "n_C": 993,
+    "r2_C": 0.5619,
+    "r2_C_base": 0.5198,
+    "coef_C_sat_per_100": 0.05367,
+    "bp_p": 6.099583389607922e-09,
+    "jb_p": 2.391039205939746e-13,
+    "n_cooks_4n": 80,
+    "max_vif": 2.13,
+    "outcome_mean": 0.5134,
+    "outcome_sd": 0.1624
+  }
+}
