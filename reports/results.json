@@ -577,5 +577,98 @@
         }
       }
     }
+  },
+  "step8": {
+    "ugds_cut": 23686.40000000001,
+    "n_dropped": 70,
+    "n_trimmed": 1327,
+    "r2_full": 0.5415,
+    "r2_trimmed": 0.5387,
+    "coef_full": {
+      "Intercept": 0.53223,
+      "pctpell": -0.26812,
+      "adm_rate": -0.16177,
+      "log_ugds": 0.03798,
+      "pptug_ef": -0.20407,
+      "first_gen": -0.35138,
+      "private": 0.05411,
+      "hbcu_flag": -0.06712,
+      "distance_only": 0.07017
+    },
+    "coef_trimmed": {
+      "Intercept": 0.52593,
+      "pctpell": -0.26706,
+      "adm_rate": -0.14208,
+      "log_ugds": 0.03736,
+      "pptug_ef": -0.18421,
+      "first_gen": -0.38952,
+      "private": 0.06086,
+      "hbcu_flag": -0.06297,
+      "distance_only": 0.10084
+    },
+    "max_abs_shift_in_SEs": 1.092,
+    "same_sign_sig": 8,
+    "spearman": 0.9984,
+    "top_decile_overlap": 0.9624,
+    "big_in_top": 9,
+    "big_in_bot": 5,
+    "spending_trimmed": {
+      "Instruction": {
+        "top10_median_$": 11771.2925,
+        "bottom10_median_$": 8616.2842,
+        "median_ratio": 1.3662,
+        "welch_p_log": 0.0
+      },
+      "Academic support": {
+        "top10_median_$": 3384.1837,
+        "bottom10_median_$": 1806.689,
+        "median_ratio": 1.8731,
+        "welch_p_log": 0.0
+      },
+      "Student services": {
+        "top10_median_$": 4888.1042,
+        "bottom10_median_$": 4832.0948,
+        "median_ratio": 1.0116,
+        "welch_p_log": 0.0785
+      },
+      "Institutional support": {
+        "top10_median_$": 6539.3785,
+        "bottom10_median_$": 4864.9271,
+        "median_ratio": 1.3442,
+        "welch_p_log": 0.013
+      },
+      "Core (4 categories)": {
+        "top10_median_$": 26843.3387,
+        "bottom10_median_$": 20778.0343,
+        "median_ratio": 1.2919,
+        "welch_p_log": 0.0
+      }
+    },
+    "share_trimmed": {
+      "Instruction": {
+        "top10_mean_share": 0.4539,
+        "bottom10_mean_share": 0.4209,
+        "diff_pct_pts": 3.2945,
+        "welch_p": 0.0137
+      },
+      "Academic support": {
+        "top10_mean_share": 0.1343,
+        "bottom10_mean_share": 0.1082,
+        "diff_pct_pts": 2.6076,
+        "welch_p": 0.0042
+      },
+      "Student services": {
+        "top10_mean_share": 0.1823,
+        "bottom10_mean_share": 0.2318,
+        "diff_pct_pts": -4.9484,
+        "welch_p": 0.0
+      },
+      "Institutional support": {
+        "top10_mean_share": 0.2295,
+        "bottom10_mean_share": 0.239,
+        "diff_pct_pts": -0.9538,
+        "welch_p": 0.3201
+      }
+    }
   }
 }
