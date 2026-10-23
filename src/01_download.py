@@ -1,10 +1,10 @@
 """Step 1: download the three raw datasets into data/raw and inventory them.
 
 Sources
-  College Scorecard  - most recent institution-level cohort file (U.S. Dept. of Education)
-  IPEDS              - HD2023 (institutional characteristics), F2223_F1A (public finance, GASB),
-                       F2223_F2 (private nonprofit finance, FASB), IC2023 (admissions policy),
-                       EFIA2023 (12-month FTE enrollment)
+  College Scorecard  - most recent institution-level file, October 15, 2026 release (outcome: NSLDS AY2017-18
+                       cohort measured in AY2023-24) plus MERGED2017_18_PP.csv for entry-year predictors
+  IPEDS              - HD2023 / IC2023 (characteristics, admissions policy); finance F1718..F2223 (public F1A / private F2)
+                       and EFIA2018..EFIA2023 (12-month FTE) covering the cohort's six fiscal years FY2018-FY2023
   Opportunity Insights - mrc_table2 (mobility report card, preferred estimates),
                          mrc_table11 (super_opeid -> OPEID crosswalk)
 
@@ -27,12 +27,36 @@ REPORT = ROOT / "reports" / "01_raw_inventory.md"
 
 FILES = {
     "scorecard": [
-        ("https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Institution.zip",
-         "Most-Recent-Cohorts-Institution.zip"),
+        # NOTE: the undated .../Most-Recent-Cohorts-Institution.zip URL served a stale August 2024 file in Oct 2026.
+        # Always use the dated file that matches the data dictionary release (here: October 15, 2026).
+        ("https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Institution_10152026.zip",
+         "Most-Recent-Cohorts-Institution_10152026.zip"),
+        ("https://collegescorecard.ed.gov/files/CollegeScorecardDataDictionary.xlsx", "CollegeScorecardDataDictionary.xlsx"),
+        # Full raw archive (~560 MB). Only MERGED2017_18_PP.csv is extracted: the entry year of the outcome cohort.
+        ("https://ed-public-download.scorecard.network/downloads/College_Scorecard_Raw_Data_10152026.zip",
+         "College_Scorecard_Raw_Data_10152026.zip"),
     ],
     "ipeds": [
         ("https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip", "HD2023.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/HD2023_Dict.zip", "HD2023_Dict.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1718_F1A.zip", "F1718_F1A.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1718_F1A_Dict.zip", "F1718_F1A_Dict.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1718_F2.zip", "F1718_F2.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1718_F2_Dict.zip", "F1718_F2_Dict.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1819_F1A.zip", "F1819_F1A.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1819_F2.zip", "F1819_F2.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1920_F1A.zip", "F1920_F1A.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F1920_F2.zip", "F1920_F2.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F2021_F1A.zip", "F2021_F1A.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F2021_F2.zip", "F2021_F2.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F2122_F1A.zip", "F2122_F1A.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/F2122_F2.zip", "F2122_F2.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2018.zip", "EFIA2018.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2018_Dict.zip", "EFIA2018_Dict.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2019.zip", "EFIA2019.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2020.zip", "EFIA2020.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2021.zip", "EFIA2021.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2022.zip", "EFIA2022.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F1A.zip", "F2223_F1A.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F1A_Dict.zip", "F2223_F1A_Dict.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F2.zip", "F2223_F2.zip"),
@@ -72,19 +96,30 @@ def download(url: str, dest: Path, retries: int = 3) -> None:
     sys.exit(f"FAILED to download {url}. Stopping, as instructed.")
 
 
+RAW_ARCHIVE_KEEP = ["MERGED2017_18_PP.csv"]   # entry year of the FIRSTGEN_COMP_ORIG_YR6_RT cohort (AY2017-18)
+
+
 def unzip(path: Path) -> list[Path]:
     out_dir = path.with_suffix("")
     out_dir.mkdir(exist_ok=True)
     with zipfile.ZipFile(path) as z:
+        if path.name.startswith("College_Scorecard_Raw_Data"):
+            names = [n for n in z.namelist() if Path(n).name in RAW_ARCHIVE_KEEP]
+            for n in names:
+                target = out_dir / Path(n).name
+                if not target.exists():
+                    with z.open(n) as src, open(target, "wb") as dst:
+                        dst.write(src.read())
+            return [out_dir / Path(n).name for n in names]
         z.extractall(out_dir)
         names = z.namelist()
     return [out_dir / n for n in names]
 
 
 def inventory_csv(path: Path, con: duckdb.DuckDBPyConnection) -> tuple[int, list[str]]:
-    rel = con.read_csv(str(path), all_varchar=True, header=True, ignore_errors=False)
+    rel = con.read_csv(str(path), all_varchar=True, header=True, ignore_errors=False, sample_size=-1)
     cols = rel.columns
-    n = con.execute(f"SELECT count(*) FROM read_csv('{path}', all_varchar=true, header=true)").fetchone()[0]
+    n = con.execute(f"SELECT count(*) FROM read_csv('{path}', all_varchar=true, header=true, sample_size=-1)").fetchone()[0]
     return n, cols
 
 
@@ -103,12 +138,14 @@ def main() -> None:
             if fname.endswith(".zip"):
                 extracted = unzip(dest)
                 csvs += [p for p in extracted if p.suffix.lower() == ".csv"]
-            else:
+            elif fname.endswith(".csv"):
                 csvs.append(dest)
 
     print("\n=== Row counts and columns ===")
     for p in sorted(csvs):
         # IPEDS zips sometimes ship a revised "_rv" copy alongside the original; inventory both.
+        if "__MACOSX" in p.parts:
+            continue
         n, cols = inventory_csv(p, con)
         rel = p.relative_to(ROOT)
         print(f"\n{rel}\n  rows: {n:,}   columns: {len(cols)}")

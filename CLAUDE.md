@@ -86,3 +86,5 @@ Teach in step by step chains and explain the why behind each detail. Pause after
 * Always activate the venv first: `source .venv/bin/activate`.
 * Pipeline scripts live in `src/` and are numbered in build order; run them with `python src/NN_name.py` from the project root.
 * `data/raw/` is gitignored. `python src/01_download.py` recreates it.
+* The Scorecard's undated download URL can serve a stale file. Always download the dated file that matches the data dictionary release, and read the dictionary's `Most_Recent_Inst_Cohort_Map` sheet to find each variable's cohort year before matching other data to it.
+* Review fixes (timing, spending-in-model, Carnegie, bootstrap) are logged in `decisions.md` under "Fixes after review"; `reports/archive/` keeps the pre-review ranking.

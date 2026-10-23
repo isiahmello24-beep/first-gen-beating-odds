@@ -1,0 +1,1252 @@
+unitid,instnm,point_rank,p_top_decile,boot_rank_mean,boot_rank_p2_5,boot_rank_p97_5
+475200,Whitworth University-Adult Degree Programs,1,1.0,1.243,1.0,3.0
+210304,Warner Pacific University,2,1.0,2.909,1.0,5.0
+441937,California State University-Channel Islands,3,1.0,3.836,2.0,6.0
+206349,Ursuline College,4,1.0,4.674,2.0,8.0
+235422,Heritage University,5,1.0,6.208,3.0,14.0
+484473,University of Florida-Online,6,0.942,30.193,1.0,222.62499999999943
+186371,Rutgers University-Camden,7,1.0,8.133,4.0,13.0
+445188,University of California-Merced,8,1.0,9.659,4.0,18.0
+113698,Dominican University of California,9,1.0,8.776,5.0,14.0
+217934,Columbia College,10,1.0,11.384,5.0,18.0
+115773,Humphreys University,11,1.0,11.627,6.0,18.0
+193292,Molloy University,12,1.0,12.033,7.0,17.0
+167394,College of Our Lady of the Elms,13,1.0,13.136,9.0,18.0
+409698,California State University-Monterey Bay,14,1.0,12.995,6.0,18.0
+186399,Rutgers University-Newark,15,1.0,12.907,8.0,17.0
+241191,Universidad Adventista de las Antillas,16,1.0,14.607,6.975000000000001,23.0
+110671,University of California-Riverside,17,1.0,15.829,8.0,22.0
+225414,University of Houston-Clear Lake,18,1.0,17.919,11.0,25.0
+110495,California State University-Stanislaus,19,1.0,21.63,15.0,34.0
+177551,Harris-Stowe State University,20,1.0,22.154,13.0,39.0
+166939,Mount Holyoke College,21,1.0,23.393,18.0,34.0
+174817,Saint Mary's University of Minnesota,22,1.0,24.429,17.0,41.0
+110653,University of California-Irvine,23,1.0,25.418,17.0,45.02499999999998
+198507,Elizabeth City State University,24,1.0,28.335,18.0,54.0
+145646,Illinois Wesleyan University,25,1.0,26.404,20.0,39.02499999999998
+212577,Franklin and Marshall College,26,1.0,28.048,20.0,43.0
+186876,Stockton University,27,1.0,30.087,21.0,44.0
+143118,Aurora University,28,1.0,31.19,20.0,51.02499999999998
+110547,California State University-Dominguez Hills,29,1.0,32.06,20.0,57.02499999999998
+110644,University of California-Davis,30,1.0,33.1,21.0,58.0
+184348,Drew University,31,1.0,32.701,25.0,46.0
+128780,Charter Oak State College,32,0.743,101.327,3.0,550.2999999999997
+214175,Muhlenberg College,33,1.0,35.901,24.0,60.0
+212674,Gettysburg College,34,1.0,36.967,24.0,63.0
+212832,Gwynedd Mercy University,35,1.0,38.75,23.0,65.0
+166124,College of the Holy Cross,36,1.0,39.96,26.0,65.0
+186432,Saint Peter's University,37,1.0,46.782,27.0,77.0
+165167,Cambridge College,38,0.991,49.608,18.0,111.02499999999998
+110705,University of California-Santa Barbara,39,0.999,48.489,27.0,87.0
+125727,Westmont College,40,1.0,48.515,30.0,78.02499999999998
+227863,University of St Thomas,41,1.0,48.37,34.0,66.0
+118888,Northeastern University Oakland,42,1.0,50.689,22.0,99.0
+212984,Holy Family University,43,1.0,50.13,32.0,74.02499999999998
+110583,California State University-Long Beach,44,0.998,53.212,24.0,101.02499999999998
+193399,University of Mount Saint Vincent,45,1.0,51.502,31.0,79.0
+174747,College of Saint Benedict,46,1.0,51.447,34.975,77.0
+110529,California State Polytechnic University-Pomona,47,0.999,54.112,28.0,97.0
+170967,Rochester Christian University,48,1.0,51.949,29.0,84.02499999999998
+150400,DePauw University,49,1.0,51.517,33.0,82.0
+110413,California Lutheran University,50,1.0,54.331,36.0,79.02499999999998
+148584,University of St Francis,51,1.0,53.59,29.975,85.02499999999998
+199157,North Carolina Central University,52,0.999,56.945,25.0,105.02499999999998
+122409,San Diego State University,53,1.0,55.055,32.0,90.0
+141981,University of Hawaii-West Oahu,54,1.0,54.929,27.0,97.0
+110565,California State University-Fullerton,55,0.996,59.618,29.975,105.04999999999995
+110510,California State University-San Bernardino,56,0.975,63.359,27.0,124.07499999999993
+168218,Wellesley College,57,1.0,58.768,33.0,96.02499999999998
+225432,University of Houston-Downtown,58,0.996,60.703,30.0,103.0
+209065,Linfield University,59,1.0,61.383,41.0,89.0
+133951,Florida International University,60,0.998,62.209,29.0,109.0
+187134,The College of New Jersey,61,1.0,59.864,34.975,93.02499999999998
+161235,University of Maine at Fort Kent,62,0.988,63.143,25.0,119.0
+176035,Mississippi University for Women,63,1.0,63.049,34.0,95.0
+110680,University of California-San Diego,64,0.994,65.16,37.0,108.0
+164270,McDaniel College,65,1.0,65.064,43.0,91.0
+183822,Bloomfield College of Montclair State University,66,0.996,69.79,38.0,109.0
+123457,Simpson University,67,1.0,67.317,41.0,95.0
+185828,New Jersey Institute of Technology,68,1.0,68.625,43.0,95.02499999999998
+187897,New Mexico Highlands University,69,0.997,69.836,36.0,108.0
+190716,D'Youville  University,70,0.988,71.483,32.0,118.0
+230959,Middlebury College,71,0.998,72.673,39.0,111.0
+130314,University of Saint Joseph,72,0.984,72.728,32.975,122.0
+141060,Spelman College,73,0.964,74.462,32.0,137.0
+188429,Adelphi University,74,1.0,73.925,48.0,102.0
+110662,University of California-Los Angeles,75,0.969,75.778,40.0,129.0
+236230,Pacific Lutheran University,76,1.0,74.662,55.0,97.02499999999998
+139658,Emory University,77,1.0,73.56,41.0,107.0
+234076,University of Virginia-Main Campus,78,0.998,74.769,40.0,113.02499999999998
+110592,California State University-Los Angeles,79,0.911,83.908,35.0,161.07499999999993
+110538,California State University-Chico,80,0.966,82.349,47.0,129.02499999999998
+163578,Notre Dame of Maryland University,81,0.997,78.88,44.0,115.0
+129242,Fairfield University,82,0.995,80.155,51.0,111.0
+213358,La Roche University,83,0.998,82.538,56.0,111.0
+213598,Lincoln University,84,0.935,84.398,34.975,141.0
+198808,Lees-McRae College,85,0.989,84.45,58.975,117.02499999999998
+176947,Central Methodist University-College of Liberal Arts and Sciences,86,0.948,87.289,48.0,137.0
+110617,California State University-Sacramento,87,0.932,89.555,47.0,139.02499999999998
+205957,Franciscan University of Steubenville,88,0.926,85.835,37.0,145.0
+215929,University of Scranton,89,0.993,87.815,61.0,117.0
+148496,Dominican University,90,0.94,90.853,53.975,139.0
+148627,Saint Xavier University,91,0.955,91.328,58.0,134.0
+216597,Villanova University,92,0.985,86.399,50.975,118.02499999999998
+195544,St. Joseph's University-New York,93,0.996,88.357,65.0,112.0
+110486,California State University-Bakersfield,94,0.891,94.483,51.975,153.0
+198543,Fayetteville State University,95,0.869,94.644,43.975,155.02499999999998
+184773,Georgian Court University,96,0.97,96.521,71.0,127.02499999999998
+152390,Saint Mary's College,97,0.986,93.526,64.0,122.0
+234085,Virginia Military Institute,98,0.937,91.005,47.0,135.0
+211583,Chestnut Hill College,99,0.956,97.075,68.0,130.0
+232186,George Mason University,100,0.978,96.412,67.0,125.0
+209825,University of Portland,101,0.936,102.337,74.0,136.0
+217864,Citadel Military College of South Carolina,102,0.888,100.756,57.975,142.0
+366711,California State University-San Marcos,103,0.853,106.251,69.975,150.0
+199999,Winston-Salem State University,104,0.761,107.879,53.0,170.0
+123572,Sonoma State University,105,0.811,110.246,78.975,151.0
+182670,Dartmouth College,106,0.829,106.183,64.0,152.0
+199120,University of North Carolina at Chapel Hill,107,0.849,106.521,68.0,152.0
+145600,University of Illinois Chicago,108,0.748,111.512,71.975,162.0
+166692,Massachusetts Maritime Academy,109,0.804,107.223,62.975,153.0
+119173,Mount Saint Mary's University,110,0.765,113.377,80.0,155.02499999999998
+198419,Duke University,111,0.769,110.06,68.0,158.0
+110556,California State University-Fresno,112,0.625,118.352,69.0,183.0
+174792,Saint Johns University,113,0.815,111.651,81.0,145.0
+164632,Bay Path University,114,0.708,116.481,81.0,164.0
+163912,St. Mary's College of Maryland,115,0.706,113.888,72.0,160.0
+167996,Stonehill College,116,0.775,114.348,81.0,152.0
+136215,Nova Southeastern University,117,0.631,119.823,83.0,164.0
+233295,Randolph-Macon College,118,0.614,121.9,96.0,152.0
+217165,Bryant University,119,0.58,123.765,91.975,162.04999999999995
+208646,Eastern Oregon University,120,0.58,123.623,86.0,171.02499999999998
+459727,Touro University Worldwide,121,0.528,125.28,64.0,196.02499999999998
+153375,Grand View University,122,0.487,128.052,93.0,170.0
+216524,Ursinus College,123,0.499,126.015,95.0,161.02499999999998
+243744,Stanford University,124,0.514,128.835,78.0,194.02499999999998
+190512,CUNY Bernard M Baruch College,125,0.454,132.833,81.0,199.0
+197197,Wagner College,126,0.447,129.555,103.0,165.0
+190637,CUNY Lehman College,127,0.44,132.19,83.975,191.02499999999998
+214069,Misericordia University,128,0.496,127.995,89.0,174.0
+154013,Mount Mercy University,129,0.452,129.746,87.0,182.0
+170532,Kalamazoo College,130,0.413,130.743,95.0,172.02499999999998
+238980,Lakeland University,131,0.477,132.965,59.0,227.04999999999995
+231624,William & Mary,132,0.459,130.407,81.0,191.02499999999998
+229267,Trinity University,133,0.384,131.949,97.0,173.0
+117104,Life Pacific University,134,0.365,134.632,93.0,183.0
+136950,Rollins College,135,0.24,134.557,111.975,163.0
+167288,Massachusetts College of Liberal Arts,136,0.382,134.979,91.0,179.02499999999998
+111948,Chapman University,137,0.21,139.049,110.0,171.0
+147660,North Central College,138,0.154,140.924,114.975,176.02499999999998
+134130,University of Florida,139,0.224,143.658,107.0,191.0
+239716,Saint Norbert College,140,0.171,143.946,110.0,186.0
+228787,The University of Texas at Dallas,141,0.138,143.438,112.0,177.0
+166452,Lesley University,142,0.187,144.669,103.0,193.0
+236595,Seattle University,143,0.122,146.216,114.0,184.0
+217156,Brown University,144,0.22,146.028,97.0,203.02499999999998
+213826,Marywood University,145,0.039,148.349,122.975,180.0
+212197,Elizabethtown College,146,0.152,149.864,108.0,200.02499999999998
+487603,Northwest University-Center for Online and Extended Education,147,0.242,148.538,89.975,216.0
+238193,Alverno College,148,0.13,150.568,109.0,200.0
+196112,SUNY Polytechnic Institute,149,0.167,149.563,105.0,198.02499999999998
+239017,Lawrence University,150,0.088,150.127,117.0,192.0
+228723,Texas A&M University-College Station,151,0.136,153.416,110.0,210.0
+110608,California State University-Northridge,152,0.205,163.536,93.0,262.025
+206507,Wilmington College,153,0.047,157.044,121.0,201.0
+236452,Saint Martin's University,154,0.058,156.902,121.0,199.02499999999998
+240107,Viterbo University,155,0.032,156.09,124.0,191.04999999999995
+217536,Salve Regina University,156,0.03,157.366,124.975,198.0
+213251,Juniata College,157,0.018,160.945,127.0,198.0
+209409,Bushnell University,158,0.047,163.912,119.975,217.0
+233374,University of Richmond,159,0.097,165.053,112.0,234.0
+162928,Johns Hopkins University,160,0.074,165.778,113.0,226.0
+215266,University of Pittsburgh-Bradford,161,0.137,165.298,100.0,236.0
+220516,King University,162,0.089,171.82,111.975,254.0
+233921,Virginia Polytechnic Institute and State University,163,0.021,167.288,128.0,211.0
+216278,Susquehanna University,164,0.005,169.459,134.0,209.0
+154350,Simpson College,165,0.007,170.065,133.975,211.02499999999998
+213011,Immaculata University,166,0.098,169.282,104.0,248.02499999999998
+214157,Moravian University,167,0.01,172.479,133.975,216.0
+185572,Monmouth University,168,0.009,175.281,130.0,231.02499999999998
+215275,University of Pittsburgh-Greensburg,169,0.061,171.187,116.0,231.0
+190415,Cornell University,170,0.044,174.325,119.0,241.02499999999998
+168148,Tufts University,171,0.037,172.99,122.0,231.0
+152381,Saint Mary-of-the-Woods College,172,0.005,176.285,135.0,226.0
+230807,Westminster University,173,0.004,178.088,139.0,227.0
+166027,Harvard University,174,0.055,177.917,116.0,253.0
+139719,Fort Valley State University,175,0.081,181.974,108.95,272.04999999999995
+110422,California Polytechnic State University-San Luis Obispo,176,0.027,182.353,125.0,257.025
+122931,Santa Clara University,177,0.0,181.035,145.0,224.0
+166850,Merrimack College,178,0.0,183.785,144.0,232.0
+190761,Dominican University New York,179,0.0,183.673,152.0,220.02499999999998
+170976,University of Michigan-Ann Arbor,180,0.013,184.037,132.95,243.02499999999998
+211291,Bucknell University,181,0.017,186.801,130.975,260.0
+143084,Augustana College,182,0.0,187.797,148.0,232.0
+110635,University of California-Berkeley,183,0.028,189.949,124.0,270.0
+145336,Governors State University,184,0.026,188.626,125.0,265.0
+189705,Canisius University,185,0.0,191.393,156.0,234.0
+213996,Messiah University,186,0.0,191.691,152.975,240.0
+195720,St. John Fisher University,187,0.001,190.353,150.0,233.0
+140340,Herzing University-Atlanta,188,0.038,194.226,121.975,279.0
+110714,University of California-Santa Cruz,189,0.006,194.695,140.0,254.0
+125897,Woodbury University,190,0.0,195.532,154.0,244.02499999999998
+185129,New Jersey City University,191,0.008,197.971,135.0,265.0
+157818,Transylvania University,192,0.002,197.152,146.0,253.0
+211431,Carlow University,193,0.0,199.038,155.975,249.0
+145637,University of Illinois Urbana-Champaign,194,0.0,198.598,152.975,248.04999999999995
+149505,Trinity Christian College,195,0.0,199.053,161.0,243.0
+167729,Salem State University,196,0.0,199.811,157.0,245.0
+237215,Bluefield State University,197,0.06,203.497,114.975,314.0
+193353,Mount Saint Mary College,198,0.0,202.163,160.0,250.0
+115755,California State Polytechnic University-Humboldt,199,0.003,207.172,142.0,270.025
+211556,Chatham University,200,0.007,203.121,143.975,273.0
+232672,Mary Baldwin University,201,0.033,204.956,120.95,299.04999999999995
+210429,Western Oregon University,202,0.0,207.126,164.0,248.0
+228802,The University of Texas at Tyler,203,0.0,203.995,152.975,256.0
+164173,Stevenson University,204,0.0,208.336,176.0,246.02499999999998
+222983,Austin College,205,0.0,205.877,170.975,245.0
+119605,National University,206,0.061,211.877,107.975,349.0
+106412,University of Arkansas at Pine Bluff,207,0.011,210.028,132.0,299.0
+130794,Yale University,208,0.0,210.273,144.975,287.025
+122612,University of San Francisco,209,0.0,210.378,169.0,255.0
+146481,Lake Forest College,210,0.0,211.316,174.975,251.0
+174020,Metropolitan State University,211,0.074,209.473,99.975,340.0
+186380,Rutgers University-New Brunswick,212,0.0,213.159,153.975,278.025
+131876,Trinity Washington University,213,0.004,216.067,147.0,294.0
+459949,Texas A&M University-San Antonio,214,0.007,213.189,135.975,306.025
+204635,Ohio Northern University,215,0.0,214.289,171.0,262.0
+123554,Saint Mary's College of California,216,0.0,215.379,178.0,258.0
+183974,Centenary University,217,0.0,217.551,176.0,260.0
+164216,Washington College,218,0.0,214.775,174.0,264.0
+363916,Caribbean University-Vega Baja,219,0.032,220.228,118.0,327.0
+224545,Texas A&M University-Texarkana,220,0.0,218.017,155.975,291.025
+226152,Texas A & M International University,221,0.001,221.235,156.0,287.025
+241386,Caribbean University-Carolina,222,0.037,222.762,119.975,333.025
+145691,Illinois College,223,0.0,222.024,178.975,268.025
+138600,Agnes Scott College,224,0.0,221.623,178.0,264.025
+191630,Hobart William Smith Colleges,225,0.0,223.867,174.975,282.0
+243179,University of Puerto Rico-Humacao,226,0.045,227.043,115.975,370.04999999999995
+164739,Bentley University,227,0.0,226.286,174.0,290.07499999999993
+229179,Texas Woman's University,228,0.0,224.385,173.975,278.025
+164924,Boston College,229,0.0,227.38,174.975,286.025
+140553,Morehouse College,230,0.011,233.809,140.975,344.025
+201195,Baldwin Wallace University,231,0.0,234.944,193.0,284.0
+133650,Florida Agricultural and Mechanical University,232,0.003,236.68,148.975,328.04999999999995
+126775,Colorado School of Mines,233,0.001,230.101,162.975,305.025
+228778,The University of Texas at Austin,234,0.0,236.618,175.0,305.0
+134097,Florida State University,235,0.0,235.697,182.0,288.025
+227881,Sam Houston State University,236,0.0,237.113,188.975,292.0
+204006,Miami University-Hamilton,237,0.007,236.25,149.0,336.07499999999993
+221731,Tennessee Wesleyan University,238,0.0,241.387,188.975,305.0
+218964,Winthrop University,239,0.0,238.4,184.975,291.025
+234915,City University of Seattle,240,0.045,239.93,112.975,379.0
+168281,Wheaton College (Massachusetts),241,0.0,239.58,192.0,294.0
+122436,University of San Diego,242,0.0,245.154,197.975,297.0
+199193,North Carolina State University at Raleigh,243,0.0,243.45,194.0,294.025
+231712,Christopher Newport University,244,0.0,243.622,186.0,304.0
+233426,Roanoke College,245,0.0,247.554,203.975,294.025
+209612,Pacific University,246,0.0,246.929,186.0,310.0
+227368,The University of Texas Rio Grande Valley,247,0.0,254.158,170.0,336.04999999999995
+177339,Evangel University,248,0.0,252.028,192.0,319.025
+154527,Wartburg College,249,0.0,251.095,204.0,303.0
+161299,Maine Maritime Academy,250,0.0,248.443,173.975,326.025
+215114,Cairn University-Langhorne,251,0.0,253.474,187.975,326.0
+235316,Gonzaga University,252,0.0,251.028,204.0,302.0
+133669,Florida Atlantic University,253,0.0,255.4,189.0,324.0
+122597,San Francisco State University,254,0.001,261.27,172.975,355.0
+190594,CUNY Hunter College,255,0.0,260.197,182.0,341.04999999999995
+237066,Whitworth University,256,0.0,257.527,209.0,314.04999999999995
+227526,Prairie View A & M University,257,0.0,262.554,170.975,357.0
+237899,West Virginia State University,258,0.03,264.498,122.95,422.04999999999995
+195128,Russell Sage College,259,0.0,258.579,192.95,330.025
+231059,Saint Michael's College,260,0.0,259.527,196.0,328.025
+234155,Virginia State University,261,0.001,264.908,166.0,362.0
+123961,University of Southern California,262,0.0,264.148,186.0,351.0
+196219,SUNY at Purchase College,263,0.0,262.244,209.975,319.0
+174844,St Olaf College,264,0.0,265.194,205.975,335.025
+169716,University of Detroit Mercy,265,0.0,263.937,223.0,308.0
+165015,Brandeis University,266,0.0,264.007,205.0,322.025
+153825,Loras College,267,0.0,268.696,210.975,330.025
+173045,Augsburg University,268,0.0,269.1,225.975,322.0
+227331,Our Lady of the Lake University,269,0.001,273.061,174.0,366.025
+204015,Miami University-Middletown,270,0.0,267.036,177.975,356.025
+192192,Keuka College,271,0.0,271.635,231.0,315.0
+148405,Rockford University,272,0.0,272.458,218.95,330.0
+182290,University of Nevada-Reno,273,0.0,276.818,212.0,340.0
+199111,University of North Carolina Asheville,274,0.0,276.723,219.0,337.025
+196185,SUNY Oneonta,275,0.0,279.903,225.975,333.0
+114813,Fresno Pacific University,276,0.0,284.869,220.975,347.025
+198516,Elon University,277,0.0,279.48,221.975,341.025
+215947,Seton Hill University,278,0.0,280.142,238.0,325.0
+196079,Binghamton University,279,0.0,279.845,227.975,338.025
+232423,James Madison University,280,0.0,282.478,215.975,352.025
+238661,Edgewood University,281,0.0,280.408,225.0,337.025
+154688,Baker University,282,0.0,281.355,208.0,358.025
+144962,Elmhurst University,283,0.0,286.62,232.0,342.0
+228501,Sul Ross State University,284,0.0,284.104,210.0,355.04999999999995
+150455,Earlham College,285,0.0,285.707,239.0,334.0
+185262,Kean University,286,0.0,290.205,225.0,352.025
+175430,Blue Mountain Christian University,287,0.0,289.554,223.975,355.025
+228468,Southwestern Adventist University,288,0.0,288.478,231.975,348.0
+165699,Endicott College,289,0.0,289.297,233.0,345.04999999999995
+239105,Marquette University,290,0.0,291.084,230.0,352.025
+139959,University of Georgia,291,0.0,288.774,233.975,345.025
+203368,John Carroll University,292,0.0,291.66,237.0,350.0
+196097,Stony Brook University,293,0.0,291.632,227.0,358.025
+186201,Ramapo College of New Jersey,294,0.0,290.095,241.0,342.0
+220631,Lincoln Memorial University,295,0.0,292.006,229.0,355.025
+239318,Milwaukee School of Engineering,296,0.0,295.683,254.975,339.025
+218399,Morris College,297,0.001,301.701,199.975,408.0
+216038,Slippery Rock University of Pennsylvania,298,0.0,296.601,248.0,342.025
+174899,The College of Saint Scholastica,299,0.0,295.765,245.0,341.0
+195474,Siena University,300,0.0,301.06,252.975,351.0
+215284,University of Pittsburgh-Johnstown,301,0.0,298.337,239.975,356.0
+199607,Salem College,302,0.0,299.931,238.0,364.0
+217873,Claflin University,303,0.0,308.356,219.95,410.025
+175856,Jackson State University,304,0.0,304.506,209.0,400.0
+112075,Concordia University-Irvine,305,0.0,304.252,266.0,341.025
+194958,Roberts Wesleyan University,306,0.0,303.537,226.975,381.0
+125763,Whittier College,307,0.0,306.815,243.975,368.0
+194392,Paul Smiths College of Arts and Science,308,0.0,308.49,255.975,359.0
+184603,Fairleigh Dickinson University-Metropolitan Campus,309,0.0,308.85,235.0,379.0
+145813,Illinois State University,310,0.0,308.304,253.0,360.0
+117946,Loyola Marymount University,311,0.0,308.338,260.95,355.0
+186867,Stevens Institute of Technology,312,0.0,306.075,246.975,363.0
+193584,Nazareth University,313,0.0,309.447,257.975,362.0
+219091,Dakota Wesleyan University,314,0.0,309.138,259.0,359.0
+111188,Cal Poly Maritime Academy,315,0.0,307.849,224.0,392.0
+157757,Spalding University,316,0.0,310.373,241.0,380.0
+175342,Alcorn State University,317,0.0,315.223,215.0,419.0999999999999
+147767,Northwestern University,318,0.0,311.125,232.95,394.0
+161226,University of Maine at Farmington,319,0.0,312.893,246.975,374.0
+207458,Oklahoma City University,320,0.0,312.678,253.975,372.025
+217776,Southern Wesleyan University,321,0.0,311.733,235.0,387.025
+232706,Marymount University,322,0.0,317.911,266.975,369.0
+220701,The University of Tennessee Southern,323,0.0,316.545,223.9,406.025
+183239,Saint Anselm College,324,0.0,317.986,252.0,388.0
+172644,Wayne State University,325,0.0,318.189,262.0,368.0
+187444,William Paterson University of New Jersey,326,0.0,323.295,261.0,380.025
+178420,University of Missouri-St Louis,327,0.0,318.869,258.975,380.0
+197869,Appalachian State University,328,0.0,324.425,263.0,385.025
+170301,Hope College,329,0.0,324.459,257.0,390.07499999999993
+201645,Case Western Reserve University,330,0.0,321.481,250.975,386.04999999999995
+165662,Emerson College,331,0.0,323.783,258.0,395.0
+152600,Valparaiso University,332,0.0,325.188,261.975,381.025
+232681,University of Mary Washington,333,0.0,322.825,270.0,374.04999999999995
+110574,California State University-East Bay,334,0.0,328.46,242.0,415.025
+211088,Arcadia University,335,0.0,330.263,281.975,376.025
+175616,Delta State University,336,0.0,327.414,257.975,387.0
+168263,Westfield State University,337,0.0,328.951,284.0,368.04999999999995
+121150,Pepperdine University,338,0.0,328.787,268.975,388.025
+166513,University of Massachusetts-Lowell,339,0.0,332.917,288.975,376.0
+161873,University of Baltimore,340,0.0,332.582,252.975,404.025
+196060,University at Albany,341,0.0,335.669,280.975,392.025
+138947,Clark Atlanta University,342,0.0,345.802,249.95,453.0
+196042,Farmingdale State College,343,0.0,341.221,257.0,425.025
+199102,North Carolina A & T State University,344,0.0,345.206,248.0,448.025
+190549,CUNY Brooklyn College,345,0.0,344.362,257.975,422.04999999999995
+217013,Wilson College,346,0.0,343.997,284.0,407.025
+131159,American University,347,0.0,345.002,283.0,409.0
+219383,University of Sioux Falls,348,0.0,348.185,293.975,409.0
+120883,University of the Pacific,349,0.0,351.382,291.975,413.025
+184612,Felician University,350,0.0,360.368,288.0,438.025
+163851,Salisbury University,351,0.0,358.013,306.975,414.025
+228796,The University of Texas at El Paso,352,0.0,358.747,270.0,454.0
+214166,Mount Aloysius College,353,0.0,361.251,282.0,438.025
+150677,Grace College and Theological Seminary,354,0.0,361.178,317.975,416.0
+163268,University of Maryland-Baltimore County,355,0.0,358.963,317.0,403.0
+131469,George Washington University,356,0.0,363.086,300.0,433.0
+441900,Nevada State University,357,0.0,362.862,247.0,493.0
+197045,Utica University,358,0.0,366.285,317.0,417.025
+207263,Northeastern State University,359,0.0,365.506,315.975,417.0
+181020,Doane University,360,0.0,367.803,309.975,428.0
+181604,College of Saint Mary,361,0.0,367.59,306.975,429.0
+101435,Huntingdon College,362,0.0,368.767,312.975,433.0
+180948,Chadron State College,363,0.0,370.413,305.975,446.025
+208822,George Fox University,364,0.0,371.495,320.95,429.0
+217484,University of Rhode Island,365,0.0,369.907,332.0,415.0
+131496,Georgetown University,366,0.0,370.892,297.0,451.0
+190044,Clarkson University,367,0.0,372.829,320.0,433.04999999999995
+196149,State University of New York at Cortland,368,0.0,374.009,313.0,443.025
+199218,University of North Carolina Wilmington,369,0.0,372.476,332.95,417.0
+165024,Bridgewater State University,370,0.0,374.917,332.0,422.025
+209506,Oregon Institute of Technology,371,0.0,374.088,281.975,475.025
+217420,Rhode Island College,372,0.0,376.651,328.0,427.0
+190600,CUNY John Jay College of Criminal Justice,373,0.0,382.678,289.975,480.0
+262086,University of Massachusetts Global,374,0.0,377.519,215.0,550.0
+107512,Ouachita Baptist University,375,0.0,380.711,332.0,433.025
+219000,Augustana University,376,0.0,380.196,321.0,451.0
+141565,University of Hawaii at Hilo,377,0.0,380.838,299.95,476.0
+179867,Washington University in St Louis,378,0.0,383.058,303.975,477.04999999999995
+186618,Saint Elizabeth University,379,0.0,384.667,327.95,454.0
+150145,Bethel University,380,0.0,384.083,333.975,446.0
+197911,Barton College,381,0.0,385.46,320.975,464.0
+145725,Illinois Institute of Technology,382,0.0,386.459,330.975,446.025
+213303,Keystone College,383,0.0,390.568,309.0,486.0
+121691,University of Redlands,384,0.0,388.018,342.0,439.04999999999995
+192323,Le Moyne College,385,0.0,386.902,340.975,440.025
+181783,Wayne State College,386,0.0,390.696,323.0,467.025
+128498,Albertus Magnus College,387,0.0,395.338,306.975,501.0
+209807,Portland State University,388,0.0,390.077,334.975,458.025
+225511,University of Houston,389,0.0,392.824,322.975,467.04999999999995
+196015,SUNY College of Technology at Canton,390,0.0,394.539,322.0,471.0
+152336,University of Saint Francis-Fort Wayne,391,0.0,395.987,344.0,454.0
+170806,Madonna University,392,0.0,395.398,313.0,489.025
+213543,Lehigh University,393,0.0,395.087,325.0,472.025
+227845,Saint Edward's University,394,0.0,398.76,347.0,458.0
+243443,Universidad del Sagrado Corazon,395,0.0,401.265,293.95,537.05
+234030,Virginia Commonwealth University,396,0.0,396.169,348.975,452.0
+162584,Frostburg State University,397,0.0,396.419,355.0,444.0
+165334,Clark University,398,0.0,396.821,336.0,472.025
+228343,Southwestern University,399,0.0,397.539,342.0,465.0
+154095,University of Northern Iowa,400,0.0,402.472,346.0,471.0
+240462,University of Wisconsin-Platteville,401,0.0,403.259,356.0,461.025
+200059,Dickinson State University,402,0.0,401.862,311.0,505.0
+229027,The University of Texas at San Antonio,403,0.0,405.798,345.0,473.025
+166638,University of Massachusetts-Boston,404,0.0,406.097,351.975,466.0
+181002,Creighton University,405,0.0,407.85,356.975,475.0
+149222,Southern Illinois University-Carbondale,406,0.0,413.21,366.0,469.0
+177542,Hannibal-LaGrange University,407,0.0,418.659,322.0,545.025
+151388,Indiana University-East,408,0.0,413.9,342.975,495.025
+196237,SUNY Old Westbury,409,0.0,418.636,357.0,487.0
+137351,University of South Florida,410,0.0,417.811,350.0,493.0
+363907,Caribbean University-Ponce,411,0.0,422.479,307.975,545.0
+218733,South Carolina State University,412,0.0,425.64,318.975,553.025
+217633,Anderson University,413,0.0,422.604,377.0,478.0
+228149,St. Mary's University,414,0.0,427.224,362.0,506.0
+156295,Berea College,415,0.0,431.76,303.95,576.0749999999999
+139144,Berry College,416,0.0,424.162,365.0,493.025
+157535,University of Pikeville,417,0.0,431.696,333.975,544.0
+184782,Rowan University,418,0.0,426.554,372.0,489.0
+236896,Walla Walla University,419,0.0,431.205,352.975,525.025
+168005,Suffolk University,420,0.0,433.701,361.0,518.0
+199148,University of North Carolina at Greensboro,421,0.0,430.293,368.0,505.07499999999993
+143358,Bradley University,422,0.0,432.39,373.975,504.0
+201548,Capital University,423,0.0,432.042,387.975,488.0
+240329,University of Wisconsin-La Crosse,424,0.0,431.166,368.0,503.0
+164562,Assumption University,425,0.0,431.062,371.975,504.0
+167783,Simmons University,426,0.0,429.722,359.0,515.0
+173328,Concordia University-Saint Paul,427,0.0,432.477,313.0,571.05
+210739,DeSales University,428,0.0,433.089,383.975,488.0
+196194,State University of New York at Oswego,429,0.0,434.593,363.975,515.0
+175005,St Catherine University,430,0.0,432.908,340.0,535.0
+129774,Mitchell College,431,0.0,434.379,367.0,513.0
+228769,The University of Texas at Arlington,432,0.0,435.96,335.925,558.025
+209551,University of Oregon,433,0.0,436.071,379.0,504.0
+163453,Morgan State University,434,0.0,440.502,326.975,567.0
+215743,Saint Francis University,435,0.0,438.162,385.975,498.025
+228705,Texas A&M University-Kingsville,436,0.0,442.02,353.975,539.0
+185590,Montclair State University,437,0.0,444.416,374.975,525.0
+227216,University of North Texas,438,0.0,445.048,384.0,514.05
+196592,Touro University,439,0.0,445.672,380.0,527.05
+199139,University of North Carolina at Charlotte,440,0.0,446.083,387.0,510.025
+195030,University of Rochester,441,0.0,445.448,376.0,524.0
+194824,Rensselaer Polytechnic Institute,442,0.0,446.091,378.0,517.025
+179955,William Jewell College,443,0.0,444.438,377.975,520.025
+141486,Chaminade University of Honolulu,444,0.0,452.216,388.0,524.025
+107600,Philander Smith University,445,0.0,459.038,341.0,588.05
+206437,Walsh University,446,0.0,453.218,401.0,512.025
+165820,Fitchburg State University,447,0.0,451.636,401.0,506.0
+213507,Lebanon Valley College,448,0.0,454.809,400.0,518.0
+147244,Millikin University,449,0.0,454.639,386.95,525.025
+225885,Jarvis Christian University,450,0.0,467.085,339.0,608.0
+171571,Oakland University,451,0.0,455.085,403.0,515.025
+225502,Texas A&M University-Victoria,452,0.0,453.382,345.975,567.025
+218539,Presbyterian College,453,0.0,456.493,392.975,524.025
+199272,William Peace University,454,0.0,458.565,378.975,548.0
+183211,Rivier University,455,0.0,458.55,377.0,543.0
+243151,University of Puerto Rico at Cayey,456,0.0,462.041,313.875,629.025
+238333,Beloit College,457,0.0,460.01,393.975,530.0
+240277,University of Wisconsin-Green Bay,458,0.0,461.035,407.975,525.0
+196291,SUNY Maritime College,459,0.0,460.152,364.0,565.025
+203128,Hiram College,460,0.0,463.527,398.975,531.0
+100724,Alabama State University,461,0.0,472.177,348.95,605.0
+161217,University of Maine at Augusta,462,0.0,466.369,318.0,628.0999999999999
+140447,Mercer University,463,0.0,467.877,415.0,528.0
+155900,Southwestern College,464,0.0,467.662,354.0,582.0
+240189,University of Wisconsin-Whitewater,465,0.0,469.883,406.0,540.0
+164076,Towson University,466,0.0,469.629,417.0,527.025
+236133,Northwest University,467,0.0,473.854,382.0,572.0
+221999,Vanderbilt University,468,0.0,469.044,369.0,569.0
+117140,University of La Verne,469,0.0,474.951,378.0,592.0
+186584,Seton Hall University,470,0.0,474.878,414.975,538.0
+102270,Stillman College,471,0.0,478.034,354.975,610.0749999999999
+190983,Elmira College,472,0.0,472.337,408.975,537.0
+186283,Rider University,473,0.0,476.461,418.975,539.0
+168227,Wentworth Institute of Technology,474,0.0,477.618,404.975,552.025
+196413,Syracuse University,475,0.0,478.777,402.0,557.0
+173647,Gustavus Adolphus College,476,0.0,478.106,405.0,558.0
+195809,St. John's University-New York,477,0.0,483.903,401.975,576.0
+150604,Franklin College,478,0.0,480.342,416.0,544.0
+134079,Florida Southern College,479,0.0,479.843,421.0,536.0
+129215,Eastern Connecticut State University,480,0.0,479.406,416.0,539.025
+143288,Blackburn College,481,0.0,483.735,381.975,587.0
+175272,Winona State University,482,0.0,478.412,406.0,552.0
+132903,University of Central Florida,483,0.0,483.058,376.0,590.0
+178697,College of the Ozarks,484,0.0,483.967,375.975,599.025
+221971,Union University,485,0.0,480.911,404.0,560.0
+133711,Flagler College,486,0.0,486.667,408.975,566.025
+486901,Milligan University,487,0.0,485.241,410.975,561.025
+237792,Shepherd University,488,0.0,487.155,392.95,577.0
+154493,Upper Iowa University,489,0.0,488.006,370.925,625.025
+167987,University of Massachusetts-Dartmouth,490,0.0,486.865,416.975,561.025
+216667,Washington & Jefferson College,491,0.0,487.878,420.0,552.025
+228529,Tarleton State University,492,0.0,488.691,409.0,564.0
+145619,Benedictine University,493,0.0,490.086,429.95,552.025
+215062,University of Pennsylvania,494,0.0,489.658,382.975,596.025
+136172,University of North Florida,495,0.0,488.081,416.975,558.025
+141574,University of Hawaii at Manoa,496,0.0,491.54,433.0,549.025
+182634,Colby-Sawyer College,497,0.0,493.207,421.975,560.025
+211468,Cedar Crest College,498,0.0,493.309,419.0,566.0
+237011,Western Washington University,499,0.0,495.288,419.95,571.0
+180258,University of Providence,500,0.0,493.229,355.0,642.0749999999999
+171100,Michigan State University,501,0.0,497.545,421.0,568.0
+202134,Cleveland State University,502,0.0,498.188,433.0,563.0
+155511,McPherson College,503,0.0,498.423,425.0,570.025
+180814,Bellevue University,504,0.0,507.377,385.0,633.025
+142115,Boise State University,505,0.0,503.701,443.975,564.0749999999999
+200004,Western Carolina University,506,0.0,504.018,420.0,580.0
+198835,Lenoir-Rhyne University,507,0.0,506.006,455.0,554.0
+150163,Butler University,508,0.0,505.107,422.0,588.0
+142461,Northwest Nazarene University,509,0.0,508.164,457.975,559.025
+240268,University of Wisconsin-Eau Claire,510,0.0,508.144,435.975,576.025
+199306,Pfeiffer University,511,0.0,509.655,435.0,578.025
+229814,West Texas A & M University,512,0.0,512.696,452.95,574.0
+210669,Allegheny College,513,0.0,514.9,452.975,574.0
+144351,Concordia University-Chicago,514,0.0,516.692,449.975,581.0
+240471,University of Wisconsin-River Falls,515,0.0,513.399,448.95,568.025
+216339,Temple University,516,0.0,516.174,447.0,583.0
+206613,Wright State University-Lake Campus,517,0.0,510.716,395.95,620.025
+191621,Hilbert College,518,0.0,518.623,441.975,592.025
+243665,University of the Virgin Islands,519,0.0,517.852,369.975,681.025
+130253,Sacred Heart University,520,0.0,517.185,460.975,574.05
+241225,Universidad Central de Bayamon,521,0.0,518.802,367.975,693.0
+156356,Brescia University,522,0.0,519.2,425.975,619.025
+174066,University of Minnesota-Twin Cities,523,0.0,519.965,440.0,593.0
+171137,University of Michigan-Dearborn,524,0.0,522.573,458.975,583.025
+175421,Belhaven University,525,0.0,522.506,384.975,685.05
+225627,University of the Incarnate Word,526,0.0,527.853,431.975,616.0
+183910,Caldwell University,527,0.0,528.617,455.0,601.05
+161554,University of Southern Maine,528,0.0,523.524,457.0,584.025
+151786,Marian University,529,0.0,526.855,474.0,578.0
+135726,University of Miami,530,0.0,526.752,445.975,604.0
+171128,Michigan Technological University,531,0.0,521.558,429.975,604.0
+235097,Eastern Washington University,532,0.0,530.875,451.975,606.0
+213668,Lycoming College,533,0.0,531.111,443.975,610.0
+228246,Southern Methodist University,534,0.0,528.075,457.0,595.0
+174075,University of Minnesota-Crookston,535,0.0,521.518,390.975,656.025
+214272,Neumann University,536,0.0,532.701,455.0,602.0
+215798,Saint Vincent College,537,0.0,532.571,462.0,597.025
+213349,Kutztown University of Pennsylvania,538,0.0,533.118,457.975,601.025
+129020,University of Connecticut,539,0.0,531.344,455.975,606.025
+237330,Concord University,540,0.0,534.449,412.975,634.0
+162760,Hood College,541,0.0,536.314,470.0,598.0
+153001,Buena Vista University,542,0.0,539.41,487.0,587.025
+233541,Shenandoah University,543,0.0,537.157,452.975,610.0749999999999
+162283,Coppin State University,544,0.0,538.886,387.975,686.025
+232566,Longwood University,545,0.0,541.733,459.975,610.025
+147776,Northeastern Illinois University,546,0.0,545.513,458.0,628.0
+206862,Southern Nazarene University,547,0.0,550.094,459.975,634.025
+243115,University of Puerto Rico-Arecibo,548,0.0,545.605,364.975,745.0
+130943,University of Delaware,549,0.0,546.211,474.0,612.0
+148654,University of Illinois Springfield,550,0.0,544.272,442.0,642.0
+128771,Central Connecticut State University,551,0.0,551.27,489.975,609.025
+239628,Ripon College,552,0.0,550.055,484.0,613.025
+230995,Norwich University,553,0.0,550.76,476.975,623.05
+198950,Meredith College,554,0.0,554.37,496.95,611.0
+237312,University of Charleston,555,0.0,552.125,459.975,650.025
+147341,Monmouth College,556,0.0,558.86,487.95,625.0
+218919,Voorhees University,557,0.0,561.049,431.925,684.025
+235167,The Evergreen State College,558,0.0,558.467,470.0,636.025
+178396,University of Missouri-Columbia,559,0.0,557.888,490.975,618.025
+240480,University of Wisconsin-Stevens Point,560,0.0,561.214,494.0,619.0
+153108,Central College,561,0.0,560.317,498.975,620.025
+147013,McKendree University,562,0.0,563.363,512.975,611.0
+131283,The Catholic University of America,563,0.0,559.195,467.95,650.05
+193016,Mercy University,564,0.0,568.823,474.975,651.025
+152567,Trine University,565,0.0,565.649,468.975,652.05
+218663,University of South Carolina-Columbia,566,0.0,564.042,497.0,625.025
+163286,University of Maryland-College Park,567,0.0,567.052,490.975,643.0
+163046,Loyola University Maryland,568,0.0,567.719,486.0,647.0
+134945,Jacksonville University,569,0.0,572.23,503.975,632.0
+100663,University of Alabama at Birmingham,570,0.0,571.007,501.975,638.025
+221847,Tennessee Technological University,571,0.0,572.498,499.0,644.025
+147536,National Louis University,572,0.0,575.406,465.925,677.0
+150756,Hanover College,573,0.0,578.108,510.0,641.0999999999999
+243197,University of Puerto Rico-Mayaguez,574,0.0,577.425,421.95,741.1749999999998
+221892,Trevecca Nazarene University,575,0.0,576.05,469.975,677.05
+230852,Champlain College,576,0.0,580.462,492.0,673.0
+174491,University of Northwestern-St Paul,577,0.0,579.046,488.975,669.05
+199412,Queens University of Charlotte,578,0.0,580.032,520.95,639.0
+181127,Hastings College,579,0.0,582.16,517.975,642.025
+192819,Marist University,580,0.0,584.431,502.0,676.0
+147703,Northern Illinois University,581,0.0,583.15,513.0,657.0
+190567,CUNY City College,582,0.0,583.757,494.925,673.025
+131450,Gallaudet University,583,0.0,582.399,467.0,692.0
+191241,Fordham University,584,0.0,583.923,515.0,652.0
+145372,Greenville University,585,0.0,584.065,519.975,640.025
+144892,Eastern Illinois University,586,0.0,583.74,515.0,648.05
+198756,Johnson C Smith University,587,0.0,590.539,465.975,718.05
+217402,Providence College,588,0.0,585.702,506.975,671.0
+152099,Oakland City University,589,0.0,587.433,429.95,732.05
+232043,Eastern Mennonite University,590,0.0,590.128,531.975,653.0
+170082,Grand Valley State University,591,0.0,594.078,510.0,680.025
+150172,Calumet College of Saint Joseph,592,0.0,592.656,485.0,696.025
+218742,University of South Carolina-Upstate,593,0.0,592.606,514.0,669.025
+146427,Knox College,594,0.0,594.367,531.0,657.05
+218654,University of South Carolina Beaufort,595,0.0,590.812,511.0,665.025
+100858,Auburn University,596,0.0,592.26,514.0,668.025
+214883,Peirce College,597,0.0,592.017,377.975,798.025
+156286,Bellarmine University,598,0.0,596.301,512.0,675.025
+195526,Skidmore College,599,0.0,597.045,492.975,703.025
+193900,New York University,600,0.0,600.714,491.0,712.0
+209542,Oregon State University,601,0.0,598.403,529.0,673.025
+159009,Grambling State University,602,0.0,602.998,475.975,728.025
+198464,East Carolina University,603,0.0,598.97,536.0,657.05
+126562,University of Colorado Denver/Anschutz Medical Campus,604,0.0,598.194,537.0,670.025
+206835,Oklahoma Wesleyan University,605,0.0,599.733,504.95,694.0
+121309,Point Loma Nazarene University,606,0.0,605.939,557.0,655.025
+176406,Tougaloo College,607,0.0,609.513,481.975,736.0
+157401,Murray State University,608,0.0,606.979,544.975,668.0999999999999
+130493,Southern Connecticut State University,609,0.0,608.442,545.975,673.025
+221759,The University of Tennessee-Knoxville,610,0.0,607.594,548.0,672.0
+200217,University of Mary,611,0.0,606.988,517.975,702.0
+228875,Texas Christian University,612,0.0,612.379,540.975,688.025
+157216,Lindsey Wilson University,613,0.0,617.371,504.975,724.05
+191931,Iona University,614,0.0,617.022,539.0,698.0
+149231,Southern Illinois University Edwardsville,615,0.0,612.217,553.0,670.05
+229780,Wayland Baptist University,616,0.0,612.451,409.975,795.05
+128744,University of Bridgeport,617,0.0,614.781,538.0,699.05
+165671,Emmanuel College,618,0.0,616.671,554.0,684.0
+231174,University of Vermont,619,0.0,615.746,527.95,701.0
+226383,Lubbock Christian University,620,0.0,621.079,560.0,680.0
+144740,DePaul University,621,0.0,626.738,550.0,710.0
+153834,Luther College,622,0.0,624.236,550.975,711.0
+216694,Waynesburg University,623,0.0,626.964,558.975,700.025
+210331,Corban University,624,0.0,626.302,546.975,707.05
+155520,MidAmerica Nazarene University,625,0.0,627.243,576.975,679.025
+142294,The College of Idaho,626,0.0,628.977,570.0,690.0
+107141,John Brown University,627,0.0,633.42,586.975,687.0
+220862,University of Memphis,628,0.0,633.456,566.0,700.025
+196246,State University of New York at Plattsburgh,629,0.0,632.935,566.975,702.025
+204194,Mount Vernon Nazarene University,630,0.0,636.415,587.0,689.025
+142328,Lewis-Clark State College,631,0.0,635.489,552.975,719.025
+101480,Jacksonville State University,632,0.0,636.517,576.95,697.0
+139861,Georgia College & State University,633,0.0,635.584,561.975,706.0
+132471,Barry University,634,0.0,640.063,549.975,718.05
+168786,Aquinas College,635,0.0,638.416,579.0,706.025
+178059,Maryville University of Saint Louis,636,0.0,638.239,556.975,720.0
+141167,Thomas University,637,0.0,634.284,453.975,802.0749999999999
+210146,Southern Oregon University,638,0.0,638.909,583.0,699.0
+183071,University of New Hampshire at Manchester,639,0.0,632.067,479.975,772.0
+153366,Graceland University-Lamoni,640,0.0,641.526,585.0,698.0
+228042,Schreiner University,641,0.0,644.1,558.975,726.05
+192703,Manhattan University,642,0.0,644.561,589.975,706.025
+179946,Westminster College,643,0.0,642.87,569.975,717.0
+174914,University of St Thomas,644,0.0,642.932,567.975,716.025
+487524,Husson University,645,0.0,642.783,569.0,710.025
+107080,Hendrix College,646,0.0,645.534,578.975,713.025
+240365,University of Wisconsin-Oshkosh,647,0.0,645.254,587.975,713.05
+194091,New York Institute of Technology,648,0.0,649.263,593.0,709.025
+239390,Mount Mary University,649,0.0,647.149,558.95,729.0
+212106,Duquesne University,650,0.0,650.099,592.0,710.0
+105330,Northern Arizona University,651,0.0,651.354,579.0,721.025
+212054,Drexel University,652,0.0,653.853,572.975,742.025
+155025,Emporia State University,653,0.0,649.417,578.0,713.0
+183257,University of New Hampshire College of Professional Studies Online,654,0.05,643.831,56.95,1174.0749999999998
+191968,Ithaca College,655,0.0,654.69,575.975,742.0
+171146,University of Michigan-Flint,656,0.0,648.632,551.975,739.0
+203775,Malone University,657,0.0,654.664,604.975,704.0
+216807,Westminster College,658,0.0,659.724,599.0,716.025
+199281,University of North Carolina at Pembroke,659,0.0,660.126,585.975,731.0
+176372,University of Southern Mississippi,660,0.0,660.878,582.925,733.0
+181215,University of Nebraska at Kearney,661,0.0,661.158,599.0,718.0
+217961,Converse University,662,0.0,662.048,593.975,721.025
+224004,Concordia University Texas,663,0.0,663.922,605.975,719.025
+151333,Indiana University-Kokomo,664,0.0,665.64,575.975,747.025
+213400,Lancaster Bible College,665,0.0,665.391,553.975,771.05
+190691,CUNY York College,666,0.0,668.284,547.0,777.025
+198215,Catawba College,667,0.0,670.314,598.0,744.0
+232609,University of Lynchburg,668,0.0,673.389,616.0,733.0
+154749,Bethel College-North Newton,669,0.0,671.25,590.0,746.025
+161572,Unity Environmental University,670,0.0,674.684,598.0,747.025
+172051,Saginaw Valley State University,671,0.0,674.856,622.975,725.025
+190114,Metropolitan College of New York,672,0.0,677.922,552.975,785.025
+163338,University of Maryland Eastern Shore,673,0.0,671.548,521.925,800.0
+226833,Midwestern State University,674,0.0,677.074,629.0,723.0
+236948,University of Washington-Seattle Campus,675,0.0,677.036,587.975,763.0
+178411,Missouri University of Science and Technology,676,0.0,674.133,596.975,746.0
+122728,William Jessup University,677,0.0,679.136,617.0,745.0
+216931,Wilkes University,678,0.0,679.79,603.0,747.025
+173665,Hamline University,679,0.0,682.068,623.0,736.025
+228459,Texas State University,680,0.0,680.311,606.975,747.025
+204264,Muskingum University,681,0.0,683.677,637.0,729.0
+157377,Midway University,682,0.0,681.073,617.925,741.0
+482149,Augusta University,683,0.0,676.725,589.975,755.0
+217749,Bob Jones University,684,0.0,682.765,592.975,777.0
+215691,Rosemont College,685,0.0,681.818,602.0,755.025
+237932,West Liberty University,686,0.0,680.344,592.95,749.0
+243780,Purdue University-Main Campus,687,0.0,680.646,607.0,746.0
+216852,Widener University,688,0.0,682.569,621.975,741.0
+241410,Pontifical Catholic University of Puerto Rico-Ponce,689,0.0,686.834,539.95,826.0749999999999
+207306,Northwestern Oklahoma State University,690,0.0,684.921,606.975,757.025
+234827,Central Washington University,691,0.0,691.496,607.0,766.025
+155089,Friends University,692,0.0,688.777,623.0,748.0
+160621,Southern University and A & M College,693,0.0,690.035,569.95,803.0
+102049,Samford University,694,0.0,689.503,614.975,771.025
+110361,California Baptist University,695,0.0,697.612,597.9,782.0
+165529,Curry College,696,0.0,695.021,630.0,753.025
+200226,Mayville State University,697,0.0,683.361,554.0,801.0
+152992,Briar Cliff University,698,0.0,693.677,611.975,765.025
+245953,Mid-America Christian University,699,0.0,697.671,613.975,775.025
+182281,University of Nevada-Las Vegas,700,0.0,694.682,618.925,768.0
+159966,Nicholls State University,701,0.0,696.258,608.975,769.0
+162210,Washington Adventist University,702,0.0,695.052,632.0,753.025
+236577,Seattle Pacific University,703,0.0,696.848,624.0,767.0
+164988,Boston University,704,0.0,696.302,599.95,789.0
+177214,Drury University,705,0.0,700.148,635.95,760.025
+156082,Washburn University,706,0.0,695.727,609.975,771.025
+207500,University of Oklahoma-Norman Campus,707,0.0,700.17,645.975,752.0
+101879,University of North Alabama,708,0.0,703.294,645.975,751.025
+176017,University of Mississippi,709,0.0,701.437,638.0,754.0
+164447,American International College,710,0.0,708.506,637.975,771.0
+196121,SUNY Brockport,711,0.0,705.707,632.0,765.025
+202523,Denison University,712,0.0,705.185,619.975,782.0
+212601,Gannon University,713,0.0,707.08,639.95,771.0
+231554,Bluefield University,714,0.0,711.612,626.975,786.025
+209056,Lewis & Clark College,715,0.0,709.527,633.975,776.025
+140818,Piedmont University,716,0.0,712.327,658.975,764.0
+211608,Cheyney University of Pennsylvania,717,0.0,710.455,555.975,829.0749999999999
+155681,Pittsburg State University,718,0.0,713.222,646.0,768.0
+100654,Alabama A & M University,719,0.0,714.739,587.975,825.0
+198561,Gardner-Webb University,720,0.0,711.49,640.975,773.025
+194310,Pace University,721,0.0,716.271,651.0,781.025
+201690,Central State University,722,0.0,716.824,597.925,822.0
+156125,Wichita State University,723,0.0,717.131,656.0,771.025
+151351,Indiana University-Bloomington,724,0.0,718.204,644.925,788.025
+106458,Arkansas State University,725,0.0,716.368,649.975,769.0
+153658,University of Iowa,726,0.0,720.026,653.925,778.025
+173124,Bemidji State University,727,0.0,721.242,642.0,793.025
+198862,Livingstone College,728,0.0,729.433,608.0,844.0
+229018,The University of Texas Permian Basin,729,0.0,723.332,627.0,803.025
+127741,University of Northern Colorado,730,0.0,727.485,658.0,789.0
+198136,Campbell University,731,0.0,729.163,671.975,784.0
+203085,Heidelberg University,732,0.0,731.872,668.975,787.025
+155812,University of Saint Mary,733,0.0,729.307,661.975,791.025
+220215,Freed-Hardeman University,734,0.0,732.623,658.0,810.0
+102094,University of South Alabama,735,0.0,733.217,680.0,779.0
+162654,Goucher College,736,0.0,734.016,667.0,800.0
+229887,Wiley University,737,0.0,741.23,612.0,857.025
+153603,Iowa State University,738,0.0,738.58,661.95,803.0
+229115,Texas Tech University,739,0.0,739.123,671.0,800.025
+196088,University at Buffalo,740,0.0,740.473,683.0,793.0
+193973,Niagara University,741,0.0,742.498,688.975,799.0
+130776,Western Connecticut State University,742,0.0,740.943,693.0,785.025
+240444,University of Wisconsin-Madison,743,0.0,741.694,665.0,807.0
+150534,University of Evansville,744,0.0,744.339,692.0,798.025
+243346,Universidad Ana G. Mendez-Carolina Campus,745,0.0,746.792,576.95,917.0999999999999
+142285,University of Idaho,746,0.0,743.72,683.0,799.0
+102377,Tuskegee University,747,0.0,747.147,621.0,865.0
+173160,Bethel University,748,0.0,743.24,659.95,825.0
+150668,Goshen College,749,0.0,746.913,664.925,817.025
+214041,Millersville University of Pennsylvania,750,0.0,747.407,701.975,795.0
+202480,University of Dayton,751,0.0,747.232,670.0,818.025
+155061,Fort Hays State University,752,0.0,747.003,614.975,875.025
+179548,Stephens College,753,0.0,750.323,673.0,823.025
+238458,Carroll University,754,0.0,755.138,706.0,807.0
+212656,Geneva College,755,0.0,754.594,701.0,806.0
+224554,East Texas A&M University,756,0.0,750.704,657.975,836.025
+161518,Saint Joseph's College of Maine,757,0.0,752.458,658.0,837.025
+177144,Culver-Stockton College,758,0.0,757.116,701.975,808.025
+228431,Stephen F Austin State University,759,0.0,758.719,706.975,811.025
+192749,Manhattanville University,760,0.0,761.295,708.95,816.0
+168254,Western New England University,761,0.0,760.977,703.0,820.0749999999999
+176479,William Carey University,762,0.0,759.413,678.95,839.025
+241739,Universidad Ana G. Mendez-Cupey Campus,763,0.0,766.614,602.0,922.05
+174251,University of Minnesota-Morris,764,0.0,755.911,661.975,834.0
+199069,University of Mount Olive,765,0.0,760.013,623.9,899.0
+210775,Alvernia University,766,0.0,765.98,703.975,827.0
+129941,University of New Haven,767,0.0,769.386,698.0,840.0
+107983,Southern Arkansas University Main Campus,768,0.0,766.586,691.0,831.025
+159656,Loyola University New Orleans,769,0.0,765.817,699.975,830.025
+179964,William Woods University,770,0.0,766.094,681.95,854.0
+101189,Faulkner University,771,0.0,770.449,710.0,835.025
+210571,Albright College,772,0.0,771.184,692.0,849.025
+243212,University of Puerto Rico at Ponce,773,0.0,766.961,583.975,944.025
+196176,State University of New York at New Paltz,774,0.0,771.413,702.0,835.0
+237525,Marshall University,775,0.0,773.214,709.975,835.025
+156541,University of the Cumberlands,776,0.0,775.018,701.975,843.025
+120184,Notre Dame de Namur University,777,0.0,777.771,712.925,843.0
+168430,Worcester State University,778,0.0,776.559,736.0,824.025
+482158,Middle Georgia State University,779,0.0,776.372,673.0,880.0
+206589,The College of Wooster,780,0.0,778.022,707.95,851.0
+206491,Wilberforce University,781,0.0,782.732,658.975,896.0
+219709,Belmont University,782,0.0,781.897,722.975,846.025
+220075,East Tennessee State University,783,0.0,784.367,728.975,840.0
+226091,Lamar University,784,0.0,783.013,719.925,853.025
+212115,East Stroudsburg University of Pennsylvania,785,0.0,789.903,726.95,849.025
+204200,Mount St. Joseph University,786,0.0,790.266,744.0,840.025
+219198,Mount Marty University,787,0.0,788.908,708.975,872.0
+231420,Averett University,788,0.0,792.948,728.975,859.025
+128106,Colorado State University Pueblo,789,0.0,795.269,734.0,853.0
+127185,Fort Lewis College,790,0.0,792.737,733.0,850.025
+220978,Middle Tennessee State University,791,0.0,795.234,743.0,848.0
+139311,Clayton  State University,792,0.0,793.054,684.975,901.025
+206622,Xavier University,793,0.0,797.755,730.975,869.0
+178244,Missouri Baptist University,794,0.0,797.587,727.0,871.0
+188182,University of the Southwest,795,0.0,798.14,712.0,888.0
+196264,Empire State University,796,0.0,797.744,670.95,920.05
+149772,Western Illinois University,797,0.0,801.97,741.975,856.025
+190664,CUNY Queens College,798,0.0,803.296,712.0,890.025
+197993,Bennett College,799,0.0,805.134,692.975,914.025
+140720,Paine College,800,0.0,803.135,682.975,919.025
+178341,Missouri Southern State University,801,0.0,803.461,720.0,888.0749999999999
+232982,Old Dominion University,802,0.0,802.596,749.975,862.0
+172334,Spring Arbor University,803,0.0,804.872,754.95,860.025
+166018,Hampshire College,804,0.0,803.222,736.0,874.025
+140960,Savannah State University,805,0.0,807.836,699.0,920.0
+127060,University of Denver,806,0.0,804.728,752.975,860.0
+204909,Ohio Wesleyan University,807,0.0,808.344,754.0,863.0
+218414,Newberry College,808,0.0,809.557,753.975,868.025
+139463,Dalton State College,809,0.0,811.28,720.925,908.0749999999999
+207041,East Central University,810,0.0,810.0,727.95,890.025
+200332,North Dakota State University-Main Campus,811,0.0,813.887,747.975,883.0
+183062,Keene State College,812,0.0,815.91,744.975,883.025
+195173,St. Francis College,813,0.0,821.779,739.95,903.0
+159993,University of Louisiana at Monroe,814,0.0,817.724,761.975,879.025
+488679,Indiana Wesleyan University-National & Global,815,0.0,827.819,711.975,938.025
+161457,University of New England,816,0.0,820.054,750.975,896.025
+173300,Concordia College at Moorhead,817,0.0,820.704,754.975,896.0
+112084,San Diego Christian College,818,0.0,822.435,751.0,892.025
+204857,Ohio University-Main Campus,819,0.0,823.042,769.975,882.025
+215655,Robert Morris University,820,0.0,824.775,771.0,878.05
+174358,Minnesota State University Moorhead,821,0.0,822.07,746.0,902.0
+107071,Henderson State University,822,0.0,826.081,762.0,885.025
+197984,Belmont Abbey College,823,0.0,828.476,763.0,895.025
+240417,University of Wisconsin-Stout,824,0.0,825.679,772.0,880.0
+238476,Carthage College,825,0.0,829.003,765.975,892.025
+146719,Loyola University Chicago,826,0.0,829.451,771.95,897.0
+203845,Marietta College,827,0.0,828.519,769.975,882.0
+181446,Nebraska Wesleyan University,828,0.0,828.283,785.0,873.0
+228884,Texas College,829,0.0,836.815,719.0,951.0
+200572,Valley City State University,830,0.0,823.646,717.0,924.025
+101693,University of Mobile,831,0.0,830.787,770.975,893.0
+171456,Northern Michigan University,832,0.0,829.749,778.0,880.0
+132657,Lynn University,833,0.0,830.823,775.975,888.0
+150941,Huntington University,834,0.0,830.488,780.975,883.025
+236939,Washington State University,835,0.0,834.672,776.975,897.0
+159391,Louisiana State University and Agricultural & Mechanical College,836,0.0,833.985,777.975,896.0
+221953,Tusculum University,837,0.0,840.144,767.975,913.025
+156213,Asbury University,838,0.0,836.098,773.0,900.0
+202514,Defiance College,839,0.0,837.419,777.95,897.025
+176318,Rust College,840,0.0,842.162,726.925,948.0
+240426,University of Wisconsin-Superior,841,0.0,835.573,766.975,901.0
+228981,Texas Lutheran University,842,0.0,841.057,766.0,912.0
+151111,Indiana University-Indianapolis,843,0.0,839.946,787.975,893.025
+218229,Lander University,844,0.0,840.521,766.0,914.0
+433660,Florida Gulf Coast University,845,0.0,842.531,777.975,906.025
+240727,University of Wyoming,846,0.0,841.115,778.0,910.0
+153126,Clarke University,847,0.0,840.571,751.0,933.05
+221768,The University of Tennessee-Martin,848,0.0,844.072,786.0,895.0
+176965,University of Central Missouri,849,0.0,846.978,794.0,897.0
+165866,Framingham State University,850,0.0,845.34,794.975,897.0
+172699,Western Michigan University,851,0.0,846.609,793.95,895.025
+221740,The University of Tennessee-Chattanooga,852,0.0,850.767,799.0,903.025
+107558,University of the Ozarks,853,0.0,854.28,785.975,925.0
+193654,The New School,854,0.0,853.529,795.0,915.025
+219833,Christian Brothers University,855,0.0,855.726,800.0,906.0
+201654,Cedarville University,856,0.0,855.7,785.0,925.05
+195003,Rochester Institute of Technology,857,0.0,857.526,790.0,923.025
+240338,Wisconsin Lutheran College,858,0.0,857.929,796.975,915.025
+163462,Mount St. Mary's University,859,0.0,856.649,805.0,903.025
+157100,Kentucky Christian University,860,0.0,856.026,772.95,932.0
+187967,New Mexico Institute of Mining and Technology,861,0.0,852.25,737.0,965.025
+242626,Inter American University of Puerto Rico-Aguadilla,862,0.0,862.313,739.0,982.05
+140988,Shorter University,863,0.0,859.53,807.975,906.025
+243106,University of Puerto Rico-Aguadilla,864,0.0,858.349,720.0,1000.0
+240453,University of Wisconsin-Milwaukee,865,0.0,861.675,811.0,909.025
+207847,Southeastern Oklahoma State University,866,0.0,861.451,802.975,919.0
+217819,College of Charleston,867,0.0,864.314,796.0,928.025
+202763,The University of Findlay,868,0.0,865.791,794.975,932.025
+157085,University of Kentucky,869,0.0,869.016,800.0,931.0
+232937,Norfolk State University,870,0.0,871.022,758.975,977.025
+216010,Shippensburg University of Pennsylvania,871,0.0,870.646,810.0,922.025
+168740,Andrews University,872,0.0,865.801,781.0,948.05
+169080,Calvin University,873,0.0,872.499,799.0,946.025
+242644,Inter American University of Puerto Rico-Barranquitas,874,0.0,876.288,742.95,996.025
+110097,Biola University,875,0.0,873.882,817.0,921.025
+141334,University of West Georgia,876,0.0,872.381,804.0,938.0
+174233,University of Minnesota-Duluth,877,0.0,874.442,803.975,937.0
+104151,Arizona State University Campus Immersion,878,0.0,877.789,791.975,963.025
+167899,Springfield College,879,0.0,876.873,813.975,938.025
+169910,Ferris State University,880,0.0,875.692,819.0,933.025
+169479,Davenport University,881,0.0,878.765,763.0,995.0
+180522,Montana State University-Northern,882,0.0,877.781,792.0,956.0
+160630,Southern University at New Orleans,883,0.0,879.969,747.875,1004.05
+144005,Chicago State University,884,0.0,877.805,758.95,996.05
+117627,La Sierra University,885,0.0,885.339,822.0,940.05
+234164,Virginia Union University,886,0.0,888.072,779.0,992.025
+195243,St. Thomas Aquinas College,887,0.0,884.792,823.0,940.025
+190150,Columbia University in the City of New York,888,0.0,883.546,790.0,972.025
+155335,Newman University,889,0.0,884.995,785.0,972.05
+179326,Southwest Baptist University,890,0.0,887.595,843.0,928.025
+160904,Xavier University of Louisiana,891,0.0,891.834,779.0,1000.0
+157447,Northern Kentucky University,892,0.0,891.503,832.0,949.0
+169248,Central Michigan University,893,0.0,893.266,843.975,939.0
+181394,University of Nebraska at Omaha,894,0.0,893.026,840.975,947.0
+205443,Shawnee State University,895,0.0,894.567,825.95,952.0
+230764,University of Utah,896,0.0,893.647,829.0,956.0
+190725,Daemen University,897,0.0,892.779,825.975,955.0
+174437,North Central University,898,0.0,895.896,833.0,957.025
+212133,Eastern University,899,0.0,900.082,855.0,946.0
+217518,Roger Williams University,900,0.0,900.875,830.0,967.025
+191676,Houghton University,901,0.0,899.788,817.975,982.05
+131520,Howard University,902,0.0,904.107,787.0,1009.0
+170037,Cornerstone University,903,0.0,903.062,850.0,955.025
+166391,Lasell University,904,0.0,905.032,858.975,956.0
+180984,Concordia University-Nebraska,905,0.0,903.147,837.0,967.0
+151263,University of Indianapolis,906,0.0,905.662,851.0,959.0
+217059,York College of Pennsylvania,907,0.0,909.113,852.0,968.0
+155399,Kansas State University,908,0.0,907.207,845.0,964.0
+149514,Trinity International University-Illinois,909,0.0,904.106,798.975,1005.0
+226471,University of Mary Hardin-Baylor,910,0.0,913.547,863.975,961.0
+199209,North Carolina Wesleyan University,911,0.0,912.626,824.0,992.025
+155627,Ottawa University-Ottawa,912,0.0,913.86,839.95,982.025
+144281,Columbia College Chicago,913,0.0,917.276,840.0,986.05
+213321,King's College,914,0.0,916.413,864.975,966.05
+181738,Union Adventist University,915,0.0,914.112,858.0,966.0
+100830,Auburn University at Montgomery,916,0.0,916.525,871.0,963.025
+226587,McMurry University,917,0.0,917.902,853.975,981.0
+204185,University of Mount Union,918,0.0,919.851,861.95,974.0
+207722,University of Science and Arts of Oklahoma,919,0.0,915.668,823.95,1000.0
+160065,University of Holy Cross,920,0.0,918.048,826.975,999.025
+106397,University of Arkansas,921,0.0,921.392,873.0,969.0
+198695,High Point University,922,0.0,922.576,833.95,1004.0
+199032,Montreat College,923,0.0,920.788,844.0,995.025
+207157,Randall University,924,0.0,920.406,831.0,1000.025
+168546,Albion College,925,0.0,923.722,868.0,971.0
+188304,Western New Mexico University,926,0.0,922.618,853.975,988.025
+217882,Clemson University,927,0.0,923.47,861.975,984.0
+182795,Franklin Pierce University,928,0.0,928.12,890.975,967.0
+196130,SUNY Buffalo State University,929,0.0,927.088,851.975,989.0
+207388,Oklahoma State University-Main Campus,930,0.0,927.71,880.975,971.0
+218724,Coastal Carolina University,931,0.0,928.056,871.0,983.0
+229160,Texas Wesleyan University,932,0.0,927.425,808.0,1026.025
+140234,LaGrange College,933,0.0,930.201,877.975,980.0
+195216,St Lawrence University,934,0.0,930.818,863.0,999.0
+101675,Miles College,935,0.0,937.006,827.9,1028.025
+225399,Houston Christian University,936,0.0,936.692,894.0,978.0
+176044,Mississippi Valley State University,937,0.0,935.594,809.0,1029.05
+213020,Indiana University of Pennsylvania,938,0.0,934.77,875.0,989.0
+126580,University of Colorado Colorado Springs,939,0.0,934.895,878.975,988.0
+219949,Cumberland University,940,0.0,938.309,870.975,1002.025
+133492,Eckerd College,941,0.0,938.345,880.975,990.05
+165936,Gordon College,942,0.0,938.597,874.95,1000.025
+191649,Hofstra University,943,0.0,939.187,892.0,984.0
+196200,SUNY College at Potsdam,944,0.0,939.729,869.975,999.0
+137546,Stetson University,945,0.0,944.996,899.0,992.025
+196680,Excelsior University,946,0.006,891.734,263.975,1229.05
+188641,Alfred University,947,0.0,949.033,902.0,996.0
+153144,Coe College,948,0.0,948.682,900.975,993.0
+218061,Francis Marion University,949,0.0,948.562,869.975,1010.025
+170675,Lawrence Technological University,950,0.0,949.86,881.975,1018.0
+137476,St. Thomas University,951,0.0,951.103,840.0,1039.0
+151360,Indiana University-Northwest,952,0.0,951.689,893.975,1006.025
+150136,Ball State University,953,0.0,953.781,904.0,996.0
+141361,Young Harris College,954,0.0,955.412,904.0,999.025
+178387,Missouri Western State University,955,0.0,954.275,899.975,1000.0
+178402,University of Missouri-Kansas City,956,0.0,953.987,898.0,1003.0
+195164,St Bonaventure University,957,0.0,957.866,904.0,1010.0
+223232,Baylor University,958,0.0,958.001,887.975,1016.025
+198598,Greensboro College,959,0.0,958.021,895.975,1010.025
+213367,La Salle University,960,0.0,962.045,910.975,1010.0
+178624,Northwest Missouri State University,961,0.0,959.418,910.975,999.0
+138275,Warner University,962,0.0,959.966,879.0,1028.0
+180416,Montana Technological University,963,0.0,958.107,878.0,1021.0
+160038,Northwestern State University of Louisiana,964,0.0,960.67,905.0,1010.0
+157863,Union Commonwealth University,965,0.0,963.998,904.0,1016.0
+165802,Fisher College,966,0.0,957.951,843.975,1048.0
+104179,University of Arizona,967,0.0,962.775,902.0,1011.0
+126182,Adams State University,968,0.0,962.582,894.0,1019.0
+207865,Southwestern Oklahoma State University,969,0.0,966.135,912.975,1009.0
+196033,SUNY College of Agriculture and Technology at Cobleskill,970,0.0,965.941,896.95,1021.0
+156620,Eastern Kentucky University,971,0.0,969.167,911.9,1016.0
+179894,Webster University,972,0.0,968.877,915.975,1019.05
+139366,Columbus State University,973,0.0,965.65,889.0,1030.0
+234173,Virginia Wesleyan University,974,0.0,970.697,925.0,1011.0
+130226,Quinnipiac University,975,0.0,969.416,916.975,1017.0
+229063,Texas Southern University,976,0.0,968.218,862.0,1043.0
+131113,Wilmington University,977,0.0,964.228,811.0,1075.05
+120537,Hope International University,978,0.0,969.683,895.975,1031.025
+220598,Lane College,979,0.0,975.137,870.0,1052.025
+237181,Bethany College,980,0.0,974.412,913.95,1027.025
+178721,Park University,981,0.0,969.476,837.0,1075.025
+179159,Saint Louis University,982,0.0,975.915,926.0,1023.0
+242680,Inter American University of Puerto Rico-Fajardo,983,0.0,976.622,854.0,1072.0
+233301,Randolph College,984,0.0,980.157,926.0,1024.025
+199643,Shaw University,985,0.0,983.132,890.975,1053.025
+180595,Rocky Mountain College,986,0.0,982.302,930.0,1027.0
+207351,Oklahoma Panhandle State University,987,0.0,979.7,905.0,1034.025
+157289,University of Louisville,988,0.0,984.681,938.975,1018.025
+107044,Harding University,989,0.0,987.474,942.0,1027.0
+126818,Colorado State University-Fort Collins,990,0.0,986.296,935.975,1026.0
+181534,Peru State College,991,0.0,984.767,910.925,1045.025
+206604,Wright State University-Main Campus,992,0.0,987.202,934.975,1028.025
+219976,Lipscomb University,993,0.0,987.85,943.975,1027.0
+133979,Florida Memorial University,994,0.0,989.71,880.975,1071.05
+237367,Fairmont State University,995,0.0,991.7,942.95,1028.025
+206695,Youngstown State University,996,0.0,992.341,944.0,1029.0
+157058,Kentucky State University,997,0.0,986.121,871.975,1070.0
+196103,SUNY College of Environmental Science and Forestry,998,0.0,985.196,884.0,1062.025
+141185,Toccoa Falls College,999,0.0,994.168,951.0,1029.0
+207582,Oral Roberts University,1000,0.0,995.951,930.0,1046.0
+192448,Long Island University,1001,0.0,993.453,912.95,1051.025
+160658,University of Louisiana at Lafayette,1002,0.0,994.409,941.0,1038.0
+198899,Mars Hill University,1003,0.0,997.267,943.0,1039.025
+174783,Saint Cloud State University,1004,0.0,997.355,946.975,1037.0
+215293,University of Pittsburgh-Pittsburgh Campus,1005,0.0,997.736,949.0,1035.025
+106704,University of Central Arkansas,1006,0.0,999.352,949.0,1039.025
+385619,Everglades University,1007,0.0,1001.962,937.0,1058.0
+159416,Louisiana State University-Shreveport,1008,0.0,998.587,947.975,1040.0
+123651,Vanguard University of Southern California,1009,0.0,1001.78,960.0,1038.025
+106713,Central Baptist College,1010,0.0,1001.171,955.975,1035.0
+233277,Radford University,1011,0.0,1002.629,957.975,1039.0
+160612,Southeastern Louisiana University,1012,0.0,1003.129,956.0,1044.0
+486840,Kennesaw State University,1013,0.0,1000.105,924.95,1050.025
+231581,Bridgewater College,1014,0.0,1005.825,949.95,1047.025
+169983,Kettering University,1015,0.0,1007.573,962.0,1050.0
+157386,Morehead State University,1016,0.0,1008.958,959.975,1046.0
+201441,Bowling Green State University-Main Campus,1017,0.0,1009.765,968.0,1043.0
+179566,Missouri State University-Springfield,1018,0.0,1010.112,969.975,1043.0
+152530,Taylor University,1019,0.0,1008.178,949.0,1054.0
+140872,Reinhardt University,1020,0.0,1013.174,973.0,1049.0
+173920,Minnesota State University-Mankato,1021,0.0,1014.985,967.975,1052.0
+199962,Wingate University,1022,0.0,1019.897,965.975,1064.0
+210401,Willamette University,1023,0.0,1021.637,974.975,1061.025
+148131,Quincy University,1024,0.0,1022.788,978.0,1057.025
+242662,Inter American University of Puerto Rico-Ponce,1025,0.0,1024.347,921.975,1104.05
+207971,University of Tulsa,1026,0.0,1025.588,976.975,1063.025
+196167,SUNY College at Geneseo,1027,0.0,1026.275,977.0,1064.025
+230038,Brigham Young University,1028,0.0,1027.269,941.925,1097.0
+157076,Kentucky Wesleyan College,1029,0.0,1030.769,985.975,1071.0
+179557,Southeast Missouri State University,1030,0.0,1032.803,1000.0,1063.0
+220613,Lee University,1031,0.0,1036.063,1000.0,1070.0
+201371,Bluffton University,1032,0.0,1034.478,997.0,1068.025
+139764,Georgia Southwestern State University,1033,0.0,1032.553,982.975,1072.0
+175078,Southwest Minnesota State University,1034,0.0,1032.273,967.0,1084.0
+207661,Rogers State University,1035,0.0,1035.39,980.0,1080.0
+224527,East Texas Baptist University,1036,0.0,1037.617,1005.975,1067.0
+157951,Western Kentucky University,1037,0.0,1037.862,1000.975,1072.0
+218645,University of South Carolina Aiken,1038,0.0,1035.924,995.0,1068.0
+101709,University of Montevallo,1039,0.0,1036.629,991.0,1070.0
+187985,University of New Mexico-Main Campus,1040,0.0,1039.496,1005.0,1070.0
+177940,Lincoln University,1041,0.0,1038.637,952.0,1105.05
+151801,Indiana Wesleyan University-Marion,1042,0.0,1041.207,959.975,1108.0
+170639,Lake Superior State University,1043,0.0,1038.069,994.975,1073.0
+243601,Universidad Ana G. Mendez-Gurabo Campus,1044,0.0,1038.349,924.95,1132.025
+236328,University of Puget Sound,1045,0.0,1041.028,988.0,1087.0
+490805,Purdue University Northwest,1046,0.0,1041.604,980.0,1092.0
+168528,Adrian College,1047,0.0,1048.589,1014.0,1080.0
+206084,University of Toledo,1048,0.0,1047.262,1013.975,1078.0
+168591,Alma College,1049,0.0,1048.691,1021.0,1076.0
+204936,Otterbein University,1050,0.0,1052.529,1025.0,1083.0
+174862,Crown College,1051,0.0,1050.238,992.95,1099.0
+206914,Cameron University,1052,0.0,1053.684,1021.0,1086.0
+154235,Saint Ambrose University,1053,0.0,1055.299,1030.975,1083.0
+198066,Brevard College,1054,0.0,1055.286,1021.0,1089.025
+243221,University of Puerto Rico-Rio Piedras,1055,0.0,1050.489,953.0,1134.025
+227429,Paul Quinn College,1056,0.0,1057.89,983.0,1119.0
+203517,Kent State University at Kent,1057,0.0,1058.42,1025.0,1089.025
+232265,Hampton University,1058,0.0,1056.931,978.0,1126.025
+154855,Central Christian College of Kansas,1059,0.0,1059.413,1003.0,1115.1
+240374,University of Wisconsin-Parkside,1060,0.0,1058.74,1023.0,1093.025
+142276,Idaho State University,1061,0.0,1058.638,1022.0,1094.025
+217688,Charleston Southern University,1062,0.0,1062.893,1030.0,1092.0
+190558,College of Staten Island CUNY,1063,0.0,1064.794,1021.975,1107.0
+176080,Mississippi State University,1064,0.0,1063.772,1035.0,1090.025
+204796,Ohio State University-Main Campus,1065,0.0,1064.996,1025.975,1105.0
+177065,Columbia College,1066,0.0,1065.298,967.975,1152.0
+159382,Louisiana State University at Alexandria,1067,0.0,1063.788,1001.975,1119.0
+144971,Eureka College,1068,0.0,1067.356,1035.975,1102.0
+151777,Manchester University,1069,0.0,1068.713,1038.0,1102.0
+206941,University of Central Oklahoma,1070,0.0,1068.866,1033.0,1104.0
+128391,Western Colorado University,1071,0.0,1067.087,1020.0,1110.025
+158802,Dillard University,1072,0.0,1072.126,1013.0,1132.0
+219082,Dakota State University,1073,0.0,1067.477,1007.95,1119.025
+161341,University of Maine at Presque Isle,1074,0.0,1069.924,1019.975,1119.0
+169798,Eastern Michigan University,1075,0.0,1071.348,1031.0,1109.025
+192864,Marymount Manhattan College,1076,0.0,1074.09,1041.975,1108.0
+216764,West Chester University of Pennsylvania,1077,0.0,1075.722,1043.0,1110.0
+100751,The University of Alabama,1078,0.0,1080.057,1047.0,1115.0
+155317,University of Kansas,1079,0.0,1080.18,1045.975,1114.0
+130934,Delaware State University,1080,0.0,1080.401,1007.9,1145.0
+137847,The University of Tampa,1081,0.0,1084.712,1043.975,1131.0
+117751,The Master's University and Seminary,1082,0.0,1081.799,1042.0,1118.0
+138354,University of West Florida,1083,0.0,1083.388,1046.0,1123.0
+204617,Ohio Dominican University,1084,0.0,1084.027,1049.0,1118.0
+230728,Utah State University,1085,0.0,1085.433,1049.0,1120.025
+242617,Inter American University of Puerto Rico-San German,1086,0.0,1087.035,1017.975,1150.025
+224323,University of Dallas,1087,0.0,1086.011,1046.0,1123.025
+181464,University of Nebraska-Lincoln,1088,0.0,1088.171,1061.975,1118.0
+217907,Coker University,1089,0.0,1088.246,1056.975,1115.0
+136330,Palm Beach Atlantic University,1090,0.0,1089.76,1048.0,1132.0
+151324,Indiana State University,1091,0.0,1090.506,1060.0,1121.0
+159717,McNeese State University,1092,0.0,1091.216,1059.0,1125.0
+155414,Kansas Wesleyan University,1093,0.0,1091.497,1060.0,1122.0
+200800,University of Akron Main Campus,1094,0.0,1092.719,1058.975,1128.0
+220181,Fisk University,1095,0.0,1094.626,1035.975,1153.025
+154721,Bethany College,1096,0.0,1094.384,1060.0,1127.025
+196158,SUNY at Fredonia,1097,0.0,1095.084,1052.975,1133.0
+243133,University of Puerto Rico,1098,0.0,1093.181,1001.95,1169.0
+222831,Angelo State University,1099,0.0,1097.248,1061.975,1133.0
+219790,Bryan College-Dayton,1100,0.0,1097.325,1063.0,1130.0
+151342,Indiana University-South Bend,1101,0.0,1100.992,1077.0,1131.0
+177968,Lindenwood University,1102,0.0,1102.534,1068.0,1137.0
+106245,University of Arkansas at Little Rock,1103,0.0,1100.944,1058.975,1141.0
+100690,Amridge University,1104,0.002,1050.838,504.475,1239.0
+198303,Chowan University,1105,0.0,1106.508,1056.0,1154.0
+141644,Hawaii Pacific University,1106,0.0,1106.285,1074.0,1139.0
+219602,Austin Peay State University,1107,0.0,1109.582,1076.0,1143.0
+219806,Carson-Newman University,1108,0.0,1108.95,1064.0,1147.0
+183080,Plymouth State University,1109,0.0,1109.145,1074.0,1140.0
+211981,Delaware Valley University,1110,0.0,1110.743,1080.0,1142.0
+219259,Northern State University,1111,0.0,1109.443,1062.0,1156.0
+153278,University of Dubuque,1112,0.0,1114.11,1088.975,1138.0
+102368,Troy University,1113,0.0,1113.841,1077.0,1150.0
+225247,Hardin-Simmons University,1114,0.0,1115.031,1087.0,1142.025
+198613,Guilford College,1115,0.0,1115.983,1080.975,1148.0
+225548,Howard Payne University,1116,0.0,1116.485,1084.0,1146.025
+159568,Louisiana Christian University,1117,0.0,1117.68,1084.0,1146.0
+200253,Minot State University,1118,0.0,1116.183,1079.0,1153.0
+139630,Emmanuel University,1119,0.0,1117.124,1076.975,1153.025
+159939,University of New Orleans,1120,0.0,1116.412,1081.975,1148.025
+243142,University of Puerto Rico-Carolina,1121,0.0,1112.373,1014.975,1192.0
+160755,Tulane University of Louisiana,1122,0.0,1117.761,1070.0,1159.0
+180179,Montana State University Billings,1123,0.0,1119.935,1082.975,1152.025
+224226,Dallas Baptist University,1124,0.0,1120.043,1082.95,1154.0
+206525,Wittenberg University,1125,0.0,1123.497,1093.0,1149.0
+178615,Truman State University,1126,0.0,1123.566,1089.0,1155.0
+181853,York University,1127,0.0,1123.381,1083.975,1156.025
+163204,University of Maryland Global Campus,1128,0.0,1119.88,1017.975,1201.0
+100706,University of Alabama in Huntsville,1129,0.0,1124.676,1094.0,1153.0
+139940,Georgia State University,1130,0.0,1129.566,1091.0,1161.025
+484905,University of North Texas at Dallas,1131,0.0,1131.487,1093.975,1166.025
+222178,Abilene Christian University,1132,0.0,1132.578,1105.0,1157.0
+217235,Johnson & Wales University-Providence,1133,0.0,1133.725,1086.975,1169.0
+107877,Williams Baptist University,1134,0.0,1131.96,1093.975,1162.0
+129525,University of Hartford,1135,0.0,1133.38,1104.0,1157.0
+126669,Colorado Christian University,1136,0.0,1129.465,1045.0,1193.0
+105899,Arizona Christian University,1137,0.0,1133.626,1095.975,1162.0
+154101,Northwestern College,1138,0.0,1133.901,1095.975,1166.0
+213987,Mercyhurst University,1139,0.0,1136.834,1111.975,1160.0
+139931,Georgia Southern University,1140,0.0,1135.629,1106.0,1159.0
+104586,Embry-Riddle Aeronautical University-Prescott,1141,0.0,1137.065,1087.0,1172.0
+153269,Drake University,1142,0.0,1138.138,1105.0,1166.0
+181330,Midland University,1143,0.0,1140.663,1107.0,1167.0
+176628,Avila University,1144,0.0,1141.304,1111.0,1164.0
+242653,Inter American University of Puerto Rico-Metro,1145,0.0,1138.919,1079.975,1189.0
+242635,Inter American University of Puerto Rico-Arecibo,1146,0.0,1140.696,1073.975,1194.0
+154004,Morningside University,1147,0.0,1142.453,1115.0,1166.0
+167358,Northeastern University,1148,0.0,1141.221,1097.975,1172.0
+226231,LeTourneau University,1149,0.0,1141.88,1104.975,1170.0
+161253,University of Maine,1150,0.0,1145.743,1113.0,1175.0
+219356,South Dakota State University,1151,0.0,1146.853,1113.0,1178.0
+233897,University of Virginia's College at Wise,1152,0.0,1148.594,1108.0,1179.0
+157809,Thomas More University,1153,0.0,1151.233,1111.975,1182.0
+180461,Montana State University,1154,0.0,1151.306,1125.975,1175.0
+139199,Brenau University,1155,0.0,1150.979,1113.0,1183.0
+200156,University of Jamestown,1156,0.0,1152.344,1122.0,1173.0
+126614,University of Colorado Boulder,1157,0.0,1152.811,1123.0,1179.0
+214777,Pennsylvania State University-Main Campus,1158,0.0,1152.796,1111.975,1186.0
+219471,University of South Dakota,1159,0.0,1153.294,1116.0,1185.0
+201885,University of Cincinnati-Main Campus,1160,0.0,1156.901,1131.975,1180.0
+183044,University of New Hampshire-Main Campus,1161,0.0,1157.612,1131.0,1183.025
+140696,Oglethorpe University,1162,0.0,1157.751,1133.0,1181.0
+216357,Thiel College,1163,0.0,1159.269,1133.0,1181.0
+156365,Campbellsville University,1164,0.0,1160.274,1125.0,1189.025
+237358,Davis & Elkins College,1165,0.0,1160.598,1109.0,1199.0
+237969,West Virginia Wesleyan College,1166,0.0,1162.935,1141.975,1184.0
+146339,Judson University,1167,0.0,1165.355,1141.0,1187.025
+182980,New England College,1168,0.0,1167.794,1126.0,1199.025
+242705,Inter American University of Puerto Rico-Bayamon,1169,0.0,1166.378,1098.95,1212.0
+207403,Oklahoma Baptist University,1170,0.0,1172.197,1153.0,1189.0
+176053,Mississippi Christian University,1171,0.0,1171.512,1150.0,1192.0
+171599,The University of Olivet,1172,0.0,1172.165,1152.0,1190.0
+233611,Southern Virginia University,1173,0.0,1171.586,1135.0,1200.0
+206048,Tiffin University,1174,0.0,1174.033,1158.975,1187.0
+150066,Anderson University,1175,0.0,1175.418,1155.0,1195.025
+207856,Southwestern Christian University,1176,0.0,1175.319,1148.975,1195.025
+231651,Regent University,1177,0.0,1174.001,1129.0,1206.025
+146612,Lewis University,1178,0.0,1177.714,1152.0,1199.0
+230603,Southern Utah University,1179,0.0,1177.276,1159.0,1193.0
+147828,Olivet Nazarene University,1180,0.0,1178.4,1163.0,1194.0
+219718,Bethel University,1181,0.0,1180.523,1141.975,1208.025
+188030,New Mexico State University-Main Campus,1182,0.0,1180.428,1155.0,1200.0
+204024,Miami University-Oxford,1183,0.0,1180.464,1156.975,1201.0
+109785,Azusa Pacific University,1184,0.0,1182.62,1159.975,1200.0
+101912,Oakwood University,1185,0.0,1180.87,1134.975,1213.0
+238616,Concordia University-Wisconsin,1186,0.0,1182.47,1159.0,1202.0
+127565,Metropolitan State University of Denver,1187,0.0,1182.142,1150.975,1204.025
+154590,William Penn University,1188,0.0,1183.531,1163.0,1199.0
+151379,Indiana University-Southeast,1189,0.0,1182.974,1162.0,1200.0
+156745,Georgetown College,1190,0.0,1184.84,1165.0,1200.0
+224147,Texas A & M University-Corpus Christi,1191,0.0,1185.578,1166.0,1202.0
+203580,Lake Erie College,1192,0.0,1186.118,1163.0,1205.0
+238032,West Virginia University,1193,0.0,1191.259,1169.0,1208.0
+179043,Rockhurst University,1194,0.0,1190.685,1168.0,1209.0
+232089,Ferrum College,1195,0.0,1193.175,1171.975,1209.0
+151102,Purdue University Fort Wayne,1196,0.0,1195.414,1177.0,1209.0
+138293,Webber International University,1197,0.0,1196.624,1178.975,1209.0
+133553,Embry-Riddle Aeronautical University-Daytona Beach,1198,0.0,1198.073,1174.0,1213.0
+147679,North Park University,1199,0.0,1199.029,1186.0,1210.0
+141264,Valdosta State University,1200,0.0,1197.801,1174.0,1213.0
+187648,Eastern New Mexico University-Main Campus,1201,0.0,1198.825,1180.975,1213.0
+482680,University of North Georgia,1202,0.0,1200.107,1179.0,1213.0
+232025,Emory & Henry University,1203,0.0,1202.046,1187.0,1211.025
+155937,Sterling College,1204,0.0,1202.115,1183.975,1214.0
+166629,University of Massachusetts-Amherst,1205,0.0,1203.135,1188.0,1215.0
+138868,Point University,1206,0.0,1204.427,1189.0,1215.0
+183026,Southern New Hampshire University,1207,0.0,1198.217,1127.0,1233.0
+148487,Roosevelt University,1208,0.0,1205.406,1191.975,1216.0
+180692,The University of Montana-Western,1209,0.0,1206.78,1189.0,1218.0
+200280,University of North Dakota,1210,0.0,1206.46,1185.0,1220.0
+230047,Brigham Young University-Hawaii,1211,0.0,1208.318,1193.0,1219.0
+189088,Bard College,1212,0.0,1208.311,1193.0,1219.0
+198969,Methodist University,1213,0.0,1211.35,1203.0,1217.0
+137564,Southeastern University,1214,0.0,1215.455,1207.0,1222.0
+218441,North Greenville University,1215,0.0,1215.629,1209.0,1222.0
+137032,Saint Leo University,1216,0.0,1215.784,1199.975,1227.0
+154712,Benedictine College,1217,0.0,1217.501,1207.0,1227.0
+228325,Nelson University,1218,0.0,1218.753,1210.0,1226.0
+237385,Glenville State University,1219,0.0,1218.448,1207.0,1228.0
+191533,Hartwick College,1220,0.0,1219.014,1212.0,1225.0
+144883,East-West University,1221,0.0,1221.554,1205.0,1232.025
+180489,The University of Montana,1222,0.0,1222.24,1212.0,1231.0
+141237,Truett McConnell University,1223,0.0,1222.861,1212.0,1232.0
+220710,Maryville College,1224,0.0,1223.343,1218.0,1228.0
+162007,Bowie State University,1225,0.0,1224.618,1211.0,1235.0
+151290,Indiana Institute of Technology,1226,0.0,1226.379,1214.0,1236.0
+207324,Oklahoma Christian University,1227,0.0,1226.116,1219.0,1233.0
+156189,Alice Lloyd College,1228,0.0,1228.232,1218.0,1236.0
+201104,Ashland University,1229,0.0,1230.649,1224.0,1236.0
+178369,Missouri Valley College,1230,0.0,1230.879,1224.975,1236.0
+217925,Columbia International University,1231,0.0,1230.474,1218.0,1238.0
+127918,Regis University,1232,0.0,1230.552,1220.0,1237.0
+106342,Lyon College,1233,0.0,1231.464,1226.0,1236.0
+215442,Point Park University,1234,0.0,1232.001,1227.0,1236.0
+433387,Western Governors University,1235,0.0,1205.824,994.875,1250.0
+225575,Huston-Tillotson University,1236,0.0,1233.012,1223.0,1238.025
+238078,Wheeling University,1237,0.0,1237.336,1234.0,1240.0
+232557,Liberty University,1238,0.0,1237.154,1228.975,1242.0
+102614,University of Alaska Fairbanks,1239,0.0,1237.337,1232.0,1240.0
+133526,Edward Waters University,1240,0.0,1240.116,1232.975,1246.0
+240754,University of Guam,1241,0.0,1240.585,1238.0,1242.0
+102553,University of Alaska Anchorage,1242,0.0,1240.836,1238.0,1243.0
+215770,Saint Joseph's University - Philadelphia,1243,0.0,1243.357,1241.0,1246.0
+133881,Florida Institute of Technology,1244,0.0,1244.375,1242.0,1247.0
+101587,University of West Alabama,1245,0.0,1244.201,1241.0,1247.0
+139755,Georgia Institute of Technology-Main Campus,1246,0.0,1245.287,1242.0,1247.0
+219046,Black Hills State University,1247,0.0,1246.214,1244.0,1247.0
+239080,Marian University,1248,0.0,1248.603,1248.0,1250.0
+197708,Yeshiva University,1249,0.0,1248.886,1247.0,1250.0
+159647,Louisiana Tech University,1250,0.0,1249.349,1248.0,1250.0
+122755,San Jose State University,1251,0.0,1250.987,1251.0,1251.0

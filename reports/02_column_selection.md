@@ -25,7 +25,7 @@ One row per campus. `NULL` = not available; `PrivacySuppressed` = cell too small
 | `FIRSTGEN_COMP_4YR_TRANS_YR6_RT` | Context. Share of first-gen students who transferred and completed at a different 4-year school within 6 years. |
 | `FIRSTGEN_YR6_N` | Number of first-gen students in the 6-year cohort (the denominator of the outcome). Used as a minimum-cohort filter and for weights. |
 | `NOT1STGEN_COMP_ORIG_YR6_RT` | Same 6-year completion rate for students who are NOT first-generation. Lets us compute the first-gen gap. |
-| `FIRST_GEN` | Share of federal-aid students who are first-generation (neither parent attended college). |
+| `FIRST_GEN` | Share of federal-aid students who are first-generation (neither parent attended college). Per the cohort map this is the NSLDS AY2015-16 + AY2016-17 pooled cohorts, the last years published, so it is already close to the AY2017-18 outcome cohort and is used in the model as-is. |
 | `PCTPELL` | PELL SHARE. Share of undergraduates receiving a Pell Grant (a proxy for low-income enrollment). |
 | `ADM_RATE` | SELECTIVITY. Admission rate = admitted / applied. Missing for open-admission schools; we set those to 1.0 using IPEDS OPENADMP. |
 | `SAT_AVG` | Secondary selectivity measure. Average SAT-equivalent score of admitted students. Missing for ~45% of 4-year schools, so used only in a sensitivity check. |
@@ -56,6 +56,7 @@ One row per institution.
 | `HLOFFER` | Highest level of offering (5 = bachelor's ... 9 = doctorate). |
 | `INSTCAT` | Institutional category (2 = degree-granting, primarily baccalaureate or above). |
 | `C21BASIC` | Carnegie 2021 basic classification. |
+| `C18BASIC` | Carnegie 2018 basic classification (the one in force when the cohort entered). Grouped into doctoral (15-17), master's (18-20), baccalaureate (21-22), baccalaureate/associate's (14, 23), special focus & tribal (24-33). Special-focus schools (nursing, faith, arts, business, medical...) are modeled separately. |
 | `INSTSIZE` | Enrollment size category (1 = under 1,000 ... 5 = 20,000+). |
 | `HBCU` | 1 = HBCU, 2 = not. |
 | `LOCALE` | Urban-centric locale code. |

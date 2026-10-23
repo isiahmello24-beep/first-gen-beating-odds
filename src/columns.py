@@ -9,8 +9,12 @@ selectivity, size, spending per student. Extra context columns are marked.
 """
 
 # ---------------------------------------------------------------- Scorecard
-# Source: College Scorecard, Most-Recent-Cohorts-Institution.csv (one row per campus).
+# Source: College Scorecard, Most-Recent-Cohorts-Institution_10152026.csv (October 15, 2026 release; one row per campus).
 # Strings "NULL" and "PrivacySuppressed" mark missing / small-cell-suppressed values.
+# TIMING (from the data dictionary "Most_Recent_Inst_Cohort_Map" sheet): the outcome
+# FIRSTGEN_COMP_ORIG_YR6_RT is the NSLDS AY2017-18 entry cohort measured in AY2023-24.
+# Institution traits in this file are Fall 2024 / AY2024-25, i.e. AFTER the cohort. We therefore take
+# the predictors from the AY2017-18 merged file (SCORECARD_ENTRY below) and spending from FY2018-FY2023.
 SCORECARD = {
     # keys and identity
     "UNITID": "IPEDS unit ID. Primary join key across all files.",
@@ -31,7 +35,7 @@ SCORECARD = {
     "FIRSTGEN_COMP_4YR_TRANS_YR6_RT": "Context. Share of first-gen students who transferred and completed at a different 4-year school within 6 years.",
     "FIRSTGEN_YR6_N": "Number of first-gen students in the 6-year cohort (the denominator of the outcome). Used as a minimum-cohort filter and for weights.",
     "NOT1STGEN_COMP_ORIG_YR6_RT": "Same 6-year completion rate for students who are NOT first-generation. Lets us compute the first-gen gap.",
-    "FIRST_GEN": "Share of federal-aid students who are first-generation (neither parent attended college).",
+    "FIRST_GEN": "Share of federal-aid students who are first-generation (neither parent attended college). Per the cohort map this is the NSLDS AY2015-16 + AY2016-17 pooled cohorts, the last years published, so it is already close to the AY2017-18 outcome cohort and is used in the model as-is.",
     # PELL SHARE
     "PCTPELL": "PELL SHARE. Share of undergraduates receiving a Pell Grant (a proxy for low-income enrollment).",
     # SELECTIVITY
@@ -54,6 +58,21 @@ SCORECARD = {
     "MD_EARN_WNE_P10": "Median earnings of students 10 years after entry (working, not enrolled).",
 }
 
+# ------------------------------------------------- Scorecard, entry year
+# Source: MERGED2017_18_PP.csv from the raw archive: the same variables as observed in the
+# cohort's entry year (AY2017-18 / Fall 2017). These feed the regression; the most-recent
+# values above are kept for context only.
+SCORECARD_ENTRY = {
+    "UNITID": "IPEDS unit ID (join key).",
+    "PCTPELL": "PELL SHARE at entry (AY2017-18): share of undergraduates receiving a Pell Grant.",
+    "ADM_RATE": "SELECTIVITY at entry (Fall 2017 admissions): admitted / applied.",
+    "SAT_AVG": "Secondary selectivity at entry: average SAT-equivalent of admitted students (Fall 2017).",
+    "UGDS": "SIZE at entry: undergraduate degree-seeking enrollment, Fall 2017.",
+    "PPTUG_EF": "Part-time share of undergraduates, Fall 2017.",
+    "CONTROL": "Control in 2017-18 (to confirm the school did not change sector).",
+    "PREDDEG": "Predominant degree in 2017-18 (to confirm it was already bachelor's-dominant).",
+}
+
 # ------------------------------------------------------------------- IPEDS
 # HD2023: institutional characteristics (one row per institution).
 IPEDS_HD = {
@@ -65,6 +84,7 @@ IPEDS_HD = {
     "HLOFFER": "Highest level of offering (5 = bachelor's ... 9 = doctorate).",
     "INSTCAT": "Institutional category (2 = degree-granting, primarily baccalaureate or above).",
     "C21BASIC": "Carnegie 2021 basic classification.",
+    "C18BASIC": "Carnegie 2018 basic classification (the one in force when the cohort entered). Grouped into doctoral (15-17), master's (18-20), baccalaureate (21-22), baccalaureate/associate's (14, 23), special focus & tribal (24-33). Special-focus schools (nursing, faith, arts, business, medical...) are modeled separately.",
     "INSTSIZE": "Enrollment size category (1 = under 1,000 ... 5 = 20,000+).",
     "HBCU": "1 = HBCU, 2 = not.",
     "LOCALE": "Urban-centric locale code.",
@@ -79,8 +99,9 @@ IPEDS_IC = {
     "OPENADMP": "Open admission policy: 1 = yes (admits all applicants), 2 = no, -2 = not applicable. Used to fill missing ADM_RATE with 1.0.",
 }
 
-# F2223_F1A: finance for PUBLIC institutions (GASB accounting), fiscal year 2022-23.
-# F2223_F2:  finance for PRIVATE NONPROFIT institutions (FASB accounting).
+# Fyyyy_F1A: finance for PUBLIC institutions (GASB accounting); Fyyyy_F2: PRIVATE NONPROFIT (FASB).
+# Pulled for every fiscal year the cohort was enrolled: FY2018 (F1718) through FY2023 (F2223).
+# Variable codes are identical across these years (verified against the FY2018 and FY2023 dictionaries).
 # The two forms label the same functional expense categories with different codes.
 # We harmonize them into the common names on the left. Dollar amounts, whole dollars.
 SPENDING_CATEGORIES = {
@@ -97,14 +118,17 @@ SPENDING_CATEGORIES = {
 }
 IPEDS_FINANCE_KEYS = {"UNITID": "IPEDS unit ID (join key)."}
 
-# EFIA2023: 12-month enrollment and full-time-equivalent (FTE) counts, 2022-23.
+# EFIAyyyy: 12-month enrollment and full-time-equivalent (FTE) counts, pulled for 2017-18 .. 2022-23.
 IPEDS_EFIA = {
     "UNITID": "IPEDS unit ID (join key).",
     "FTEUG": "Reported 12-month full-time-equivalent undergraduate enrollment.",
     "FTEGD": "Reported 12-month FTE graduate enrollment.",
     "FTEDPP": "Reported 12-month FTE doctor's-professional-practice enrollment (med, law, etc.).",
 }
-# SPENDING PER STUDENT = each exp_* category / (FTEUG + FTEGD + FTEDPP).
+# SPENDING PER STUDENT = each exp_* category / (FTEUG + FTEGD + FTEDPP), computed for each fiscal
+# year FY2018-FY2023 and then AVERAGED over the years the school reported (nominal dollars; every
+# school faces the same price years, so cross-school comparisons are unaffected). FY2023-only values
+# are kept as *_fy23 to show how the original, mistimed version differs.
 # Total FTE is the right denominator because instruction, academic support and
 # institutional support serve graduate and undergraduate students alike.
 
