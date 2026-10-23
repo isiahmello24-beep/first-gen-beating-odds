@@ -51,5 +51,111 @@
     "max_vif": 2.13,
     "outcome_mean": 0.5134,
     "outcome_sd": 0.1624
+  },
+  "step6": {
+    "n_ranked": 1397,
+    "top_decile_n": 140,
+    "top_decile_cut_pp": 13.29,
+    "bottom_decile_cut_pp": -13.22,
+    "top5": [
+      {
+        "school": "Whitworth University-Adult Degree Programs",
+        "state": "WA",
+        "actual": 0.651,
+        "predicted": 0.247,
+        "resid_pp": 40.4
+      },
+      {
+        "school": "Nebraska Methodist College of Nursing & Allied Health",
+        "state": "NE",
+        "actual": 0.764,
+        "predicted": 0.41,
+        "resid_pp": 35.5
+      },
+      {
+        "school": "Pacific Oaks College",
+        "state": "CA",
+        "actual": 0.558,
+        "predicted": 0.207,
+        "resid_pp": 35.1
+      },
+      {
+        "school": "Mount Carmel College of Nursing",
+        "state": "OH",
+        "actual": 0.785,
+        "predicted": 0.447,
+        "resid_pp": 33.8
+      },
+      {
+        "school": "University of Health Sciences and Pharmacy in St. Louis",
+        "state": "MO",
+        "actual": 0.819,
+        "predicted": 0.492,
+        "resid_pp": 32.7
+      }
+    ],
+    "top5_high_pell": [
+      {
+        "school": "Pacific Oaks College",
+        "state": "CA",
+        "pell": 0.62,
+        "actual": 0.558,
+        "predicted": 0.207,
+        "resid_pp": 35.1
+      },
+      {
+        "school": "Methodist College",
+        "state": "IL",
+        "pell": 0.56,
+        "actual": 0.633,
+        "predicted": 0.314,
+        "resid_pp": 31.9
+      },
+      {
+        "school": "Dewey University-Hato Rey",
+        "state": "PR",
+        "pell": 0.95,
+        "actual": 0.448,
+        "predicted": 0.148,
+        "resid_pp": 30.0
+      },
+      {
+        "school": "Columbia College Hollywood",
+        "state": "CA",
+        "pell": 0.55,
+        "actual": 0.694,
+        "predicted": 0.395,
+        "resid_pp": 29.9
+      },
+      {
+        "school": "California State University-Stanislaus",
+        "state": "CA",
+        "pell": 0.6,
+        "actual": 0.63,
+        "predicted": 0.334,
+        "resid_pp": 29.7
+      }
+    ],
+    "bottom3": [
+      {
+        "school": "Florida Institute of Technology",
+        "state": "FL",
+        "resid_pp": -37.9
+      },
+      {
+        "school": "Tiffin University",
+        "state": "OH",
+        "resid_pp": -39.7
+      },
+      {
+        "school": "High Point University",
+        "state": "NC",
+        "resid_pp": -59.4
+      }
+    ],
+    "top_decile_mean_pell": 0.379,
+    "bottom_decile_mean_pell": 0.374,
+    "top_decile_private_share": 0.664,
+    "bottom_decile_private_share": 0.7
   }
 }
