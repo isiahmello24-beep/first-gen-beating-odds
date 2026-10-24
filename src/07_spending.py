@@ -52,7 +52,7 @@ def fmt_money(d):
 
 
 def main():
-    df = pd.read_parquet(CLEAN / "analysis_scored.parquet"); df = df[df.special_focus == 0]
+    df = pd.read_parquet(CLEAN / "analysis_scored.parquet"); df = df[df.in_main == 1]
     top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]
     all_cmp, all_sh = compare(top, bot), shares(top, bot)
     fy23_cmp = compare(top, bot, "_fy23")

@@ -3,7 +3,7 @@
 Sources
   College Scorecard  - most recent institution-level file, October 15, 2026 release (outcome: NSLDS AY2017-18
                        cohort measured in AY2023-24) plus MERGED2017_18_PP.csv for entry-year predictors
-  IPEDS              - HD2023 / IC2023 (characteristics, admissions policy); finance F1718..F2223 (public F1A / private F2)
+  IPEDS              - HD2023 / IC2023 (characteristics, admissions policy); EF2017A_DIST (Fall 2017 distance-education enrollment); finance F1718..F2223 (public F1A / private F2)
                        and EFIA2018..EFIA2023 (12-month FTE) covering the cohort's six fiscal years FY2018-FY2023
   BLS CPI-U (via FRED) - monthly price index, to deflate spending to FY2023 dollars
   Opportunity Insights - mrc_table2 (mobility report card, preferred estimates),
@@ -62,6 +62,8 @@ FILES = {
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F1A_Dict.zip", "F2223_F1A_Dict.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F2.zip", "F2223_F2.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/F2223_F2_Dict.zip", "F2223_F2_Dict.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EF2017A_DIST.zip", "EF2017A_DIST.zip"),
+        ("https://nces.ed.gov/ipeds/datacenter/data/EF2017A_DIST_Dict.zip", "EF2017A_DIST_Dict.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/IC2023.zip", "IC2023.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/IC2023_Dict.zip", "IC2023_Dict.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2023.zip", "EFIA2023.zip"),

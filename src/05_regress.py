@@ -31,14 +31,16 @@ REP = ROOT / "reports"
 FIG = REP / "figures"
 RESULTS = REP / "results.json"
 OUTCOME = "firstgen_comp_orig_yr6_rt"
-TRAITS = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "private", "hbcu_flag", "distance_only"]
+TRAITS = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "ug25abv", "pct_distance", "private", "hbcu_flag"]
+TRAITS_PREV = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "private", "hbcu_flag", "distance_only"]   # spec before the age/online controls
 CARNEGIE = "C(carnegie_group, Treatment(reference=\"Master's\"))"
 LABELS = {"Intercept": "Intercept (Master's, public)", "pctpell": "Pell share (0-1)", "adm_rate": "Admission rate (0-1)", "log_ugds": "log(undergrad enrollment)",
           "pptug_ef": "Part-time share (0-1)", "first_gen": "First-gen share (0-1)", "private": "Private nonprofit (vs public)", "hbcu_flag": "HBCU",
-          "distance_only": "Distance-education only", "log_core_per_fte": "log(core spending per FTE, FY18-23 avg)", "ug_share_fte": "Undergraduate share of total FTE (0-1)", "sat_avg": "SAT average (points)",
+          "distance_only": "Distance-education only", "ug25abv": "Share of undergrads aged 25+ (0-1)", "pct_distance": "Share exclusively online (0-1)", "log_core_per_fte": "log(core spending per FTE, FY18-23 avg)", "ug_share_fte": "Undergraduate share of total FTE (0-1)", "sat_avg": "SAT average (points)",
           f"{CARNEGIE}[T.Doctoral]": "Carnegie: Doctoral (vs Master's)", f"{CARNEGIE}[T.Baccalaureate]": "Carnegie: Baccalaureate (vs Master's)"}
 FORMULA_A = f"{OUTCOME} ~ " + " + ".join(TRAITS) + f" + {CARNEGIE}"
-FORMULA_A0 = f"{OUTCOME} ~ " + " + ".join(TRAITS)
+FORMULA_A0 = f"{OUTCOME} ~ " + " + ".join(TRAITS_PREV)
+FORMULA_PREV = FORMULA_A0 + f" + {CARNEGIE}"
 
 
 def fit(df, formula):
@@ -76,10 +78,10 @@ def diagnostics_plot(res, df, path):
 def main():
     FIG.mkdir(exist_ok=True)
     full = pd.read_parquet(CLEAN / "analysis.parquet")
-    df = full[full.special_focus == 0].copy()
-    sf = full[full.special_focus == 1].copy()
+    df = full[full.in_main == 1].copy()
+    sf = full[full.in_main == 0].copy()          # special focus + adult/online-dominant, scored out of sample
 
-    A = fit(df, FORMULA_A); A0 = fit(full, FORMULA_A0); A_noc = fit(df, FORMULA_A0)
+    A = fit(df, FORMULA_A); A0 = fit(full, FORMULA_A0); A_noc = fit(df, f"{OUTCOME} ~ " + " + ".join(TRAITS)); A_prev = fit(df, FORMULA_PREV if df["distance_only"].nunique() > 1 else FORMULA_PREV.replace(" + distance_only", ""))
     B = fit(df, FORMULA_A + " + log_core_per_fte + ug_share_fte")
     B_noug = fit(df, FORMULA_A + " + log_core_per_fte")
     dfC = df[df.sat_avg.notna()]; C_ = fit(dfC, FORMULA_A + " + sat_avg"); C_base = fit(dfC, FORMULA_A)
@@ -87,7 +89,7 @@ def main():
     df["predicted"], df["residual"] = A.fittedvalues, A.resid
     df["predicted_B"], df["residual_B"] = B.fittedvalues, B.resid
     # special-focus schools have no Carnegie dummy in Model A: score them at the Master's baseline (documented in the report)
-    sf["predicted"] = A.predict(sf.assign(carnegie_group="Master's")); sf["residual"] = sf[OUTCOME] - sf["predicted"]; sf["predicted_B"] = np.nan; sf["residual_B"] = np.nan
+    sf["predicted"] = A.predict(sf.assign(carnegie_group=np.where(sf.carnegie_group == "Special focus / tribal", "Master's", sf.carnegie_group))); sf["residual"] = sf[OUTCOME] - sf["predicted"]; sf["predicted_B"] = np.nan; sf["residual_B"] = np.nan
     scored = pd.concat([df, sf]); scored["residual_pct_pts"] = scored["residual"] * 100
     scored["predicted_A0"] = A0.fittedvalues.reindex(scored.index); scored["residual_A0"] = A0.resid.reindex(scored.index)
     scored.to_parquet(CLEAN / "analysis_scored.parquet", index=False); scored.to_csv(CLEAN / "analysis_scored.csv", index=False)
@@ -99,16 +101,16 @@ def main():
     top_cooks = df.assign(cooks=cooks).nlargest(8, "cooks")[["instnm", "stabbr", "ugds", OUTCOME, "predicted", "cooks"]]
     diagnostics_plot(A, df, FIG / "05_diagnostics_model_a.png")
     fig, ax = plt.subplots(figsize=(7, 6.5)); ax.scatter(df["predicted"], df[OUTCOME], s=9, alpha=.45, label="main sample")
-    ax.scatter(sf["predicted"], sf[OUTCOME], s=14, alpha=.8, color="#e76f51", label="special focus (out of sample)")
+    ax.scatter(sf["predicted"], sf[OUTCOME], s=14, alpha=.8, color="#e76f51", label="excluded groups (out of sample)")
     ax.plot([0, 1], [0, 1], "k--", lw=1); ax.set(xlabel="Predicted first-gen 6-year completion (Model A)", ylabel="Actual", title=f"Actual vs predicted, n = {len(df):,}, R² = {A.rsquared:.3f}"); ax.legend()
     fig.tight_layout(); fig.savefig(FIG / "05_actual_vs_predicted.png", dpi=130); plt.close(fig)
 
-    sf_tab = sf.sort_values("residual", ascending=False)[["instnm", "stabbr", "hd_c18basic", "ugds", "pctpell", OUTCOME, "predicted", "residual"]].round(3)
+    sf_tab = sf.sort_values(["excluded_reason", "residual"], ascending=[True, False])[["excluded_reason", "instnm", "stabbr", "hd_c18basic", "ugds", "ug25abv", "pct_distance", "pctpell", OUTCOME, "predicted", "residual"]].round(3)
     lines = ["# Regression (Step 5)\n", "Generated by `src/05_regress.py`. Outcome: share of first-generation federal-aid students in the AY2017-18 entry cohort who completed at the same institution within 6 years (0-1). "
-             "Predictors are the school's 2017-18 values. Standard errors are HC3 robust. Main sample excludes Carnegie special-focus / tribal schools.\n",
+             "Predictors are the school's 2017-18 values. Standard errors are HC3 robust. Main sample excludes Carnegie special-focus / tribal schools and campuses with more than 50% of undergraduates aged 25+ or exclusively online in Fall 2017.\n",
              f"\n## Model A (main): entry-year traits + Carnegie group, no spending — n = {int(A.nobs):,}, R² = {A.rsquared:.3f}, adj. R² = {A.rsquared_adj:.3f}, residual SD = {np.sqrt(A.mse_resid):.3f}\n", fmt(coef_table(A)),
              f"\n\nReading the coefficients: the Pell coefficient is {A.params['pctpell']:.3f}, so a school with a 40-point higher Pell share (0.20 vs 0.60) is predicted {abs(A.params['pctpell'])*0.4*100:.1f} points {'lower' if A.params['pctpell']<0 else 'higher'} on first-gen completion, holding the other traits fixed.\n",
-             f"\n## Why Carnegie controls: same traits without Carnegie on the same {len(df):,} schools give R² = {A_noc.rsquared:.3f}; the original specification on all {len(full):,} schools including special focus gives R² = {A0.rsquared:.3f}.\n",
+             f"\n## Specification comparisons on the same {len(df):,} schools\n\n- Model A without Carnegie dummies: R² = {A_noc.rsquared:.3f}.\n- Previous spec (distance-only flag instead of the age-25+ and exclusively-online shares): R² = {A_prev.rsquared:.3f}.\n- Original spec (no Carnegie, distance-only flag) on all {len(full):,} schools including excluded groups: R² = {A0.rsquared:.3f}.\n",
              f"\n## Model B: Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of FTE — n = {int(B.nobs):,}, R² = {B.rsquared:.3f} (Model A: {A.rsquared:.3f})\n", fmt(coef_table(B)),
              f"\n\nA 10% higher core budget per student is associated with {B.params['log_core_per_fte']*np.log(1.1)*100:+.2f} percentage points of first-gen completion, holding Model A traits and the undergraduate share fixed "
              f"(without the undergraduate-share control: {B_noug.params['log_core_per_fte']*np.log(1.1)*100:+.2f} points, R² {B_noug.rsquared:.3f}). Adding spending raises R² by {B.rsquared - A.rsquared:.3f}. "
@@ -120,13 +122,15 @@ def main():
              f"- Jarque-Bera: JB = {jb:.1f}, p = {jb_p:.2e}, skew = {skew:.2f}, kurtosis = {kurt:.2f}. With n = {len(df):,} inference on coefficients does not rely on normal residuals.",
              f"- Influence: {n_cooks} schools exceed the 4/n Cook's distance rule of thumb. Step 8 bootstraps the ranking to show how much any single school matters.",
              "\nMost influential schools:\n", top_cooks.round(4).to_markdown(index=False),
-             f"\n\n## Special-focus / tribal schools ({len(sf)}), scored out-of-sample with Model A (at the Master's Carnegie baseline) and NOT ranked with the main sample\n",
-             "Carnegie 2018 code: 24 faith-related, 25 medical, 26 other health professions, 27 engineering, 28 other technology, 29 business, 30 arts/music/design, 31 law, 32 other special focus, 33 tribal. "
-             "Their program mix (often one structured program with near-universal completion) is not what the model describes, so their residuals are shown for transparency only.\n", sf_tab.to_markdown(index=False),
+             f"\n\n## Excluded schools ({len(sf)}), scored out-of-sample with Model A and NOT ranked with the main sample\n",
+             f"Two groups. (1) Carnegie special-focus / tribal (codes 24-33: faith, medical, health professions, engineering, technology, business, arts, law, other, tribal), scored at the Master's Carnegie baseline: {int((sf.excluded_reason == 'special focus / tribal').sum())} schools. "
+             f"(2) Campuses where more than 50% of Fall 2017 undergraduates were aged 25+ or exclusively online: {int((sf.excluded_reason == 'adult (25+) or online share > 50%').sum())} schools. "
+             f"(3) Schools whose Scorecard completion rates are implausible against their IPEDS graduation rate (both first-gen and non-first-gen below 25% of C150_4): {int((sf.excluded_reason == 'outcome implausible vs IPEDS grad rate').sum())} schools. "
+             "Both serve populations and run programs the main model does not describe, so their residuals are shown for transparency only.\n", sf_tab.to_markdown(index=False),
              "\n\n![diagnostics](figures/05_diagnostics_model_a.png)\n", "![actual vs predicted](figures/05_actual_vs_predicted.png)\n"]
     (REP / "05_regression.md").write_text("\n".join(lines))
     results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
-    results["step5"] = {"n": int(A.nobs), "n_special_focus": len(sf), "r2_A": round(A.rsquared, 4), "adj_r2_A": round(A.rsquared_adj, 4), "resid_sd_A": round(float(np.sqrt(A.mse_resid)), 4),
+    results["step5"] = {"n": int(A.nobs), "n_special_focus": int((sf.excluded_reason == "special focus / tribal").sum()), "n_nontraditional": int((sf.excluded_reason == "adult (25+) or online share > 50%").sum()), "n_anomaly": int((sf.excluded_reason == "outcome implausible vs IPEDS grad rate").sum()), "n_excluded": len(sf), "r2_A_prev_spec": round(A_prev.rsquared, 4), "r2_A": round(A.rsquared, 4), "adj_r2_A": round(A.rsquared_adj, 4), "resid_sd_A": round(float(np.sqrt(A.mse_resid)), 4),
                         "r2_A_no_carnegie": round(A_noc.rsquared, 4), "r2_A0_original_spec_all_schools": round(A0.rsquared, 4), "n_A0": int(A0.nobs),
                         "coef_A": {k: round(float(v), 5) for k, v in A.params.items()}, "p_A": {k: round(float(v), 5) for k, v in A.pvalues.items()}, "se_A": {k: round(float(v), 5) for k, v in A.bse.items()},
                         "r2_B": round(B.rsquared, 4), "coef_B_log_core": round(float(B.params["log_core_per_fte"]), 5), "p_B_log_core": round(float(B.pvalues["log_core_per_fte"]), 5),
@@ -138,7 +142,7 @@ def main():
                         "outcome_mean": round(float(df[OUTCOME].mean()), 4), "outcome_sd": round(float(df[OUTCOME].std()), 4),
                         "cohort": "NSLDS AY2017-18 entry cohort measured AY2023-24; predictors 2017-18; spending FY2018-FY2023 average"}
     RESULTS.write_text(json.dumps(results, indent=2))
-    print(fmt(coef_table(A))); print(f"\nR2 A={A.rsquared:.3f} (no Carnegie {A_noc.rsquared:.3f}; original spec all schools {A0.rsquared:.3f})  B={B.rsquared:.3f}  C={C_.rsquared:.3f}/{C_base.rsquared:.3f} n={int(C_.nobs)}  BP p={bp_p:.1e} maxVIF={vif['VIF'].max():.2f} cooks>4/n={n_cooks}")
+    print(fmt(coef_table(A))); print(f"\nR2 A={A.rsquared:.3f} (no Carnegie {A_noc.rsquared:.3f}; prev spec {A_prev.rsquared:.3f}; original spec all schools {A0.rsquared:.3f}; n excluded {len(sf)})  B={B.rsquared:.3f}  C={C_.rsquared:.3f}/{C_base.rsquared:.3f} n={int(C_.nobs)}  BP p={bp_p:.1e} maxVIF={vif['VIF'].max():.2f} cooks>4/n={n_cooks}")
 
 
 if __name__ == "__main__":

@@ -22,6 +22,7 @@ SC_CSV = RAW / "scorecard/Most-Recent-Cohorts-Institution_10152026/Most-Recent-C
 SC_ENTRY_CSV = RAW / "scorecard/College_Scorecard_Raw_Data_10152026/MERGED2017_18_PP.csv"
 HD_CSV = RAW / "ipeds/HD2023/HD2023.csv"
 IC_CSV = RAW / "ipeds/IC2023/IC2023_RV.csv"
+EFDIST_CSV = RAW / "ipeds/EF2017A_DIST/ef2017a_dist_rv.csv"
 OI2_CSV = RAW / "opportunity_insights/mrc_table2.csv"
 OI11_CSV = RAW / "opportunity_insights/mrc_table11.csv"
 CPI_CSV = RAW / "cpi/CPIAUCSL.csv"
@@ -143,6 +144,16 @@ def main() -> None:
           "LEFT join IPEDS IC2023 admissions policy. No rows drop; unmatched schools get NULL openadmp.")
     n_ic_missing = con.execute("SELECT count(*) FROM j_ic WHERE openadmp IS NULL").fetchone()[0]
 
+    # ------------------------------------------- IPEDS Fall 2017 distance education (left)
+    con.execute(f"""CREATE OR REPLACE TABLE efdist AS
+        SELECT UNITID::INTEGER AS d_unitid, TRY_CAST(EFDETOT AS DOUBLE) AS ug_total_f17, TRY_CAST(EFDEEXC AS DOUBLE) AS ug_distance_exc_f17,
+               -- IPEDS leaves EFDEEXC blank with imputation flag 'A' (not applicable) when a school offers no distance education: that is zero, not missing
+               COALESCE(TRY_CAST(EFDEEXC AS DOUBLE), 0) / NULLIF(TRY_CAST(EFDETOT AS DOUBLE), 0) AS pct_distance
+          FROM read_csv('{EFDIST_CSV}', {IPEDS_OPTS}) WHERE trim(EFDELEV) = '2'""")
+    stage("j_dist", "SELECT j.*, d.* EXCLUDE (d_unitid) FROM j_ic j LEFT JOIN efdist d ON j.unitid = d.d_unitid",
+          "LEFT join IPEDS EF2017A_DIST (share of undergraduates exclusively online, Fall 2017). No rows drop; unmatched get NULL.")
+    n_dist_missing = con.execute("SELECT count(*) FROM j_dist WHERE pct_distance IS NULL").fetchone()[0]
+
     # ------------------------------------------------ Opportunity Insights (left)
     con.execute(f"""CREATE OR REPLACE TABLE oi AS
         WITH xw AS (SELECT DISTINCT TRY_CAST(super_opeid AS INTEGER) AS super_opeid, TRY_CAST(opeid AS INTEGER) AS opeid
@@ -155,7 +166,7 @@ def main() -> None:
     oi_dup = con.execute("SELECT count(*) - count(DISTINCT opeid) FROM oi").fetchone()[0]
     con.execute("CREATE OR REPLACE TABLE oi1 AS SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY opeid ORDER BY super_opeid) rn FROM oi) WHERE rn = 1")
     stage("joined", """SELECT j.*, o.* EXCLUDE (opeid, rn), (o.opeid IS NOT NULL) AS oi_matched
-                       FROM j_ic j LEFT JOIN oi1 o ON TRY_CAST(j.opeid6 AS INTEGER) = o.opeid""",
+                       FROM j_dist j LEFT JOIN oi1 o ON TRY_CAST(j.opeid6 AS INTEGER) = o.opeid""",
           "LEFT join Opportunity Insights via OPEID6 → mrc_table11 → super_opeid. No rows drop; unmatched schools get NULL OI fields.")
     n_oi = con.execute("SELECT count(*) FILTER (WHERE oi_matched) FROM joined").fetchone()[0]
     n_total = funnel[-1][1]
@@ -184,6 +195,7 @@ def main() -> None:
         lines.append(f"| `{name}` | {n:,} | {'' if prev is None else f'{prev - n:,}'} | {why} |"); prev = n
     lines += ["\n## Left-join coverage (no rows dropped)\n",
               f"- IPEDS IC2023 admissions policy matched: {n_total - n_ic_missing:,} of {n_total:,} ({n_ic_missing} missing OPENADMP).",
+              f"- IPEDS EF2017A_DIST (exclusively-online share, Fall 2017) matched: {n_total - n_dist_missing:,} of {n_total:,} ({n_dist_missing} missing).",
               f"- Opportunity Insights matched: {n_oi:,} of {n_total:,} ({n_oi/n_total:.1%}). OI covers 1980-82 birth cohorts at schools with enough students, so small and newer schools are absent.",
               f"- OPEIDs mapped to more than one super_opeid in mrc_table11 (first kept): {oi_dup}.",
               "\n## CPI-U fiscal-year averages used to deflate spending to FY2023 dollars (BLS via FRED, series CPIAUCSL)\n", cpi_tab.round(3).to_markdown(index=False),

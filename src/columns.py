@@ -71,6 +71,15 @@ SCORECARD_ENTRY = {
     "PPTUG_EF": "Part-time share of undergraduates, Fall 2017.",
     "CONTROL": "Control in 2017-18 (to confirm the school did not change sector).",
     "PREDDEG": "Predominant degree in 2017-18 (to confirm it was already bachelor's-dominant).",
+    "UG25ABV": "Share of undergraduates aged 25 and above, Fall 2017. Model A control; campuses above 50% are scored out of sample (adult-serving programs).",
+}
+
+# EF2017A_DIST: IPEDS Fall 2017 distance-education enrollment (one row per institution x student level).
+IPEDS_EFDIST = {
+    "UNITID": "IPEDS unit ID (join key).",
+    "EFDELEV": "Student level: 2 = undergraduate total (the row we use).",
+    "EFDETOT": "All undergraduates enrolled, Fall 2017.",
+    "EFDEEXC": "Undergraduates enrolled exclusively in distance-education courses. pct_distance = EFDEEXC / EFDETOT; a Model A control, and campuses above 50% are scored out of sample (online-dominant programs).",
 }
 
 # ------------------------------------------------------------------- IPEDS

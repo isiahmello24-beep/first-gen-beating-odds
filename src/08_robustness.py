@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CLEAN = ROOT / "data" / "clean"
 REP = ROOT / "reports"
 OUTCOME = "firstgen_comp_orig_yr6_rt"
-TRAITS = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "private", "hbcu_flag", "distance_only"]
+TRAITS = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "ug25abv", "pct_distance", "private", "hbcu_flag"]
 CARNEGIE = "C(carnegie_group, Treatment(reference=\"Master's\"))"
 FORMULA = f"{OUTCOME} ~ " + " + ".join(TRAITS) + f" + {CARNEGIE}"
 FORMULA_SECTOR = f"{OUTCOME} ~ " + " + ".join(t for t in TRAITS if t != "private") + f" + {CARNEGIE}"
@@ -52,7 +52,7 @@ def fm(d):
 
 
 def main():
-    df = pd.read_parquet(CLEAN / "analysis_scored.parquet"); df = df[df.special_focus == 0].reset_index(drop=True)
+    df = pd.read_parquet(CLEAN / "analysis_scored.parquet"); df = df[df.in_main == 1].reset_index(drop=True)
     n = len(df); n_top = int(round(n * 0.10))
     point_top = set(df.nlargest(n_top, "residual_eb")["unitid"])
     pclip = df["predicted"].clip(0.05, 0.95).values; coh = df["firstgen_yr6_n"].values

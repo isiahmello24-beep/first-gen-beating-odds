@@ -16,7 +16,7 @@ st.set_page_config(page_title="First-Gen Completion: Over-performing Colleges", 
 CORE = {"exp_instruction": "Instruction", "exp_academic_support": "Academic support", "exp_student_services": "Student services", "exp_institutional_support": "Institutional support"}
 CARN = "C(carnegie_group, Treatment(reference=\"Master's\"))"
 LABELS = {"pctpell": "Pell share", "adm_rate": "Admission rate", "log_ugds": "log(enrollment)", "pptug_ef": "Part-time share", "first_gen": "First-gen share",
-          "private": "Private nonprofit", "hbcu_flag": "HBCU", "distance_only": "Distance-only", f"{CARN}[T.Doctoral]": "Carnegie: Doctoral", f"{CARN}[T.Baccalaureate]": "Carnegie: Baccalaureate"}
+          "ug25abv": "Share aged 25+", "pct_distance": "Share exclusively online", "private": "Private nonprofit", "hbcu_flag": "HBCU", f"{CARN}[T.Doctoral]": "Carnegie: Doctoral", f"{CARN}[T.Baccalaureate]": "Carnegie: Baccalaureate"}
 TOP, BOT = "#2a9d8f", "#e76f51"
 
 
@@ -29,8 +29,8 @@ def load():
 
 
 full, boot, res = load()
-df = full[full.special_focus == 0].copy()
-sf = full[full.special_focus == 1].copy()
+df = full[full.in_main == 1].copy()
+sf = full[full.in_main == 0].copy()
 s5, s6, s7, s8 = res["step5"], res["step6"], res["step7"], res["step8"]
 pf, bs, sec = s7["per_fte"], s8["bootstrap"], s8["sector"]
 
@@ -41,7 +41,7 @@ tab_over, tab_rank, tab_spend, tab_school, tab_method = st.tabs(["Overview", "Ra
 
 with tab_over:
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Schools in model", f"{s5['n']:,}", f"+{s5['n_special_focus']} special focus, scored separately")
+    c1.metric("Schools in model", f"{s5['n']:,}", f"+{s5['n_excluded']} excluded, scored separately")
     c2.metric("R² (Model A)", f"{s5['r2_A']:.2f}")
     c3.metric("Mean first-gen 6-yr completion", f"{s5['outcome_mean']:.1%}")
     c4.metric("Top-decile residual cut", f"+{s6['top_decile_cut_pp']:.1f} pts")
@@ -84,11 +84,12 @@ with tab_rank:
                                    "Core $/FTE FY18-23": "${:,.0f}", "Undergrads 2017": "{:,.0f}", "First-gen cohort": "{:,.0f}"}), use_container_width=True, height=520, hide_index=True)
     st.caption(f"Shrinkage: each residual is multiplied by τ²/(τ²+σ²) where σ² is the binomial sampling variance of the school's rate given its first-gen cohort. τ = {s6['tau_pp']:.1f} points; median shrink {s6['shrink_median']:.2f}, minimum {s6['shrink_min']:.2f}. {s6['top_decile_left']} schools left the raw top decile after shrinkage, all with cohorts under 100.")
     st.download_button("Download filtered ranking (CSV)", show.to_csv(index=False).encode(), "ranked_schools_filtered.csv", "text/csv")
-    with st.expander(f"Special-focus and tribal colleges ({len(sf)}): scored with Model A but not ranked"):
-        st.write("Carnegie 2018 special-focus schools (nursing, health, faith, arts, business, law, engineering) and tribal colleges usually run one structured program, so the model does not describe them. Shown for transparency only.")
-        st.dataframe(sf.sort_values("residual", ascending=False)[["instnm", "stabbr", "control_label", "hd_c18basic", "ugds", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]].rename(columns={
-            "instnm": "School", "stabbr": "State", "control_label": "Control", "hd_c18basic": "Carnegie code", "ugds": "Undergrads", "pctpell": "Pell", "firstgen_comp_orig_yr6_rt": "Actual", "predicted": "Predicted", "residual_pct_pts": "Residual (pts)"})
-                     .style.format({"Pell": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
+    with st.expander(f"Excluded schools ({len(sf)}): scored with Model A but not ranked"):
+        st.write("Three groups the main model does not describe: Carnegie special-focus and tribal colleges (one structured program); campuses where more than half of Fall 2017 undergraduates were aged 25+ or exclusively online; "
+                 "and schools whose Scorecard completion rates are implausible against their IPEDS graduation rate (both first-gen and non-first-gen rates below a quarter of it, e.g. San Jose State at 3.8%). Shown for transparency only.")
+        st.dataframe(sf.sort_values(["excluded_reason", "residual"], ascending=[True, False])[["excluded_reason", "instnm", "stabbr", "control_label", "ugds", "ug25abv", "pct_distance", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]].rename(columns={
+            "excluded_reason": "Why excluded", "instnm": "School", "stabbr": "State", "control_label": "Control", "ugds": "Undergrads", "ug25abv": "Age 25+ share", "pct_distance": "Online share", "pctpell": "Pell", "firstgen_comp_orig_yr6_rt": "Actual", "predicted": "Predicted", "residual_pct_pts": "Residual (pts)"})
+                     .style.format({"Pell": "{:.2f}", "Age 25+ share": "{:.2f}", "Online share": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
 
 with tab_spend:
     scope = st.radio("Comparison", ["All schools (pooled model deciles)", "Public (public-only model deciles)", "Private nonprofit (private-only model deciles)", "Carnegie: Doctoral", "Carnegie: Master's", "Carnegie: Baccalaureate"], horizontal=True)
@@ -149,7 +150,7 @@ with tab_method:
 
 **Data.** College Scorecard Oct-2026 release (dated file; the undated download URL served a stale 2024 file); IPEDS HD2023, IC2023, F1718-F2223 finance (F1A public / F2 private nonprofit), EFIA2018-2023; Opportunity Insights mobility report cards (context only). Joined on UNITID in DuckDB. 4-year = bachelor's-dominant in both 2017-18 and today and IPEDS level 4+ years. For-profits excluded (non-comparable finance form).
 
-**Sample.** {s5['n']:,} schools (Carnegie doctoral, master's, baccalaureate) after dropping privacy-suppressed outcomes, first-gen cohorts under 50, schools missing an entry-year predictor, and schools with fewer than 3 fiscal years of finance data. {s5['n_special_focus']} special-focus / tribal schools are scored but not ranked.
+**Sample.** {s5['n']:,} schools (Carnegie doctoral, master's, baccalaureate) after dropping privacy-suppressed outcomes, first-gen cohorts under 50, schools missing an entry-year predictor, and schools with fewer than 3 fiscal years of finance data. Scored but not ranked: {s5['n_special_focus']} special-focus / tribal schools, {s5['n_nontraditional']} campuses with more than 50% of undergraduates aged 25+ or exclusively online, and {s5['n_anomaly']} schools with implausible Scorecard completion rates.
 
 **Model A.** OLS: first-gen 6-year same-institution completion ~ Pell share + admission rate (open-admission = 1.0) + log enrollment + part-time share + first-gen share + private + HBCU + distance-only + Carnegie group. HC3 robust SEs. R² = {s5['r2_A']:.3f}. Residual = actual − predicted, then shrunk toward zero by τ²/(τ²+σ²) with σ² the binomial variance for the school's first-gen cohort (empirical Bayes; τ = {s6['tau_pp']:.1f} pts, median shrink {s6['shrink_median']:.2f}). Spending is left out on purpose so the spending comparison is not circular; Model B adds log core spending per FTE and the undergraduate share of FTE (R² {s5['r2_B']:.3f}).
 

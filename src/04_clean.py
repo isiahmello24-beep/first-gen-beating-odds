@@ -28,12 +28,14 @@ MIN_COHORT = 50
 MIN_FIN_YEARS = 3
 
 CORE = ["exp_instruction", "exp_academic_support", "exp_student_services", "exp_institutional_support"]
-ENTRY = {"pctpell": "e_pctpell", "adm_rate": "e_adm_rate", "ugds": "e_ugds", "pptug_ef": "e_pptug_ef", "sat_avg": "e_sat_avg"}
+ENTRY = {"pctpell": "e_pctpell", "adm_rate": "e_adm_rate", "ugds": "e_ugds", "pptug_ef": "e_pptug_ef", "sat_avg": "e_sat_avg", "ug25abv": "e_ug25abv"}
+NONTRAD_CUT = 0.50
+ANOMALY_RATIO = 0.25  # both first-gen and non-first-gen 6-yr completion below 25% of the IPEDS 150%-time graduation rate = implausible reporting   # campuses with >50% of undergrads aged 25+ or >50% exclusively online are scored out of sample
 # first_gen is NOT remapped: the Scorecard stopped publishing it after the 2016-17 file, and the most-recent
 # file carries that same value (AY2015-16 + AY2016-17 pooled cohorts), one to two years before our cohort.
 CARNEGIE_GROUP = {**{k: "Doctoral" for k in (15, 16, 17)}, **{k: "Master's" for k in (18, 19, 20)}, **{k: "Baccalaureate" for k in (21, 22)},
                   **{k: "Baccalaureate/Associate's" for k in (14, 23)}, **{k: "Special focus / tribal" for k in range(24, 34)}}
-KEY_COLS = ["ug_share_fte", "firstgen_comp_orig_yr6_rt", "firstgen_yr6_n", "not1stgen_comp_orig_yr6_rt", "first_gen", "e_pctpell", "e_adm_rate", "e_sat_avg", "e_ugds",
+KEY_COLS = ["ug_share_fte", "e_ug25abv", "pct_distance", "firstgen_comp_orig_yr6_rt", "firstgen_yr6_n", "not1stgen_comp_orig_yr6_rt", "first_gen", "e_pctpell", "e_adm_rate", "e_sat_avg", "e_ugds",
             "e_pptug_ef", "pctpell", "adm_rate", "ugds", "inexpfte", "c150_4", "openadmp", "n_fin_years", "fte_total"] + [f"{k}_per_fte" for k in C.SPENDING_CATEGORIES]
 
 
@@ -66,6 +68,8 @@ def main() -> None:
     for col, label in [("pctpell", "Pell share (2017-18)"), ("ugds", "Undergrad enrollment (Fall 2017)"), ("pptug_ef", "Part-time share (Fall 2017)"), ("first_gen", "First-gen share (2015-17 pooled cohorts)")]:
         apply(f"4. {label} missing", df[col].notna())
     apply(f"5. Fewer than {MIN_FIN_YEARS} fiscal years of usable finance + FTE data", df["n_fin_years"] >= MIN_FIN_YEARS)
+    apply("6. Share of undergraduates aged 25+ (Fall 2017) missing", df["ug25abv"].notna())
+    apply("7. Share of undergraduates exclusively online (Fall 2017) missing", df["pct_distance"].notna())
 
     # ---------------------------------------------------------------- derived
     for k in C.SPENDING_CATEGORIES:
@@ -85,9 +89,14 @@ def main() -> None:
     df["control_label"] = df["hd_control"].map({1: "Public", 2: "Private nonprofit"})
     df["carnegie_group"] = df["hd_c18basic"].map(CARNEGIE_GROUP).fillna("Other")
     df["special_focus"] = (df["carnegie_group"] == "Special focus / tribal").astype(int)
+    df["nontraditional"] = ((df["ug25abv"] > NONTRAD_CUT) | (df["pct_distance"] > NONTRAD_CUT)).astype(int)
+    df["outcome_anomaly"] = ((df["firstgen_comp_orig_yr6_rt"] < ANOMALY_RATIO * df["c150_4"]) & (df["not1stgen_comp_orig_yr6_rt"] < ANOMALY_RATIO * df["c150_4"])).fillna(False).astype(int)
+    df["excluded_reason"] = np.select([df["outcome_anomaly"] == 1, df["special_focus"] == 1, df["nontraditional"] == 1],
+                                      ["outcome implausible vs IPEDS grad rate", "special focus / tribal", "adult (25+) or online share > 50%"], "")
+    df["in_main"] = (df["excluded_reason"] == "").astype(int)
     assert (df["carnegie_group"] != "Other").all(), df.loc[df.carnegie_group == "Other", "hd_c18basic"].unique()
 
-    rate_cols = ["firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "pctpell", "adm_rate", "pptug_ef", "first_gen"]
+    rate_cols = ["firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "pctpell", "adm_rate", "pptug_ef", "first_gen", "ug25abv", "pct_distance"]
     out_of_range = {c: int(((df[c] < 0) | (df[c] > 1)).sum()) for c in rate_cols}
     assert all(v == 0 for v in out_of_range.values()), out_of_range
     assert df["unitid"].is_unique
@@ -102,9 +111,12 @@ def main() -> None:
     carn = df.groupby(["carnegie_group", "control_label"]).size().unstack(fill_value=0)
 
     df.to_parquet(CLEAN / "analysis.parquet", index=False); df.to_csv(CLEAN / "analysis.csv", index=False)
-    desc = df[["firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "fg_gap", "firstgen_yr6_n", "first_gen", "pctpell", "adm_rate", "ugds", "pptug_ef", "fte_total",
+    desc = df[["firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "fg_gap", "firstgen_yr6_n", "first_gen", "pctpell", "adm_rate", "ugds", "pptug_ef", "ug25abv", "pct_distance", "fte_total",
                "exp_core_per_fte", "exp_instruction_per_fte", "exp_academic_support_per_fte", "exp_student_services_per_fte", "exp_institutional_support_per_fte"]].describe(percentiles=[.05, .25, .5, .75, .95]).T.round(3)
-    main_n, sf_n = int((df.special_focus == 0).sum()), int((df.special_focus == 1).sum())
+    main_n, sf_n = int((df.in_main == 1).sum()), int((df.special_focus == 1).sum())
+    nt_n = int((df.excluded_reason == "adult (25+) or online share > 50%").sum()); an_n = int((df.excluded_reason == "outcome implausible vs IPEDS grad rate").sum())
+    anomalies = df[df.outcome_anomaly == 1][["instnm", "stabbr", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "c150_4"]].round(3)
+    excl = df[df.in_main == 0].groupby("excluded_reason").size()
     lines = ["# Data quality report (Step 4)\n", "Generated by `src/04_clean.py`.\n",
              f"\n## Starting point\n\n{n0:,} four-year public and private nonprofit schools from the Step 3 join.\n",
              "\n## Missing values before cleaning (e_* = entry-year 2017-18 values used in the model)\n", before.astype(object).fillna("").to_markdown(),
@@ -113,8 +125,9 @@ def main() -> None:
              "\n## Cleaning rules applied in order\n", "| Rule | Dropped | Remaining |", "|---|---:|---:|", *[f"| {r} | {d:,} | {n:,} |" for r, d, n in log],
              f"\n- Rule 3 filled `adm_rate` = 1.0 for **{n_filled}** open-admission schools (flag `adm_rate_filled`). Open admission means every applicant is accepted, so 100% is the true value, not an imputation.",
              "- Blank functional expense lines on a filed finance form were set to $0.",
-             f"\n## Final file: {len(df):,} schools = {main_n:,} in the main sample + {sf_n:,} special-focus / tribal (Carnegie 2018 codes 24-33), modeled separately\n",
-             carn.to_markdown(),
+             f"\n## Final file: {len(df):,} schools = {main_n:,} in the main sample + {sf_n:,} special-focus / tribal (Carnegie 2018 codes 24-33) + {nt_n:,} adult- or online-dominant campuses (>50% of undergraduates aged 25+ or exclusively online in Fall 2017), + {an_n} schools whose Scorecard completion rates are implausible against their IPEDS graduation rate; all excluded groups are scored separately\n",
+             excl.to_frame("schools").to_markdown(),
+             f"\n\nOutcome-anomaly screen: both the first-gen and the non-first-gen 6-year completion rates below {ANOMALY_RATIO:.0%} of the school's IPEDS 150%-time graduation rate (C150_4). The two measures differ in definition but not by a factor of four; these look like NSLDS reporting problems, so they are listed, not ranked:\n", anomalies.to_markdown(index=False), "\n\nCarnegie group by control (all schools in file):\n", carn.to_markdown(),
              "\n\n## Timing: entry-year vs today's predictor values (medians and correlations)\n", drift.to_markdown(),
              "\n\nPell share and enrollment are stable school traits (high correlation), but the 2024 values describe students who entered seven years after the cohort, so the model uses the 2017-18 values.\n",
              "\n## Timing: window-average vs FY2023-only spending per FTE (medians)\n", spend_drift.to_markdown(),
@@ -124,7 +137,7 @@ def main() -> None:
              "\n## Outliers kept (the model uses log spending)\n", "Highest core spending per FTE:\n", hi.round(0).to_markdown(index=False), "\n\nLowest:\n", lo.round(0).to_markdown(index=False),
              f"\n\n## Range checks\n\nAll rate columns within [0, 1]: {out_of_range}. UNITID unique: True.\n"]
     REPORT.write_text("\n".join(lines))
-    print(f"\nfinal {len(df):,} (main {main_n:,}, special focus {sf_n:,}); INEXPFTE corr {corr:.3f}; wrote {REPORT.relative_to(ROOT)}")
+    print(f"\nfinal {len(df):,} (main {main_n:,}, special focus {sf_n:,}, adult/online {nt_n:,}, anomalies {an_n}); INEXPFTE corr {corr:.3f}; wrote {REPORT.relative_to(ROOT)}")
     print(drift.to_string()); print(spend_drift.to_string()); print(carn.to_string())
 
 

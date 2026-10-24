@@ -50,3 +50,12 @@ One line per decision: what was chosen and why.
 - Memo rewritten to lead with the sector split: the pooled student-services result is driven by private colleges, and restricted to publics the pooled-decile gaps lose significance, so a public-sector reader needs the public-only model's answer first.
 - FRED download uses a plain user agent: browser-style agents from a scripted client stall on FRED; this is a transport detail, logged so the next person does not lose an hour to it.
 - Spot check against the College Scorecard website recorded in reports/11_spot_check.md: three ranked schools' Pell share and completion figures compared by hand to the public site.
+
+## Third review pass (2026-10-23)
+
+- Share of undergraduates aged 25+ (Scorecard UG25ABV, Fall 2017) and share exclusively online (IPEDS EF2017A_DIST, Fall 2017) added to Model A; campuses above 50% on either are scored out of sample and listed with the special-focus schools: adult-degree and online programs enroll students whose completion patterns the main model cannot describe, and two of them (Whitworth's adult program, UF Online) had been ranked 1 and 3.
+- The Scorecard has no exclusively-online share, only a yes/no flag, so the share comes from IPEDS; IPEDS leaves the item blank with imputation flag "A" (not applicable) when a school offers no distance education, and that blank is read as zero, which saved 132 schools from being dropped for a non-missing value.
+- The distance-only flag was removed from Model A: with the online share in the model and online-dominant campuses excluded, it was constant and redundant.
+- Outcome-anomaly screen added: a school whose first-gen AND non-first-gen 6-year Scorecard rates are both below 25% of its IPEDS 150%-time graduation rate is listed, not ranked. San Jose State (3.8% and 4.5% vs 68%) made this necessary; the two measures differ in definition but not by a factor of four, so this is treated as a reporting problem rather than a true outcome.
+- The pre-pass ranking is archived as reports/archive/v2_... and compared in Step 6 (Spearman 0.980, 14 of 20 top-20 schools retained), so the effect of the new controls is visible.
+- Pre-COVID (FY2018-19), constant-dollar and undergraduate-FTE-share checks were already completed in the second pass; they are reported again with the new sample in reports/07 and 05.

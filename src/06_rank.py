@@ -40,7 +40,7 @@ def shrink(resid: pd.Series, p: pd.Series, n: pd.Series):
 
 def main():
     full = pd.read_parquet(CLEAN / "analysis_scored.parquet")
-    df = full[full.special_focus == 0].copy()
+    df = full[full.in_main == 1].copy()
     df["residual_eb"], df["shrink_factor"], tau2, sigma2 = shrink(df["residual"], df["predicted"], df["firstgen_yr6_n"])
     df["residual_eb_pct_pts"] = df["residual_eb"] * 100
     df["rank_raw"] = df["residual"].rank(ascending=False, method="first").astype(int)
@@ -54,9 +54,9 @@ def main():
     left_top = df[df.unitid.isin(raw_top - eb_top)]; entered_top = df[df.unitid.isin(eb_top - raw_top)]
     raw_bot = set(df.nlargest(n_top, "rank_raw").unitid); eb_bot = set(df[df.group == "bottom 10%"].unitid)
     left_bot = df[df.unitid.isin(raw_bot - eb_bot)]
-    sf = full[full.special_focus == 1].copy()
+    sf = full[full.in_main == 0].copy()
     for c in ["rank", "rank_raw", "residual_percentile", "residual_decile", "residual_eb", "shrink_factor", "residual_eb_pct_pts"]: sf[c] = np.nan
-    sf["group"] = "special focus (not ranked)"
+    sf["group"] = "excluded (not ranked)"
     scored = pd.concat([df, sf]); scored.to_parquet(CLEAN / "analysis_scored.parquet", index=False); scored.to_csv(CLEAN / "analysis_scored.csv", index=False)
     df[OUT_COLS + ["group"]].to_csv(CLEAN / "ranked_schools.csv", index=False)
 
@@ -69,6 +69,17 @@ def main():
     old = full.sort_values("residual_A0", ascending=False).reset_index(drop=True); old["rank_A0"] = old.index + 1
     rho_a0 = stats.spearmanr(df.merge(old[["unitid", "rank_A0"]], on="unitid")[["rank", "rank_A0"]].values[:, 0], df.merge(old[["unitid", "rank_A0"]], on="unitid")["rank_A0"]).statistic
     n_sf_in_old_top20 = int(old.head(20)["special_focus"].sum())
+    v2 = pd.read_csv(REP / "archive/v2_ranked_schools_carnegie_shrunk.csv")[["unitid", "rank", "residual_eb", "instnm"]].rename(columns={"rank": "rank_v2", "residual_eb": "residual_eb_v2", "instnm": "instnm_v2"})
+    v2m = df.merge(v2, on="unitid"); rho_v2 = stats.spearmanr(v2m["residual_eb"], v2m["residual_eb_v2"]).statistic
+    v2_top20 = v2.nsmallest(20, "rank_v2"); v2_top20_overlap = len(set(df.head(20).unitid) & set(v2_top20.unitid))
+    v2_left = v2_top20[~v2_top20.unitid.isin(df.head(20).unitid)].merge(full[["unitid", "excluded_reason", "ug25abv", "pct_distance"]], on="unitid", how="left").merge(df[["unitid", "rank"]], on="unitid", how="left")
+    v2_topdec_overlap = len(eb_top & set(v2.nsmallest(n_top, "rank_v2").unitid)) / n_top
+    # California State University system (incl. SDSU) for the reviewer's request
+    is_csu = (full.stabbr == "CA") & (full.instnm.str.startswith("California State University") | full.instnm.str.startswith("California State Polytechnic") | full.instnm.str.startswith("California Polytechnic State")
+                                      | full.instnm.isin(["San Diego State University", "San Jose State University", "San Francisco State University", "Sonoma State University", "Cal Poly Humboldt", "Humboldt State University"]))
+    csu = pd.concat([df[df.unitid.isin(full[is_csu].unitid)], sf[sf.unitid.isin(full[is_csu].unitid)]]).sort_values("residual_eb", ascending=False, na_position="last")
+    csu_tab = csu[["instnm", "ugds", "firstgen_yr6_n", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts", "shrink_factor", "residual_eb_pct_pts", "rank", "residual_decile", "group"]].rename(columns={
+        "instnm": "campus", "ugds": "undergrads 2017", "firstgen_yr6_n": "FG cohort", "pctpell": "Pell 2017-18", "firstgen_comp_orig_yr6_rt": "actual", "residual_pct_pts": "raw resid (pts)", "shrink_factor": "shrink", "residual_eb_pct_pts": "shrunken resid (pts)", "residual_decile": "decile"})
     v1 = pd.read_csv(REP / "archive/v1_ranked_schools_mistimed.csv")[["unitid", "rank", "residual"]].rename(columns={"rank": "rank_v1", "residual": "residual_v1"})
     v1m = df.merge(v1, on="unitid"); rho_v1 = stats.spearmanr(v1m["residual_eb"], v1m["residual_v1"]).statistic
     v1_top20_overlap = len(set(df.head(20).unitid) & set(v1.nsmallest(20, "rank_v1").unitid))
@@ -85,6 +96,9 @@ def main():
              f"\n\n{len(df):,} schools ranked. Top decile cut (shrunken): ≥ {top_dec.residual_eb.min()*100:+.1f} pts; bottom decile: ≤ {bot_dec.residual_eb.max()*100:+.1f} pts.\n",
              "\n## Top 25 over-performers (shrunken)\n", fmt(top25), "\n\n## Bottom 25 under-performers (shrunken)\n", fmt(bot25),
              "\n\n## Top 15 among high-Pell schools (Pell share ≥ 50% in 2017-18)\n", fmt(high_pell),
+             f"\n\n## California State University campuses (SDSU and all CSU campuses in the file)\n\nResiduals in percentage points; rank and decile are among the {len(df):,} main-sample schools (10 = best decile). Campuses in an excluded group are shown but not ranked.\n", csu_tab.round(3).to_markdown(index=False),
+             f"\n\n## How the top 20 changed when age-25+ and exclusively-online shares were added (v2 → current)\n\n- Spearman between v2 and current shrunken residuals on common schools: {rho_v2:.3f}; {v2_top20_overlap} of the v2 top 20 remain in the current top 20; top-decile overlap {v2_topdec_overlap:.0%}.\n",
+             "\nv2 top-20 schools no longer in the top 20 (blank rank = now in an excluded group):\n", v2_left[["rank_v2", "instnm_v2", "excluded_reason", "ug25abv", "pct_distance", "rank"]].round(3).to_markdown(index=False),
              f"\n\n## Comparisons with earlier specifications\n\n- vs the no-Carnegie spec on all {len(old):,} schools (raw residual): Spearman {rho_a0:.3f}; {n_sf_in_old_top20} of its top 20 were special-focus schools.",
              f"- vs the archived pre-review ranking (Aug-2024 Scorecard file, 2024 traits, no Carnegie, special focus included, raw residual): Spearman {rho_v1:.3f} on {len(v1m):,} common schools, {v1_top20_overlap} of 20 top-20 schools in common, top-decile overlap {v1_topdec_overlap:.0%}.\n",
              "\n## Residual by Carnegie group and control (should average ~0 within each)\n", df.groupby(["carnegie_group", "control_label"])["residual_eb"].agg(["count", "mean", "std"]).round(4).to_markdown(), "\n\nFull list: `data/clean/ranked_schools.csv`.\n"]
@@ -96,13 +110,15 @@ def main():
                         "spearman_raw_vs_eb": round(float(rho_raw_eb), 4), "top_decile_left": len(left_top), "top_decile_left_under100": int((left_top.firstgen_yr6_n < 100).sum()), "top_decile_entered": len(entered_top),
                         "bottom_decile_left": len(left_bot), "bottom_decile_left_under100": int((left_bot.firstgen_yr6_n < 100).sum()),
                         "top5": [rec(r) for r in df.head(5).itertuples()], "top5_high_pell": [rec(r) for r in high_pell.head(5).itertuples()], "bottom3": [rec(r) for r in df.tail(3).itertuples()],
-                        "spearman_old_vs_new": round(float(rho_a0), 4), "special_focus_in_old_top20": n_sf_in_old_top20, "spearman_vs_v1_mistimed": round(float(rho_v1), 4), "top20_overlap_vs_v1": v1_top20_overlap,
+                        "spearman_old_vs_new": round(float(rho_a0), 4), "spearman_vs_v2": round(float(rho_v2), 4), "top20_overlap_vs_v2": v2_top20_overlap, "top_decile_overlap_vs_v2": round(float(v2_topdec_overlap), 4),
+                        "v2_top20_left": v2_left[["rank_v2", "instnm_v2", "excluded_reason", "rank"]].astype(object).where(v2_left[["rank_v2", "instnm_v2", "excluded_reason", "rank"]].notna(), None).to_dict("records"),
+                        "csu": csu_tab.astype(object).where(csu_tab.notna(), None).round(3).to_dict("records"), "special_focus_in_old_top20": n_sf_in_old_top20, "spearman_vs_v1_mistimed": round(float(rho_v1), 4), "top20_overlap_vs_v1": v1_top20_overlap,
                         "top_decile_overlap_vs_v1": round(float(v1_topdec_overlap), 4), "n_common_v1": len(v1m),
                         "top_decile_mean_pell": round(float(top_dec.pctpell.mean()), 3), "bottom_decile_mean_pell": round(float(bot_dec.pctpell.mean()), 3),
                         "top_decile_private_share": round(float(top_dec.private.mean()), 3), "bottom_decile_private_share": round(float(bot_dec.private.mean()), 3)}
     (REP / "results.json").write_text(json.dumps(results, indent=2))
     print(fmt(top25.head(12))); print(f"\ntau {np.sqrt(tau2)*100:.1f} pts; shrink median {df.shrink_factor.median():.3f} min {df.shrink_factor.min():.3f}; rho raw/eb {rho_raw_eb:.3f}; top decile left {len(left_top)} (<100: {int((left_top.firstgen_yr6_n < 100).sum())}); vs v1 rho {rho_v1:.3f} top20 overlap {v1_top20_overlap}")
-    print(shrink_by_size.to_string())
+    print(shrink_by_size.to_string()); print(f"\nvs v2: rho {rho_v2:.3f}, top20 overlap {v2_top20_overlap}"); print(v2_left.to_string()); print(csu_tab.round(3).to_string())
 
 
 if __name__ == "__main__":
