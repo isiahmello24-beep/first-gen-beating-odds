@@ -1,7 +1,15 @@
-"""Step 6: rank main-sample schools by residual (actual minus predicted, Model A).
+"""Step 6: rank main-sample schools by empirical-Bayes-shrunken residual (Model A).
 
-Also shows how the top 20 changes versus the original specification (A0: FY2023-timed build,
-no Carnegie controls, special-focus schools included) to document the effect of the fixes.
+Why shrink: a residual on a 60-student cohort is far noisier than one on a 3,000-student cohort, yet
+a raw ranking treats them alike, so small schools crowd both tails. Empirical Bayes pulls each residual
+toward zero in proportion to its noise:
+    sigma_i^2 = p_i (1 - p_i) / n_i        binomial sampling variance of the school's rate (p_i = predicted rate, n_i = first-gen cohort)
+    tau^2     = max(var(residual) - mean(sigma_i^2), 0)   between-school variance of the TRUE residual (method of moments)
+    shrink_i  = tau^2 / (tau^2 + sigma_i^2)
+    residual_eb = residual * shrink_i
+A school with a large cohort keeps ~all of its residual; a tiny cohort keeps a fraction.
+Primary ranking = residual_eb. The raw ranking is kept as rank_raw and the change is reported.
+Also compares against (a) the no-Carnegie spec and (b) the archived pre-review ranking.
 Output: data/clean/ranked_schools.csv, reports/06_rankings.md, results.json["step6"].
 """
 import json
@@ -13,67 +21,88 @@ from scipy import stats
 ROOT = Path(__file__).resolve().parents[1]
 CLEAN = ROOT / "data" / "clean"
 REP = ROOT / "reports"
-OUT_COLS = ["rank", "unitid", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "adm_rate", "first_gen", "firstgen_yr6_n",
-            "firstgen_comp_orig_yr6_rt", "predicted", "residual", "residual_pct_pts", "residual_percentile", "residual_decile", "not1stgen_comp_orig_yr6_rt", "fg_gap",
-            "exp_core_per_fte", "exp_instruction_per_fte", "exp_academic_support_per_fte", "exp_student_services_per_fte", "exp_institutional_support_per_fte",
-            "oi_matched", "oi_tier_name", "oi_mr_kq5_pq1", "oi_par_q1"]
-SHOW = ["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]
-REN = {"instnm": "school", "control_label": "control", "carnegie_group": "Carnegie", "ugds": "undergrads", "pctpell": "Pell share", "firstgen_comp_orig_yr6_rt": "actual", "residual_pct_pts": "residual (pts)"}
+OUT_COLS = ["rank", "rank_raw", "unitid", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "adm_rate", "first_gen", "firstgen_yr6_n",
+            "firstgen_comp_orig_yr6_rt", "predicted", "residual", "shrink_factor", "residual_eb", "residual_pct_pts", "residual_eb_pct_pts", "residual_percentile", "residual_decile",
+            "not1stgen_comp_orig_yr6_rt", "fg_gap", "exp_core_per_fte", "exp_instruction_per_fte", "exp_academic_support_per_fte", "exp_student_services_per_fte",
+            "exp_institutional_support_per_fte", "oi_matched", "oi_tier_name", "oi_mr_kq5_pq1", "oi_par_q1"]
+SHOW = ["rank", "rank_raw", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "firstgen_yr6_n", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts", "shrink_factor", "residual_eb_pct_pts"]
+REN = {"instnm": "school", "control_label": "control", "carnegie_group": "Carnegie", "ugds": "undergrads", "firstgen_yr6_n": "FG cohort", "pctpell": "Pell share", "firstgen_comp_orig_yr6_rt": "actual",
+       "residual_pct_pts": "raw resid (pts)", "shrink_factor": "shrink", "residual_eb_pct_pts": "EB resid (pts)"}
+
+
+def shrink(resid: pd.Series, p: pd.Series, n: pd.Series):
+    p = p.clip(0.05, 0.95)
+    sigma2 = p * (1 - p) / n
+    tau2 = max(float(resid.var() - sigma2.mean()), 1e-6)
+    factor = tau2 / (tau2 + sigma2)
+    return resid * factor, factor, tau2, sigma2
 
 
 def main():
     full = pd.read_parquet(CLEAN / "analysis_scored.parquet")
-    df = full[full.special_focus == 0].sort_values("residual", ascending=False).reset_index(drop=True)
+    df = full[full.special_focus == 0].copy()
+    df["residual_eb"], df["shrink_factor"], tau2, sigma2 = shrink(df["residual"], df["predicted"], df["firstgen_yr6_n"])
+    df["residual_eb_pct_pts"] = df["residual_eb"] * 100
+    df["rank_raw"] = df["residual"].rank(ascending=False, method="first").astype(int)
+    df = df.sort_values("residual_eb", ascending=False).reset_index(drop=True)
     df["rank"] = df.index + 1
     df["residual_percentile"] = (1 - (df["rank"] - 1) / len(df)) * 100
-    df["residual_decile"] = pd.qcut(df["residual"], 10, labels=range(1, 11)).astype(int)
+    df["residual_decile"] = pd.qcut(df["residual_eb"], 10, labels=range(1, 11)).astype(int)
     df["group"] = np.select([df.residual_decile == 10, df.residual_decile == 1], ["top 10%", "bottom 10%"], "middle")
-    sf = full[full.special_focus == 1].copy(); sf["rank"] = np.nan; sf["residual_percentile"] = np.nan; sf["residual_decile"] = np.nan; sf["group"] = "special focus (not ranked)"
+    n_top = int((df.group == "top 10%").sum())
+    raw_top = set(df.nsmallest(n_top, "rank_raw").unitid); eb_top = set(df[df.group == "top 10%"].unitid)
+    left_top = df[df.unitid.isin(raw_top - eb_top)]; entered_top = df[df.unitid.isin(eb_top - raw_top)]
+    raw_bot = set(df.nlargest(n_top, "rank_raw").unitid); eb_bot = set(df[df.group == "bottom 10%"].unitid)
+    left_bot = df[df.unitid.isin(raw_bot - eb_bot)]
+    sf = full[full.special_focus == 1].copy()
+    for c in ["rank", "rank_raw", "residual_percentile", "residual_decile", "residual_eb", "shrink_factor", "residual_eb_pct_pts"]: sf[c] = np.nan
+    sf["group"] = "special focus (not ranked)"
     scored = pd.concat([df, sf]); scored.to_parquet(CLEAN / "analysis_scored.parquet", index=False); scored.to_csv(CLEAN / "analysis_scored.csv", index=False)
     df[OUT_COLS + ["group"]].to_csv(CLEAN / "ranked_schools.csv", index=False)
 
     fmt = lambda d: d[SHOW].rename(columns=REN).round(3).to_markdown(index=False)  # noqa: E731
     top25, bot25, high_pell = df.head(25), df.tail(25), df[df.pctpell >= 0.5].head(15)
     top_dec, bot_dec = df[df.group == "top 10%"], df[df.group == "bottom 10%"]
-    # old vs new top 20
-    old = full.sort_values("residual_A0", ascending=False).reset_index(drop=True); old["rank_A0"] = old.index + 1
-    old20 = old.head(20)[["rank_A0", "instnm", "stabbr", "carnegie_group", "ugds", "residual_A0"]].copy(); old20["residual_A0"] = old20["residual_A0"] * 100
-    old20 = old20.merge(df[["unitid", "rank"]].rename(columns={"rank": "new_rank"}), left_on=old.head(20)["unitid"], right_on="unitid", how="left").drop(columns="unitid")
-    new20 = df.head(20)[["rank", "unitid", "instnm", "stabbr", "carnegie_group", "ugds", "residual_pct_pts"]].merge(old[["unitid", "rank_A0"]], on="unitid", how="left").drop(columns="unitid")
-    both = df.merge(old[["unitid", "rank_A0"]], on="unitid")
-    rho = stats.spearmanr(both["residual"], both["residual_A0"]).statistic
-    n_sf_in_old_top20 = int(old.head(20)["special_focus"].sum())
-    overlap20 = len(set(df.head(20).unitid) & set(old.head(20).unitid))
+    shrink_by_size = df.assign(bucket=pd.cut(df.firstgen_yr6_n, [0, 100, 250, 500, 1000, 1e9], labels=["<100", "100-249", "250-499", "500-999", "1000+"])).groupby("bucket", observed=True).agg(schools=("unitid", "size"), mean_shrink=("shrink_factor", "mean"), in_raw_top=("unitid", lambda u: u.isin(raw_top).sum()), in_eb_top=("unitid", lambda u: u.isin(eb_top).sum())).round(3)
+    rho_raw_eb = stats.spearmanr(df["residual"], df["residual_eb"]).statistic
 
-    # true before/after: the committed v1 ranking (Aug-2024 Scorecard file, FY2023 traits, no Carnegie, special focus included)
+    old = full.sort_values("residual_A0", ascending=False).reset_index(drop=True); old["rank_A0"] = old.index + 1
+    rho_a0 = stats.spearmanr(df.merge(old[["unitid", "rank_A0"]], on="unitid")[["rank", "rank_A0"]].values[:, 0], df.merge(old[["unitid", "rank_A0"]], on="unitid")["rank_A0"]).statistic
+    n_sf_in_old_top20 = int(old.head(20)["special_focus"].sum())
     v1 = pd.read_csv(REP / "archive/v1_ranked_schools_mistimed.csv")[["unitid", "rank", "residual"]].rename(columns={"rank": "rank_v1", "residual": "residual_v1"})
-    v1m = df.merge(v1, on="unitid")
-    rho_v1 = stats.spearmanr(v1m["residual"], v1m["residual_v1"]).statistic
+    v1m = df.merge(v1, on="unitid"); rho_v1 = stats.spearmanr(v1m["residual_eb"], v1m["residual_v1"]).statistic
     v1_top20_overlap = len(set(df.head(20).unitid) & set(v1.nsmallest(20, "rank_v1").unitid))
-    v1_topdec_overlap = len(set(top_dec.unitid) & set(v1.nsmallest(len(top_dec), "rank_v1").unitid)) / len(top_dec)
-    lines = ["# Ranked schools by residual (Step 6)\n", "Generated by `src/06_rank.py`. Residual = actual − predicted first-gen 6-year completion (Model A: entry-year traits + Carnegie group). "
-             "Residual in percentage points: +10 means the school graduated first-gen students from the 2017-18 cohort 10 points above what its traits predict. Special-focus schools are excluded from the ranking.\n",
-             f"\n{len(df):,} schools ranked. Top decile = {len(top_dec)} schools with residual ≥ {top_dec['residual'].min()*100:+.1f} pts; bottom decile = {len(bot_dec)} schools with residual ≤ {bot_dec['residual'].max()*100:+.1f} pts.\n",
-             "\n## Top 25 over-performers\n", fmt(top25), "\n\n## Bottom 25 under-performers\n", fmt(bot25),
+    v1_topdec_overlap = len(eb_top & set(v1.nsmallest(n_top, "rank_v1").unitid)) / n_top
+
+    lines = ["# Ranked schools by shrunken residual (Step 6)\n", "Generated by `src/06_rank.py`. Primary ranking = empirical-Bayes-shrunken residual of Model A (entry-year traits + Carnegie group). Special-focus schools excluded.\n",
+             f"\n## Shrinkage\n\n- Between-school variance of the true residual τ² = {tau2:.5f} (SD {np.sqrt(tau2)*100:.1f} pts); median sampling variance σ² = {sigma2.median():.5f} (SD {np.sqrt(sigma2.median())*100:.1f} pts).",
+             f"- Shrink factor: median {df.shrink_factor.median():.3f}, min {df.shrink_factor.min():.3f} (cohort {int(df.loc[df.shrink_factor.idxmin(), 'firstgen_yr6_n'])}), max {df.shrink_factor.max():.3f}.",
+             f"- Spearman between raw and shrunken residuals: {rho_raw_eb:.3f}.\n", "\nShrinkage and top-decile membership by cohort size:\n", shrink_by_size.to_markdown(),
+             f"\n\n## Who changed in the top decile ({n_top} schools)\n\n- {len(left_top)} schools left the raw top decile after shrinkage; **{int((left_top.firstgen_yr6_n < 100).sum())} of them had first-gen cohorts under 100** (median cohort {int(left_top.firstgen_yr6_n.median()) if len(left_top) else 0}).",
+             f"- {len(entered_top)} schools entered (median cohort {int(entered_top.firstgen_yr6_n.median()) if len(entered_top) else 0}).",
+             f"- Bottom decile: {len(left_bot)} schools left, {int((left_bot.firstgen_yr6_n < 100).sum())} with cohorts under 100.\n",
+             "\nSchools that left the top decile:\n", left_top.sort_values("rank_raw")[SHOW].rename(columns=REN).round(3).to_markdown(index=False),
+             f"\n\n{len(df):,} schools ranked. Top decile cut (shrunken): ≥ {top_dec.residual_eb.min()*100:+.1f} pts; bottom decile: ≤ {bot_dec.residual_eb.max()*100:+.1f} pts.\n",
+             "\n## Top 25 over-performers (shrunken)\n", fmt(top25), "\n\n## Bottom 25 under-performers (shrunken)\n", fmt(bot25),
              "\n\n## Top 15 among high-Pell schools (Pell share ≥ 50% in 2017-18)\n", fmt(high_pell),
-             f"\n\n## How the top 20 changed after the fixes\n\nOriginal specification (A0): no Carnegie controls, special-focus schools included, n = {len(old):,}. New (A): Carnegie controls, special-focus excluded, n = {len(df):,}. "
-             f"Spearman correlation of residuals on the common schools: {rho:.3f}. {overlap20} of the new top 20 were in the old top 20; {n_sf_in_old_top20} of the old top 20 were special-focus schools.\n",
-             f"\nAgainst the committed v1 ranking (mistimed build: Aug-2024 Scorecard file, 2024 traits, no Carnegie, special focus included): Spearman {rho_v1:.3f} on {len(v1m):,} common schools, "
-             f"{v1_top20_overlap} of 20 top-20 schools in common, top-decile overlap {v1_topdec_overlap:.0%}.\n",
-             "\nOld top 20 (A0) with their new rank (blank = special focus, no longer ranked):\n", old20.round(1).to_markdown(index=False),
-             "\n\nNew top 20 (A) with their old rank:\n", new20.round(1).to_markdown(index=False),
-             "\n\n## Residual by Carnegie group and control (should average ~0 within each, because both are in the model)\n",
-             df.groupby(["carnegie_group", "control_label"])["residual"].agg(["count", "mean", "std"]).round(4).to_markdown(), "\n\nFull list: `data/clean/ranked_schools.csv`.\n"]
+             f"\n\n## Comparisons with earlier specifications\n\n- vs the no-Carnegie spec on all {len(old):,} schools (raw residual): Spearman {rho_a0:.3f}; {n_sf_in_old_top20} of its top 20 were special-focus schools.",
+             f"- vs the archived pre-review ranking (Aug-2024 Scorecard file, 2024 traits, no Carnegie, special focus included, raw residual): Spearman {rho_v1:.3f} on {len(v1m):,} common schools, {v1_top20_overlap} of 20 top-20 schools in common, top-decile overlap {v1_topdec_overlap:.0%}.\n",
+             "\n## Residual by Carnegie group and control (should average ~0 within each)\n", df.groupby(["carnegie_group", "control_label"])["residual_eb"].agg(["count", "mean", "std"]).round(4).to_markdown(), "\n\nFull list: `data/clean/ranked_schools.csv`.\n"]
     (REP / "06_rankings.md").write_text("\n".join(lines))
     results = json.loads((REP / "results.json").read_text())
-    rec = lambda r: {"school": r.instnm, "state": r.stabbr, "carnegie": r.carnegie_group, "ugds": int(r.ugds), "pell": round(r.pctpell, 2), "actual": round(r.firstgen_comp_orig_yr6_rt, 3), "predicted": round(r.predicted, 3), "resid_pp": round(r.residual_pct_pts, 1)}  # noqa: E731
-    results["step6"] = {"n_ranked": len(df), "top_decile_n": len(top_dec), "top_decile_cut_pp": round(float(top_dec["residual"].min() * 100), 2), "bottom_decile_cut_pp": round(float(bot_dec["residual"].max() * 100), 2),
+    rec = lambda r: {"school": r.instnm, "state": r.stabbr, "carnegie": r.carnegie_group, "ugds": int(r.ugds), "cohort": int(r.firstgen_yr6_n), "pell": round(r.pctpell, 2), "actual": round(r.firstgen_comp_orig_yr6_rt, 3), "predicted": round(r.predicted, 3), "resid_pp": round(r.residual_pct_pts, 1), "resid_eb_pp": round(r.residual_eb_pct_pts, 1), "rank_raw": int(r.rank_raw)}  # noqa: E731
+    results["step6"] = {"n_ranked": len(df), "top_decile_n": n_top, "top_decile_cut_pp": round(float(top_dec.residual_eb.min() * 100), 2), "bottom_decile_cut_pp": round(float(bot_dec.residual_eb.max() * 100), 2),
+                        "tau2": round(tau2, 6), "tau_pp": round(float(np.sqrt(tau2) * 100), 2), "shrink_median": round(float(df.shrink_factor.median()), 4), "shrink_min": round(float(df.shrink_factor.min()), 4),
+                        "spearman_raw_vs_eb": round(float(rho_raw_eb), 4), "top_decile_left": len(left_top), "top_decile_left_under100": int((left_top.firstgen_yr6_n < 100).sum()), "top_decile_entered": len(entered_top),
+                        "bottom_decile_left": len(left_bot), "bottom_decile_left_under100": int((left_bot.firstgen_yr6_n < 100).sum()),
                         "top5": [rec(r) for r in df.head(5).itertuples()], "top5_high_pell": [rec(r) for r in high_pell.head(5).itertuples()], "bottom3": [rec(r) for r in df.tail(3).itertuples()],
-                        "spearman_old_vs_new": round(float(rho), 4), "spearman_vs_v1_mistimed": round(float(rho_v1), 4), "top20_overlap_vs_v1": v1_top20_overlap, "top_decile_overlap_vs_v1": round(float(v1_topdec_overlap), 4), "n_common_v1": len(v1m), "top20_overlap_old_new": overlap20, "special_focus_in_old_top20": n_sf_in_old_top20,
+                        "spearman_old_vs_new": round(float(rho_a0), 4), "special_focus_in_old_top20": n_sf_in_old_top20, "spearman_vs_v1_mistimed": round(float(rho_v1), 4), "top20_overlap_vs_v1": v1_top20_overlap,
+                        "top_decile_overlap_vs_v1": round(float(v1_topdec_overlap), 4), "n_common_v1": len(v1m),
                         "top_decile_mean_pell": round(float(top_dec.pctpell.mean()), 3), "bottom_decile_mean_pell": round(float(bot_dec.pctpell.mean()), 3),
                         "top_decile_private_share": round(float(top_dec.private.mean()), 3), "bottom_decile_private_share": round(float(bot_dec.private.mean()), 3)}
     (REP / "results.json").write_text(json.dumps(results, indent=2))
-    print(fmt(top25.head(12))); print(f"\nold vs new: spearman {rho:.3f}, top20 overlap {overlap20}, special focus in old top20 {n_sf_in_old_top20}")
+    print(fmt(top25.head(12))); print(f"\ntau {np.sqrt(tau2)*100:.1f} pts; shrink median {df.shrink_factor.median():.3f} min {df.shrink_factor.min():.3f}; rho raw/eb {rho_raw_eb:.3f}; top decile left {len(left_top)} (<100: {int((left_top.firstgen_yr6_n < 100).sum())}); vs v1 rho {rho_v1:.3f} top20 overlap {v1_top20_overlap}")
+    print(shrink_by_size.to_string())
 
 
 if __name__ == "__main__":

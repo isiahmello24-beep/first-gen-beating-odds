@@ -26,25 +26,26 @@ Reading the coefficients: the Pell coefficient is -0.278, so a school with a 40-
 ## Why Carnegie controls: same traits without Carnegie on the same 1,251 schools give R² = 0.487; the original specification on all 1,301 schools including special focus gives R² = 0.470.
 
 
-## Model B: Model A + log core spending per FTE (FY2018-23 average) — n = 1,251, R² = 0.529 (Model A: 0.489)
+## Model B: Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of FTE — n = 1,251, R² = 0.530 (Model A: 0.489)
 
 | term                                    |    coef |   robust_se | p_value   |   ci_low |   ci_high |
 |:----------------------------------------|--------:|------------:|:----------|---------:|----------:|
-| Intercept (Master's, public)            | -0.5643 |      0.1233 | <0.001    |  -0.806  |   -0.3226 |
-| Carnegie: Baccalaureate (vs Master's)   | -0.0227 |      0.0086 | 0.008     |  -0.0396 |   -0.0059 |
-| Carnegie: Doctoral (vs Master's)        | -0.0055 |      0.009  | 0.539     |  -0.0232 |    0.0121 |
-| Pell share (0-1)                        | -0.1757 |      0.0339 | <0.001    |  -0.2422 |   -0.1093 |
-| Admission rate (0-1)                    | -0.1186 |      0.0181 | <0.001    |  -0.1541 |   -0.083  |
-| log(undergrad enrollment)               |  0.0426 |      0.0056 | <0.001    |   0.0317 |    0.0536 |
-| Part-time share (0-1)                   | -0.1129 |      0.042  | 0.007     |  -0.1952 |   -0.0306 |
-| First-gen share (0-1)                   | -0.1602 |      0.0579 | 0.006     |  -0.2737 |   -0.0467 |
-| Private nonprofit (vs public)           |  0.0321 |      0.0092 | <0.001    |   0.0142 |    0.05   |
-| HBCU                                    | -0.1484 |      0.0173 | <0.001    |  -0.1823 |   -0.1145 |
-| Distance-education only                 |  0.1413 |      0.097  | 0.145     |  -0.0489 |    0.3314 |
-| log(core spending per FTE, FY18-23 avg) |  0.0936 |      0.0102 | <0.001    |   0.0736 |    0.1136 |
+| Intercept (Master's, public)            | -0.5291 |      0.1315 | <0.001    |  -0.7868 |   -0.2713 |
+| Carnegie: Baccalaureate (vs Master's)   | -0.0167 |      0.01   | 0.094     |  -0.0363 |    0.0029 |
+| Carnegie: Doctoral (vs Master's)        | -0.01   |      0.0101 | 0.321     |  -0.0298 |    0.0098 |
+| Pell share (0-1)                        | -0.1747 |      0.0339 | <0.001    |  -0.2411 |   -0.1084 |
+| Admission rate (0-1)                    | -0.1167 |      0.0182 | <0.001    |  -0.1523 |   -0.0811 |
+| log(undergrad enrollment)               |  0.0439 |      0.0058 | <0.001    |   0.0326 |    0.0552 |
+| Part-time share (0-1)                   | -0.1188 |      0.0435 | 0.006     |  -0.2042 |   -0.0335 |
+| First-gen share (0-1)                   | -0.1648 |      0.0585 | 0.005     |  -0.2795 |   -0.0501 |
+| Private nonprofit (vs public)           |  0.03   |      0.0093 | 0.001     |   0.0118 |    0.0482 |
+| HBCU                                    | -0.1469 |      0.0173 | <0.001    |  -0.1809 |   -0.113  |
+| Distance-education only                 |  0.1407 |      0.0984 | 0.153     |  -0.0521 |    0.3336 |
+| log(core spending per FTE, FY18-23 avg) |  0.0921 |      0.0105 | <0.001    |   0.0715 |    0.1126 |
+| Undergraduate share of total FTE (0-1)  | -0.0349 |      0.0344 | 0.310     |  -0.1023 |    0.0325 |
 
 
-A 10% higher core budget per student is associated with +0.89 percentage points of first-gen completion, holding Model A traits fixed. Adding spending raises R² by 0.040.
+A 10% higher core budget per student is associated with +0.88 percentage points of first-gen completion, holding Model A traits and the undergraduate share fixed (without the undergraduate-share control: +0.89 points, R² 0.529). Adding spending raises R² by 0.041. The undergraduate-share coefficient is -0.035 (p = 0.310): per-FTE spending at graduate-heavy universities partly serves graduate students, and this term absorbs that.
 
 
 ## Model C: Model A + SAT average, SAT-reporting schools only — n = 1,035, R² = 0.518 (Model A on same schools: 0.475)
@@ -61,7 +62,7 @@ A 10% higher core budget per student is associated with +0.89 percentage points 
 | First-gen share (0-1)                 |  0.0326 |      0.0711 | 0.646     |  -0.1067 |    0.1719 |
 | Private nonprofit (vs public)         |  0.0444 |      0.0117 | <0.001    |   0.0214 |    0.0673 |
 | HBCU                                  | -0.0675 |      0.0195 | <0.001    |  -0.1056 |   -0.0293 |
-| Distance-education only               |  0.3233 |     24      | 0.989     | -46.7158 |   47.3625 |
+| Distance-education only               |  0.3233 |      0.7004 | 0.644     |  -1.0494 |    1.6961 |
 | SAT average (points)                  |  0.0005 |      0.0001 | <0.001    |   0.0004 |    0.0007 |
 
 

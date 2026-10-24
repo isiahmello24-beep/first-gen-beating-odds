@@ -33,7 +33,7 @@ ENTRY = {"pctpell": "e_pctpell", "adm_rate": "e_adm_rate", "ugds": "e_ugds", "pp
 # file carries that same value (AY2015-16 + AY2016-17 pooled cohorts), one to two years before our cohort.
 CARNEGIE_GROUP = {**{k: "Doctoral" for k in (15, 16, 17)}, **{k: "Master's" for k in (18, 19, 20)}, **{k: "Baccalaureate" for k in (21, 22)},
                   **{k: "Baccalaureate/Associate's" for k in (14, 23)}, **{k: "Special focus / tribal" for k in range(24, 34)}}
-KEY_COLS = ["firstgen_comp_orig_yr6_rt", "firstgen_yr6_n", "not1stgen_comp_orig_yr6_rt", "first_gen", "e_pctpell", "e_adm_rate", "e_sat_avg", "e_ugds",
+KEY_COLS = ["ug_share_fte", "firstgen_comp_orig_yr6_rt", "firstgen_yr6_n", "not1stgen_comp_orig_yr6_rt", "first_gen", "e_pctpell", "e_adm_rate", "e_sat_avg", "e_ugds",
             "e_pptug_ef", "pctpell", "adm_rate", "ugds", "inexpfte", "c150_4", "openadmp", "n_fin_years", "fte_total"] + [f"{k}_per_fte" for k in C.SPENDING_CATEGORIES]
 
 
@@ -69,9 +69,9 @@ def main() -> None:
 
     # ---------------------------------------------------------------- derived
     for k in C.SPENDING_CATEGORIES:
-        df[f"{k}_per_fte"] = df[f"{k}_per_fte"].fillna(0.0)        # blank functional line on a filed form = $0
-        df[f"{k}_per_fte_fy23"] = df[f"{k}_per_fte_fy23"].fillna(0.0)
-    for suffix in ["", "_fy23"]:
+        for suffix in ["", "_fy23", "_fy1819", "_real"]:
+            df[f"{k}_per_fte{suffix}"] = df[f"{k}_per_fte{suffix}"].fillna(0.0)   # blank functional line on a filed form = $0
+    for suffix in ["", "_fy23", "_fy1819", "_real"]:
         df[f"exp_core_per_fte{suffix}"] = df[[f"{k}_per_fte{suffix}" for k in CORE]].sum(axis=1)
         for k in CORE:
             df[f"{k}_share_core{suffix}"] = df[f"{k}_per_fte{suffix}"] / df[f"exp_core_per_fte{suffix}"]

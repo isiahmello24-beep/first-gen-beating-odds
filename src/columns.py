@@ -129,6 +129,10 @@ IPEDS_EFIA = {
 # year FY2018-FY2023 and then AVERAGED over the years the school reported (nominal dollars; every
 # school faces the same price years, so cross-school comparisons are unaffected). FY2023-only values
 # are kept as *_fy23 to show how the original, mistimed version differs.
+# Two more variants for the Step 7 timing checks: *_per_fte_fy1819 (FY2018-19 only, the cohort's first
+# two years) and *_per_fte_real (all six years deflated to FY2023 dollars with BLS CPI-U fiscal-year averages).
+# ug_share_fte = undergraduate FTE / total FTE (window average): a Model B control for how much of the
+# spending denominator is graduate and professional students.
 # Total FTE is the right denominator because instruction, academic support and
 # institutional support serve graduate and undergraduate students alike.
 

@@ -5,6 +5,7 @@ Sources
                        cohort measured in AY2023-24) plus MERGED2017_18_PP.csv for entry-year predictors
   IPEDS              - HD2023 / IC2023 (characteristics, admissions policy); finance F1718..F2223 (public F1A / private F2)
                        and EFIA2018..EFIA2023 (12-month FTE) covering the cohort's six fiscal years FY2018-FY2023
+  BLS CPI-U (via FRED) - monthly price index, to deflate spending to FY2023 dollars
   Opportunity Insights - mrc_table2 (mobility report card, preferred estimates),
                          mrc_table11 (super_opeid -> OPEID crosswalk)
 
@@ -66,6 +67,10 @@ FILES = {
         ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2023.zip", "EFIA2023.zip"),
         ("https://nces.ed.gov/ipeds/datacenter/data/EFIA2023_Dict.zip", "EFIA2023_Dict.zip"),
     ],
+    "cpi": [
+        # BLS CPI-U, all items, seasonally adjusted, monthly, via FRED. Used to express FY2018-FY2023 spending in FY2023 dollars.
+        ("https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL", "CPIAUCSL.csv"),
+    ],
     "opportunity_insights": [
         ("https://opportunityinsights.org/wp-content/uploads/2018/04/mrc_table2.csv", "mrc_table2.csv"),
         ("https://opportunityinsights.org/wp-content/uploads/2018/04/mrc_table11.csv", "mrc_table11.csv"),
@@ -73,6 +78,8 @@ FILES = {
 }
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (portfolio research download)"}
+# FRED stalls on browser-style user agents from scripted clients but answers a plain one at once.
+HEADERS_BY_HOST = {"fred.stlouisfed.org": {"User-Agent": "curl/8.4.0"}}
 
 
 def download(url: str, dest: Path, retries: int = 3) -> None:
@@ -81,7 +88,8 @@ def download(url: str, dest: Path, retries: int = 3) -> None:
         return
     for attempt in range(1, retries + 1):
         try:
-            with requests.get(url, headers=HEADERS, stream=True, timeout=120) as r:
+            host = url.split("/")[2]
+            with requests.get(url, headers=HEADERS_BY_HOST.get(host, HEADERS), stream=True, timeout=120) as r:
                 r.raise_for_status()
                 tmp = dest.with_suffix(dest.suffix + ".part")
                 with open(tmp, "wb") as f:

@@ -6,7 +6,8 @@ Model A (main):  completion ~ Pell share + admission rate + log enrollment + par
                  All predictors are entry-year (2017-18) values. Spending is NOT in Model A, so Step 7 can ask
                  "what do over-performers spend on?" without conditioning on spending.
 Model A0 (original spec, for comparison): same traits, no Carnegie dummies, all schools incl. special focus.
-Model B:  Model A + log core spending per FTE (FY2018-23 average).   Model C: Model A + SAT, SAT reporters only.
+Model B:  Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of total FTE
+          (so a research university's graduate-heavy denominator does not masquerade as low undergraduate spending).   Model C: Model A + SAT, SAT reporters only.
 Special-focus schools are scored out-of-sample with Model A and reported separately (never ranked with the main sample).
 HC3 robust SEs. Diagnostics: residual plots, VIF, Breusch-Pagan, Jarque-Bera, Cook's distance.
 Outputs: data/clean/analysis_scored.parquet, reports/05_regression.md, reports/figures/05_*.png, reports/results.json["step5"].
@@ -34,7 +35,7 @@ TRAITS = ["pctpell", "adm_rate", "log_ugds", "pptug_ef", "first_gen", "private",
 CARNEGIE = "C(carnegie_group, Treatment(reference=\"Master's\"))"
 LABELS = {"Intercept": "Intercept (Master's, public)", "pctpell": "Pell share (0-1)", "adm_rate": "Admission rate (0-1)", "log_ugds": "log(undergrad enrollment)",
           "pptug_ef": "Part-time share (0-1)", "first_gen": "First-gen share (0-1)", "private": "Private nonprofit (vs public)", "hbcu_flag": "HBCU",
-          "distance_only": "Distance-education only", "log_core_per_fte": "log(core spending per FTE, FY18-23 avg)", "sat_avg": "SAT average (points)",
+          "distance_only": "Distance-education only", "log_core_per_fte": "log(core spending per FTE, FY18-23 avg)", "ug_share_fte": "Undergraduate share of total FTE (0-1)", "sat_avg": "SAT average (points)",
           f"{CARNEGIE}[T.Doctoral]": "Carnegie: Doctoral (vs Master's)", f"{CARNEGIE}[T.Baccalaureate]": "Carnegie: Baccalaureate (vs Master's)"}
 FORMULA_A = f"{OUTCOME} ~ " + " + ".join(TRAITS) + f" + {CARNEGIE}"
 FORMULA_A0 = f"{OUTCOME} ~ " + " + ".join(TRAITS)
@@ -79,7 +80,8 @@ def main():
     sf = full[full.special_focus == 1].copy()
 
     A = fit(df, FORMULA_A); A0 = fit(full, FORMULA_A0); A_noc = fit(df, FORMULA_A0)
-    B = fit(df, FORMULA_A + " + log_core_per_fte")
+    B = fit(df, FORMULA_A + " + log_core_per_fte + ug_share_fte")
+    B_noug = fit(df, FORMULA_A + " + log_core_per_fte")
     dfC = df[df.sat_avg.notna()]; C_ = fit(dfC, FORMULA_A + " + sat_avg"); C_base = fit(dfC, FORMULA_A)
 
     df["predicted"], df["residual"] = A.fittedvalues, A.resid
@@ -107,8 +109,10 @@ def main():
              f"\n## Model A (main): entry-year traits + Carnegie group, no spending — n = {int(A.nobs):,}, R² = {A.rsquared:.3f}, adj. R² = {A.rsquared_adj:.3f}, residual SD = {np.sqrt(A.mse_resid):.3f}\n", fmt(coef_table(A)),
              f"\n\nReading the coefficients: the Pell coefficient is {A.params['pctpell']:.3f}, so a school with a 40-point higher Pell share (0.20 vs 0.60) is predicted {abs(A.params['pctpell'])*0.4*100:.1f} points {'lower' if A.params['pctpell']<0 else 'higher'} on first-gen completion, holding the other traits fixed.\n",
              f"\n## Why Carnegie controls: same traits without Carnegie on the same {len(df):,} schools give R² = {A_noc.rsquared:.3f}; the original specification on all {len(full):,} schools including special focus gives R² = {A0.rsquared:.3f}.\n",
-             f"\n## Model B: Model A + log core spending per FTE (FY2018-23 average) — n = {int(B.nobs):,}, R² = {B.rsquared:.3f} (Model A: {A.rsquared:.3f})\n", fmt(coef_table(B)),
-             f"\n\nA 10% higher core budget per student is associated with {B.params['log_core_per_fte']*np.log(1.1)*100:+.2f} percentage points of first-gen completion, holding Model A traits fixed. Adding spending raises R² by {B.rsquared - A.rsquared:.3f}.\n",
+             f"\n## Model B: Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of FTE — n = {int(B.nobs):,}, R² = {B.rsquared:.3f} (Model A: {A.rsquared:.3f})\n", fmt(coef_table(B)),
+             f"\n\nA 10% higher core budget per student is associated with {B.params['log_core_per_fte']*np.log(1.1)*100:+.2f} percentage points of first-gen completion, holding Model A traits and the undergraduate share fixed "
+             f"(without the undergraduate-share control: {B_noug.params['log_core_per_fte']*np.log(1.1)*100:+.2f} points, R² {B_noug.rsquared:.3f}). Adding spending raises R² by {B.rsquared - A.rsquared:.3f}. "
+             f"The undergraduate-share coefficient is {B.params['ug_share_fte']:+.3f} (p = {B.pvalues['ug_share_fte']:.3f}): per-FTE spending at graduate-heavy universities partly serves graduate students, and this term absorbs that.\n",
              f"\n## Model C: Model A + SAT average, SAT-reporting schools only — n = {int(C_.nobs):,}, R² = {C_.rsquared:.3f} (Model A on same schools: {C_base.rsquared:.3f})\n", fmt(coef_table(C_)),
              "\n\n## Multicollinearity (VIF, Model A)\n", vif.round(2).to_markdown(index=False),
              "\n\n## Diagnostics (Model A)\n",
@@ -127,6 +131,8 @@ def main():
                         "coef_A": {k: round(float(v), 5) for k, v in A.params.items()}, "p_A": {k: round(float(v), 5) for k, v in A.pvalues.items()}, "se_A": {k: round(float(v), 5) for k, v in A.bse.items()},
                         "r2_B": round(B.rsquared, 4), "coef_B_log_core": round(float(B.params["log_core_per_fte"]), 5), "p_B_log_core": round(float(B.pvalues["log_core_per_fte"]), 5),
                         "pp_per_10pct_spending": round(float(B.params["log_core_per_fte"] * np.log(1.1) * 100), 3),
+                        "pp_per_10pct_spending_no_ugshare": round(float(B_noug.params["log_core_per_fte"] * np.log(1.1) * 100), 3), "r2_B_no_ugshare": round(B_noug.rsquared, 4),
+                        "coef_B_ug_share": round(float(B.params["ug_share_fte"]), 5), "p_B_ug_share": round(float(B.pvalues["ug_share_fte"]), 5),
                         "n_C": int(C_.nobs), "r2_C": round(C_.rsquared, 4), "r2_C_base": round(C_base.rsquared, 4), "coef_C_sat_per_100": round(float(C_.params["sat_avg"] * 100), 5),
                         "bp_p": float(bp_p), "jb_p": float(jb_p), "n_cooks_4n": n_cooks, "max_vif": round(float(vif["VIF"].max()), 2),
                         "outcome_mean": round(float(df[OUTCOME].mean()), 4), "outcome_sd": round(float(df[OUTCOME].std()), 4),

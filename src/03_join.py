@@ -24,6 +24,7 @@ HD_CSV = RAW / "ipeds/HD2023/HD2023.csv"
 IC_CSV = RAW / "ipeds/IC2023/IC2023_RV.csv"
 OI2_CSV = RAW / "opportunity_insights/mrc_table2.csv"
 OI11_CSV = RAW / "opportunity_insights/mrc_table11.csv"
+CPI_CSV = RAW / "cpi/CPIAUCSL.csv"
 # fiscal year -> (public file, private file, FTE file); revised (_rv) files preferred where NCES published one
 FIN_YEARS = {
     2018: ("F1718_F1A/f1718_f1a_rv.csv", "F1718_F2/f1718_f2_rv.csv", "EFIA2018/efia2018_rv.csv"),
@@ -113,13 +114,24 @@ def main() -> None:
           JOIN (SELECT fy, unitid, fteug, ftegd, ftedpp, COALESCE(fteug,0)+COALESCE(ftegd,0)+COALESCE(ftedpp,0) AS fte_total FROM efia_raw) e
             USING (fy, unitid)
          WHERE e.fte_total > 0 AND f.exp_total > 0 AND f.exp_instruction > 0""")
+    # CPI-U fiscal-year averages (FY y = July y-1 .. June y); deflator to FY2023 dollars
+    con.execute(f"""CREATE OR REPLACE TABLE cpi_fy AS
+        SELECT CASE WHEN month(observation_date) >= 7 THEN year(observation_date) + 1 ELSE year(observation_date) END AS fy, avg(CPIAUCSL) AS cpi
+          FROM read_csv('{CPI_CSV}', header=true, columns={{'observation_date': 'DATE', 'CPIAUCSL': 'DOUBLE'}}) GROUP BY 1""")
+    con.execute("CREATE OR REPLACE TABLE cpi_fy AS SELECT fy, cpi, (SELECT cpi FROM cpi_fy WHERE fy = 2023) / cpi AS deflator_to_fy23 FROM cpi_fy")
+    cpi_tab = con.execute("SELECT * FROM cpi_fy WHERE fy BETWEEN 2018 AND 2023 ORDER BY fy").df()
+    con.execute("CREATE OR REPLACE TABLE fin_year AS SELECT f.*, c.deflator_to_fy23 FROM fin_year f JOIN cpi_fy c USING (fy)")
     con.execute(f"COPY fin_year TO '{CLEAN/'finance_by_year.parquet'}' (FORMAT PARQUET)")
-    avg_cols = ", ".join(f"avg({k}_per_fte) AS {k}_per_fte" for k in cats)          # window average FY2018-23
+    avg_cols = ", ".join(f"avg({k}_per_fte) AS {k}_per_fte" for k in cats)          # window average FY2018-23, nominal
     fy23_cols = ", ".join(f"max(CASE WHEN fy = 2023 THEN {k}_per_fte END) AS {k}_per_fte_fy23" for k in cats)
+    fy1819_cols = ", ".join(f"avg(CASE WHEN fy IN (2018, 2019) THEN {k}_per_fte END) AS {k}_per_fte_fy1819" for k in cats)
+    real_cols = ", ".join(f"avg({k}_per_fte * deflator_to_fy23) AS {k}_per_fte_real" for k in cats)
     con.execute(f"""CREATE OR REPLACE TABLE fin_window AS
         SELECT unitid, count(*) AS n_fin_years, min(fy) AS first_fin_fy, max(fy) AS last_fin_fy,
+               count(*) FILTER (WHERE fy IN (2018, 2019)) AS n_fin_years_1819,
                max(finance_form) AS finance_form, avg(fte_total) AS fte_total, avg(fteug) AS fteug,
-               {avg_cols}, {fy23_cols}
+               avg(COALESCE(fteug, 0)) / avg(fte_total) AS ug_share_fte,
+               {avg_cols}, {fy23_cols}, {fy1819_cols}, {real_cols}
           FROM fin_year GROUP BY unitid""")
     stage("j_fin", "SELECT j.*, f.* EXCLUDE (unitid) FROM j_carnegie j JOIN fin_window f ON j.unitid = f.unitid",
           "Inner join IPEDS finance + 12-month FTE for at least one fiscal year in FY2018-FY2023. Drops campuses whose finances are "
@@ -174,7 +186,8 @@ def main() -> None:
               f"- IPEDS IC2023 admissions policy matched: {n_total - n_ic_missing:,} of {n_total:,} ({n_ic_missing} missing OPENADMP).",
               f"- Opportunity Insights matched: {n_oi:,} of {n_total:,} ({n_oi/n_total:.1%}). OI covers 1980-82 birth cohorts at schools with enough students, so small and newer schools are absent.",
               f"- OPEIDs mapped to more than one super_opeid in mrc_table11 (first kept): {oi_dup}.",
-              "\n## Fiscal years of finance data per school (FY2018-FY2023)\n", years_hist.to_markdown(index=False),
+              "\n## CPI-U fiscal-year averages used to deflate spending to FY2023 dollars (BLS via FRED, series CPIAUCSL)\n", cpi_tab.round(3).to_markdown(index=False),
+              "\n\n## Fiscal years of finance data per school (FY2018-FY2023)\n", years_hist.to_markdown(index=False),
               "\n\nStep 4 requires at least 3 of the 6 fiscal years.\n",
               "\n## Finance join loss by control (1 = public, 2 = private nonprofit)\n", fin_loss.to_markdown(index=False),
               "\nMost finance losses are IPEDS parent/child reporters: branch campuses whose budget is reported under the parent UNITID. Largest campuses lost at the finance join:\n",

@@ -74,14 +74,15 @@ with tab_rank:
     if states: d = d[d["stabbr"].isin(states)]
     if ctrl: d = d[d["control_label"].isin(ctrl)]
     if carn: d = d[d["carnegie_group"].isin(carn)]
-    d = d[(d["ugds"] >= min_ugds) & (d["pctpell"].between(*pell_rng))].sort_values("residual", ascending=False)
+    d = d[(d["ugds"] >= min_ugds) & (d["pctpell"].between(*pell_rng))].sort_values("residual_eb", ascending=False)
     d = d.merge(boot[["unitid", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5"]], on="unitid", how="left")
-    st.write(f"{len(d):,} schools match. Rank is among all {len(df):,} main-sample schools; residual in percentage points; bootstrap columns from 1,000 resamples.")
-    show = d[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "adm_rate", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5", "exp_core_per_fte"]].rename(columns={
-        "instnm": "School", "stabbr": "State", "control_label": "Control", "carnegie_group": "Carnegie", "ugds": "Undergrads 2017", "pctpell": "Pell share", "adm_rate": "Admit rate", "firstgen_yr6_n": "First-gen cohort",
-        "firstgen_comp_orig_yr6_rt": "Actual", "predicted": "Predicted", "residual_pct_pts": "Residual (pts)", "p_top_decile": "P(top 10%)", "boot_rank_p2_5": "Rank lo", "boot_rank_p97_5": "Rank hi", "exp_core_per_fte": "Core $/FTE FY18-23"})
-    st.dataframe(show.style.format({"rank": "{:.0f}", "Pell share": "{:.2f}", "Admit rate": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "P(top 10%)": "{:.2f}", "Rank lo": "{:.0f}", "Rank hi": "{:.0f}",
+    st.write(f"{len(d):,} schools match. Rank is by the shrunken residual among all {len(df):,} main-sample schools (raw rank shown for comparison); residuals in percentage points; bootstrap columns from 1,000 resamples.")
+    show = d[["rank", "rank_raw", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "adm_rate", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts", "shrink_factor", "residual_eb_pct_pts", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5", "exp_core_per_fte"]].rename(columns={
+        "rank_raw": "Raw rank", "instnm": "School", "stabbr": "State", "control_label": "Control", "carnegie_group": "Carnegie", "ugds": "Undergrads 2017", "pctpell": "Pell share", "adm_rate": "Admit rate", "firstgen_yr6_n": "First-gen cohort",
+        "firstgen_comp_orig_yr6_rt": "Actual", "predicted": "Predicted", "residual_pct_pts": "Raw resid (pts)", "shrink_factor": "Shrink", "residual_eb_pct_pts": "Shrunken resid (pts)", "p_top_decile": "P(top 10%)", "boot_rank_p2_5": "Rank lo", "boot_rank_p97_5": "Rank hi", "exp_core_per_fte": "Core $/FTE FY18-23"})
+    st.dataframe(show.style.format({"rank": "{:.0f}", "Raw rank": "{:.0f}", "Pell share": "{:.2f}", "Admit rate": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Raw resid (pts)": "{:+.1f}", "Shrink": "{:.2f}", "Shrunken resid (pts)": "{:+.1f}", "P(top 10%)": "{:.2f}", "Rank lo": "{:.0f}", "Rank hi": "{:.0f}",
                                    "Core $/FTE FY18-23": "${:,.0f}", "Undergrads 2017": "{:,.0f}", "First-gen cohort": "{:,.0f}"}), use_container_width=True, height=520, hide_index=True)
+    st.caption(f"Shrinkage: each residual is multiplied by τ²/(τ²+σ²) where σ² is the binomial sampling variance of the school's rate given its first-gen cohort. τ = {s6['tau_pp']:.1f} points; median shrink {s6['shrink_median']:.2f}, minimum {s6['shrink_min']:.2f}. {s6['top_decile_left']} schools left the raw top decile after shrinkage, all with cohorts under 100.")
     st.download_button("Download filtered ranking (CSV)", show.to_csv(index=False).encode(), "ranked_schools_filtered.csv", "text/csv")
     with st.expander(f"Special-focus and tribal colleges ({len(sf)}): scored with Model A but not ranked"):
         st.write("Carnegie 2018 special-focus schools (nursing, health, faith, arts, business, law, engineering) and tribal colleges usually run one structured program, so the model does not describe them. Shown for transparency only.")
@@ -90,9 +91,12 @@ with tab_rank:
                      .style.format({"Pell": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
 
 with tab_spend:
-    scope = st.radio("Comparison", ["All schools (pooled model deciles)", "Public (public-only model deciles)", "Private nonprofit (private-only model deciles)"], horizontal=True)
+    scope = st.radio("Comparison", ["All schools (pooled model deciles)", "Public (public-only model deciles)", "Private nonprofit (private-only model deciles)", "Carnegie: Doctoral", "Carnegie: Master's", "Carnegie: Baccalaureate"], horizontal=True)
     if scope.startswith("All"):
-        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; note = "Deciles of the pooled Model A residual."
+        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; note = "Deciles of the pooled Model A shrunken residual."
+    elif scope.startswith("Carnegie"):
+        g = scope.split(": ")[1]; dd = df[df.carnegie_group == g]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = s7["within_carnegie"][g]["per_fte"]
+        note = f"Pooled-model deciles restricted to Carnegie {g} schools (top n = {len(top)}, bottom n = {len(bot)})."
     else:
         c = "Public" if scope.startswith("Public") else "Private nonprofit"
         dd = df[df.control_label == c]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = sec[c]["spending"]
@@ -103,9 +107,16 @@ with tab_spend:
     a.plotly_chart(px.bar(long, x="category", y="median $ per FTE", color="group", barmode="group", color_discrete_map={"top 10%": TOP, "bottom 10%": BOT}, title="Median dollars per FTE, FY2018-23 average").update_layout(height=430), use_container_width=True)
     t = pd.DataFrame([{"category": k, "top 10%": v["top10_median_$"], "bottom 10%": v["bottom10_median_$"], "ratio": v["median_ratio"], "Mann-Whitney p": v["mann_whitney_p"]} for k, v in tab.items() if k in list(CORE.values()) + ["Core (4 categories)"]])
     b.dataframe(t.style.format({"top 10%": "${:,.0f}", "bottom 10%": "${:,.0f}", "ratio": "{:.2f}×", "Mann-Whitney p": "{:.3f}"}), hide_index=True, use_container_width=True)
+    with st.expander("Timing variants: does the gap depend on which fiscal years or on inflation?"):
+        var = pd.DataFrame({"FY2018-23 nominal (main)": {k: v["median_ratio"] for k, v in pf.items()}, "FY2018-19 only": {k: v["median_ratio"] for k, v in s7["per_fte_fy1819"].items()},
+                            "FY2018-23 in FY2023 $": {k: v["median_ratio"] for k, v in s7["per_fte_real"].items()}, "FY2023 only (mistimed)": {k: v["median_ratio"] for k, v in s7["per_fte_fy23_only"].items()}})
+        st.dataframe(var.loc[list(CORE.values()) + ["Core (4 categories)"]].style.format("{:.2f}×"), use_container_width=True)
+        st.caption("Median ratio top 10% / bottom 10%. Constant dollars use BLS CPI-U fiscal-year averages.")
+    st.markdown(f"**Lead with the sector.** Public over-performers (public-only model) spent more in all four categories: instruction {sec['Public']['spending']['Instruction']['median_ratio']:.2f}×, academic support {sec['Public']['spending']['Academic support']['median_ratio']:.2f}×, student services {sec['Public']['spending']['Student services']['median_ratio']:.2f}× (p = {sec['Public']['spending']['Student services']['mann_whitney_p']:.3f}). "
+                f"Private over-performers differ on instruction ({sec['Private nonprofit']['spending']['Instruction']['median_ratio']:.2f}×) and academic support ({sec['Private nonprofit']['spending']['Academic support']['median_ratio']:.2f}×) but not student services ({sec['Private nonprofit']['spending']['Student services']['median_ratio']:.2f}×). "
+                f"Restricted to publics, the pooled-decile gaps are not significant, so the pooled headline is driven by private colleges.")
     st.markdown(f"**Pooled result.** Over-performers' median instruction spending was {pf['Instruction']['median_ratio']:.2f}× the under-performers' (${pf['Instruction']['top10_median_$']:,.0f} vs ${pf['Instruction']['bottom10_median_$']:,.0f}) and academic support {pf['Academic support']['median_ratio']:.2f}×, both p < 0.001. "
                 f"Student-services dollars were not different ({pf['Student services']['median_ratio']:.2f}×, p = {pf['Student services']['mann_whitney_p']:.2f}). "
-                f"**By sector:** public over-performers spent more in all four categories (student services {sec['Public']['spending']['Student services']['median_ratio']:.2f}×); private over-performers differ on instruction ({sec['Private nonprofit']['spending']['Instruction']['median_ratio']:.2f}×) and academic support ({sec['Private nonprofit']['spending']['Academic support']['median_ratio']:.2f}×) but not student services. "
                 "Budget shares are not shown as separate findings: they sum to 100%, so a higher instruction share is the same fact as more instruction dollars.")
 
 with tab_school:
@@ -117,7 +128,7 @@ with tab_school:
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Actual first-gen 6-yr completion", f"{row.firstgen_comp_orig_yr6_rt:.1%}")
     k2.metric("Predicted (Model A)", f"{row.predicted:.1%}")
-    k3.metric("Residual", f"{row.residual_pct_pts:+.1f} pts", f"rank {int(row['rank'])} of {len(df):,} (95% bootstrap: {b_row.boot_rank_p2_5:.0f}-{b_row.boot_rank_p97_5:.0f})")
+    k3.metric("Shrunken residual", f"{row.residual_eb_pct_pts:+.1f} pts", f"raw {row.residual_pct_pts:+.1f}; rank {int(row['rank'])} of {len(df):,} (95% bootstrap: {b_row.boot_rank_p2_5:.0f}-{b_row.boot_rank_p97_5:.0f})")
     k4.metric("P(top 10%) across resamples", f"{b_row.p_top_decile:.0%}")
     st.write(f"{row.control_label} · {row.carnegie_group} · {int(row.ugds):,} undergrads (2017) · Pell share {row.pctpell:.0%} · admit rate {row.adm_rate:.0%} · first-gen share {row.first_gen:.0%} · "
              f"non-first-gen completion {row.not1stgen_comp_orig_yr6_rt:.1%} (gap {row.fg_gap*100:+.1f} pts)"
@@ -127,7 +138,7 @@ with tab_school:
                          f"median top 10% {row.control_label}": [peers[peers.group == "top 10%"][f"{k}_per_fte"].median() for k in CORE]})
     st.plotly_chart(px.bar(comp.melt(id_vars="category", var_name="who", value_name="$ per FTE"), x="category", y="$ per FTE", color="who", barmode="group", title="Spending per FTE (FY2018-23 avg) vs peers",
                            color_discrete_sequence=["#1d3557", "#a8dadc", TOP]).update_layout(height=420), use_container_width=True)
-    near = df[(df.predicted - row.predicted).abs() < 0.03].sort_values("residual", ascending=False).head(10)
+    near = df[(df.predicted - row.predicted).abs() < 0.03].sort_values("residual_eb", ascending=False).head(10)
     st.write("Schools with a similar predicted rate (±3 pts), ranked by residual: the most comparable over-performers.")
     st.dataframe(near[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]].rename(columns={"instnm": "School", "stabbr": "State", "control_label": "Control", "carnegie_group": "Carnegie", "ugds": "Undergrads", "pctpell": "Pell", "firstgen_comp_orig_yr6_rt": "Actual", "predicted": "Predicted", "residual_pct_pts": "Residual (pts)"})
                  .style.format({"Pell": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
@@ -140,9 +151,9 @@ with tab_method:
 
 **Sample.** {s5['n']:,} schools (Carnegie doctoral, master's, baccalaureate) after dropping privacy-suppressed outcomes, first-gen cohorts under 50, schools missing an entry-year predictor, and schools with fewer than 3 fiscal years of finance data. {s5['n_special_focus']} special-focus / tribal schools are scored but not ranked.
 
-**Model A.** OLS: first-gen 6-year same-institution completion ~ Pell share + admission rate (open-admission = 1.0) + log enrollment + part-time share + first-gen share + private + HBCU + distance-only + Carnegie group. HC3 robust SEs. R² = {s5['r2_A']:.3f}. Residual = actual − predicted. Spending is left out on purpose so the spending comparison is not circular; Model B adds log core spending per FTE (R² {s5['r2_B']:.3f}).
+**Model A.** OLS: first-gen 6-year same-institution completion ~ Pell share + admission rate (open-admission = 1.0) + log enrollment + part-time share + first-gen share + private + HBCU + distance-only + Carnegie group. HC3 robust SEs. R² = {s5['r2_A']:.3f}. Residual = actual − predicted, then shrunk toward zero by τ²/(τ²+σ²) with σ² the binomial variance for the school's first-gen cohort (empirical Bayes; τ = {s6['tau_pp']:.1f} pts, median shrink {s6['shrink_median']:.2f}). Spending is left out on purpose so the spending comparison is not circular; Model B adds log core spending per FTE and the undergraduate share of FTE (R² {s5['r2_B']:.3f}).
 
-**Robustness.** Bootstrap of 1,000 resamples: top-decile schools stay top-decile {bs['mean_p_top_among_point_top']:.0%} of the time; two random resamples share {bs['mean_pairwise_top_decile_overlap']:.0%} of their top decile. Separate public and private models rank schools consistently with the pooled model (Spearman {sec['Public']['spearman_vs_pooled']:.2f} / {sec['Private nonprofit']['spearman_vs_pooled']:.2f}). Dropping the largest 5% of schools: Spearman {s8['drop5']['spearman']:.3f} (weak test, kept because the brief asked).
+**Robustness.** Spending gaps hold with FY2018-19 spending only, in constant FY2023 dollars (BLS CPI-U), and within each Carnegie group. Bootstrap of 1,000 resamples (shrinkage re-applied each draw): top-decile schools stay top-decile {bs['mean_p_top_among_point_top']:.0%} of the time; two random resamples share {bs['mean_pairwise_top_decile_overlap']:.0%} of their top decile. Separate public and private models rank schools consistently with the pooled model (Spearman {sec['Public']['spearman_vs_pooled']:.2f} / {sec['Private nonprofit']['spearman_vs_pooled']:.2f}). Dropping the largest 5% of schools: Spearman {s8['drop5']['spearman']:.3f} (weak test, kept because the brief asked).
 
 **What changed after review.** The first build used a stale Scorecard file, 2024 traits, FY2023-only spending and no Carnegie control. Only {s6['top20_overlap_vs_v1']} of its top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support spending pattern held.
 
