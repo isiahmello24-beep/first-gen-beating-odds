@@ -63,6 +63,8 @@ with tab_over:
         figc = go.Figure(go.Bar(x=co["coef"], y=co["term"], orientation="h", error_x=dict(type="data", array=1.96 * co["se"]), marker_color="#457b9d"))
         figc.update_layout(title="Model A coefficients (±95% CI, HC3)", xaxis_title="Change in completion rate per 1-unit change", height=520, yaxis=dict(autorange="reversed"))
         st.plotly_chart(figc, use_container_width=True)
+    lm = s7["level_vs_mix"]; pp_double = lm["coef"]["log_core_per_fte"] * np.log(2) * 100
+    st.markdown(f"**How much of over-performance is money? {lm['r2']*100:.1f}%.** Spending level and mix together explain {lm['r2']*100:.1f}% of the variance in the shrunken residual. With the budget fixed, one SD more academic-support share ≈ {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share ≈ {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per FTE ≈ {pp_double:+.0f} points, against a top-decile cut of +{s6['top_decile_cut_pp']:.1f}. Most over-performance sits outside budget data, so the useful output is the peer list on the Rankings tab.")
     st.markdown(f"**Reading the pooled model.** A 10-point higher Pell share (in 2017-18) predicts {abs(s5['coef_A']['pctpell'])*10:.1f} points lower first-gen completion; a 10-point higher admission rate predicts "
                 f"{abs(s5['coef_A']['adm_rate'])*10:.1f} points lower; doubling enrollment predicts {s5['coef_A']['log_ugds']*np.log(2)*100:+.1f} points. Spending is not in this model. "
                 f"Adding FY2018-23 core spending per student (Model B) lifts R² from {s5['r2_A']:.2f} to {s5['r2_B']:.2f}: a 10% higher budget per student is associated with {s5['pp_per_10pct_spending']:+.2f} points.")

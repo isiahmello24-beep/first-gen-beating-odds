@@ -11,3 +11,4 @@ __pycache__/
 # OS
 .DS_Store
 !data/raw/.gitkeep
+memo/professor_email_draft.md

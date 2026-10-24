@@ -4,6 +4,7 @@ No number in either document is typed by hand; every figure is read from results
 which Steps 5-8 wrote from code output.
 """
 import json
+import numpy as np
 from datetime import date
 from pathlib import Path
 
@@ -30,44 +31,41 @@ def peers(rows):
 
 
 lm = s7["level_vs_mix"]
-mix_line = (f"With total spending held fixed, the mix still matters, modestly: one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points of residual (p = {pv(lm['p']['acad_share'])}), one SD more instruction share {lm['pp_per_sd_instr_share']:+.1f} (p = {pv(lm['p']['instr_share'])}); a 10% larger core budget adds {lm['pp_per_10pct_core']:+.1f}. Level explains more than mix (R² {lm['r2_level_only']:.3f} vs {lm['r2_mix_only']:.3f})."
-            if lm["shares_hold"] else
-            f"With total spending held fixed, the mix does not matter: instruction and academic-support shares are not significant (p = {pv(lm['p']['instr_share'])}, {pv(lm['p']['acad_share'])}). Over-performers simply spend more; a 10% larger core budget is associated with {lm['pp_per_10pct_core']:+.1f} points.")
-headline = ("Schools that beat their prediction spent more per student, and tilted that money toward instruction and academic support" if lm["shares_hold"]
-            else "Schools that beat their prediction spent more per student; how they split it did not matter")
+pp_double = lm["coef"]["log_core_per_fte"] * np.log(2) * 100          # points per doubling of core spending per FTE
+r2_pct = lm["r2"] * 100
+headline = f"Budgets explain {r2_pct:.1f}% of why some colleges beat the odds on first-generation completion. Look at the peers."
 
 memo = f"""# Memo: {headline}
 
 **To:** Director of Student Success · **From:** Isiah Mello · **Date:** {today}
 
-## The answer depends on your sector
+## How much of over-performance is money?
 
-For first-generation students who entered in 2017-18, schools that graduated them well above prediction spent more per student during those years than under-performers. Where the money sat differs by sector:
+Not much. Among {s5['n']:,} four-year colleges, the top tenth graduated first-generation students at least {s6['top_decile_cut_pp']:.1f} points above what their 2017-18 student mix predicts. Spending level and mix together explain **{r2_pct:.1f}%** of the variation in that residual. With the budget size held fixed, one standard deviation more academic-support share is worth {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per student is worth about {pp_double:+.0f} points. All three are real (p = {pv(lm['p']['acad_share'])}, {pv(lm['p']['instr_share'])}, {pv(lm['p']['log_core_per_fte'])}) and all are small against an {s6['top_decile_cut_pp']:.1f}-point gap. Most over-performance sits outside budget data: advising, course design, culture. So the recommendation is a list of schools to call, not a reallocation.
 
-- **Public universities** (ranked against publics): more on every core function. Instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×, institutional support {pub['Institutional support']['median_ratio']:.2f}× (medians, FY2018-23).
-- **Private nonprofits:** instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}×, with no student-services difference ({prv['Student services']['median_ratio']:.2f}×).
+## What the budget data do show
 
-After correcting for {s7['bh']['n_tests']} comparisons, the instruction and academic-support gaps survive in every sector, Carnegie group and timing window; the student-services gap survives in none. {mix_line}
+Over-performers spent more per student, and the pattern differs by sector. Publics, ranked against publics: more on every core function (instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×). Privates: instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}×, student services flat ({prv['Student services']['median_ratio']:.2f}×). After correcting for {s7['bh']['n_tests']} comparisons, the instruction and academic-support gaps survive everywhere; the student-services gap survives nowhere.
 
-**Method.** {s5['n']:,} four-year public and private nonprofit colleges. Completion of first-gen federal-aid students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts. Top 10% = {s6['top_decile_n']} schools at +{s6['top_decile_cut_pp']:.0f} points or better; the ranking is stable across 1,000 bootstrap resamples.
+**Method.** Completion of first-gen federal-aid students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts; stable across 1,000 bootstrap resamples.
 
-## Peers worth a call (Pell share ≥ 50%)
+## The recommendation: call these peers (Pell share ≥ 50%)
 
 | School | Type | Cohort | Pell | Actual | Predicted | Residual |
 |---|---|---:|---:|---:|---:|---:|
 {peers(s6['top5_high_pell'])}
 
+Ask about first-year advising, gateway courses and first-gen programming. Full ranking: `streamlit run app/app.py`.
+
 ## Limitations
 
-1. **School-level data.** We see institutions, not students; program mix or unmeasured preparation can produce a residual that has nothing to do with practice. Special-focus, adult-dominant and online-dominant campuses are listed separately for this reason.
-2. **Correlation only.** Over-performers spent differently; nothing here shows that reallocating dollars would change completion.
-3. **Definition.** Transfer-out completers count as non-completers, and privacy suppression removes the smallest schools.
-
-Full method and rankings: `streamlit run app/app.py`.
+1. **School-level data.** We see institutions, not students; program mix or unmeasured preparation can produce a residual unrelated to practice. Special-focus, adult-dominant and online-dominant campuses are listed separately.
+2. **Correlation only.** Nothing here shows that moving dollars would change completion.
+3. **Definition.** Transfer-out completers count as non-completers; privacy suppression removes the smallest schools.
 """
 (ROOT / "memo/memo.md").write_text(memo)
 
-readme = f"""# Which 4-year colleges graduate first-generation students above prediction, and what did they spend on?
+readme = f"""# Which 4-year colleges graduate first-generation students above prediction, and how much of it is money?
 
 Portfolio project (UCSD MSBA application). Python · DuckDB · pandas · statsmodels · plotly · Streamlit.
 
@@ -76,6 +74,8 @@ Portfolio project (UCSD MSBA application). Python · DuckDB · pandas · statsmo
 Which US 4-year colleges graduated first-generation students at higher rates than their student mix and structure predict, and how did their spending differ, during the years those students were enrolled, from schools that under-performed?
 
 ## Headline results (all numbers generated by the pipeline; see `reports/results.json`)
+
+- **Effect size first:** spending level and mix together explain **{r2_pct:.1f}%** of the variance in the over-performance residual. One SD more academic-support share ≈ {lm['pp_per_sd_acad_share']:+.1f} points, one SD more instruction share ≈ {lm['pp_per_sd_instr_share']:+.1f}, doubling core spending per FTE ≈ {pp_double:+.0f} points, against a top-decile cut of +{s6['top_decile_cut_pp']:.1f} points. Most over-performance sits outside budget data, so the memo's recommendation is a peer list, not a reallocation.
 
 - **Cohort alignment:** outcome = first-gen students who entered in AY2017-18, measured in AY2023-24 (Scorecard cohort map). Predictors are the schools' 2017-18 values; spending is the FY2018-FY2023 average per FTE.
 - **Sample:** {s5['n']:,} four-year public and private nonprofit colleges (Carnegie doctoral, master's, baccalaureate). Scored separately: {s5['n_special_focus']} special-focus schools, {s5['n_nontraditional']} campuses with >50% of undergraduates aged 25+ or exclusively online, {s5['n_anomaly']} schools with implausible Scorecard completion rates (e.g. San Jose State's 3.8%).
