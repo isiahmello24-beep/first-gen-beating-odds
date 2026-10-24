@@ -21,15 +21,17 @@ LABELS = {**{f"private:{t}": f"Private × {v}" for t, v in {"pctpell": "Pell sha
 TOP, BOT = "#2a9d8f", "#e76f51"
 
 
+FILES = [ROOT / "data/clean/analysis_scored.parquet", ROOT / "data/clean/bootstrap_ranks.csv", ROOT / "reports/results.json"]
+
+
 @st.cache_data
-def load():
-    full = pd.read_parquet(ROOT / "data/clean/analysis_scored.parquet")
-    boot = pd.read_csv(ROOT / "data/clean/bootstrap_ranks.csv")
-    res = json.loads((ROOT / "reports/results.json").read_text())
+def load(_mtimes: tuple):
+    """Cached on the files' modification times, so a pipeline rerun always refreshes the dashboard."""
+    full = pd.read_parquet(FILES[0]); boot = pd.read_csv(FILES[1]); res = json.loads(FILES[2].read_text())
     return full, boot, res
 
 
-full, boot, res = load()
+full, boot, res = load(tuple(f.stat().st_mtime for f in FILES))
 df = full[full.in_main == 1].copy()
 sf = full[full.in_main == 0].copy()
 s5, s6, s7, s8 = res["step5"], res["step6"], res["step7"], res["step8"]
