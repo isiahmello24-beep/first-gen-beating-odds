@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
+import statsmodels.api as sm
 from patsy import dmatrices
 from scipy import stats
 import importlib.util
@@ -99,6 +100,13 @@ def main():
                          "public": [sec["Public"]["model"].params[t] for t in TRAITS if t != "private"], "public_p": [sec["Public"]["model"].pvalues[t] for t in TRAITS if t != "private"],
                          "private": [sec["Private nonprofit"]["model"].params[t] for t in TRAITS if t != "private"], "private_p": [sec["Private nonprofit"]["model"].pvalues[t] for t in TRAITS if t != "private"]})
 
+    # ---------------------------------------------------------------- (d) fractional logit of the main model
+    fl = smf.glm(FORMULA, data=df, family=sm.families.Binomial()).fit(cov_type="HC1")
+    fl_resid = shrink(df[OUTCOME] - fl.fittedvalues, fl.fittedvalues, df["firstgen_yr6_n"])[0]
+    rho_fl = stats.spearmanr(df["residual_eb"], fl_resid).statistic
+    ov_fl = len(set(df.nlargest(n_top, "residual_eb").unitid) & set(df.assign(r=fl_resid).nlargest(n_top, "r").unitid)) / n_top
+    fl_pseudo_r2 = 1 - fl.deviance / fl.null_deviance
+
     # ---------------------------------------------------------------- (c) drop largest 5% (from the brief)
     cut = df.ugds.quantile(0.95); trimmed = df[df.ugds <= cut].copy(); tm = smf.ols(FORMULA, data=trimmed).fit(cov_type="HC3")
     rho_trim = stats.spearmanr(trimmed["residual_eb"], shrink(tm.resid, tm.fittedvalues, trimmed["firstgen_yr6_n"])[0]).statistic
@@ -121,7 +129,10 @@ def main():
              "\nCoefficients (HC3 p-values for the sector fits):\n", coef.round(4).to_markdown(index=False)]
     for c, s in sec.items():
         lines += [f"\n\n### Spending, top vs bottom decile of the {c}-only model (n = {s['n_dec']} per decile)\n", fm(s["spending"])]
-    lines += [f"\n\n## (c) Drop the largest 5% of schools (undergrads > {cut:,.0f}, {n - len(trimmed)} schools)\n",
+    lines += [f"\n\n## (d) Fractional logit version of the main model\n\nSame predictors, binomial family with a logit link (quasi-likelihood for a 0-1 proportion, robust SEs). Deviance pseudo-R² = {fl_pseudo_r2:.3f}. "
+              f"Shrunken residuals from the logit fit vs the main OLS ranking: Spearman {rho_fl:.3f}, top-decile overlap {ov_fl:.0%}. "
+              "A logit keeps predictions inside 0-1 and lets effects shrink near the bounds; with an outcome that ranges 7-95% and no pile-up at either end, it should agree with OLS, and it does.\n",
+              f"\n\n## (c) Drop the largest 5% of schools (undergrads > {cut:,.0f}, {n - len(trimmed)} schools)\n",
               f"Spearman between full-model and trimmed-model residuals on the remaining {len(trimmed):,} schools: {rho_trim:.3f}. Dropping 5% of a 1,251-school sample is a weak test; it is reported because the brief asked for it, and the bootstrap above is the stronger check.\n"]
     (REP / "08_robustness.md").write_text("\n".join(lines))
     results = json.loads((REP / "results.json").read_text())
@@ -129,11 +140,12 @@ def main():
     results["step8"] = {"bootstrap": {"B": B, "seed": SEED, **{k: round(v, 4) if isinstance(v, float) else v for k, v in stab.items()}},
                         "sector": {c: {"n": s["n"], "r2": round(s["r2"], 4), "spearman_vs_pooled": round(float(s["spearman_vs_pooled"]), 4), "top_decile_overlap_vs_pooled": round(float(s["top_decile_overlap_vs_pooled"]), 4),
                                        "n_dec": s["n_dec"], "spending": rec(s["spending"]), "coef": {t: round(float(s["model"].params[t]), 5) for t in TRAITS if t != "private"}} for c, s in sec.items()},
+                        "fractional_logit": {"pseudo_r2": round(float(fl_pseudo_r2), 4), "spearman_vs_main": round(float(rho_fl), 4), "top_decile_overlap_vs_main": round(float(ov_fl), 4)},
                         "drop5": {"ugds_cut": float(cut), "n_dropped": int(n - len(trimmed)), "spearman": round(float(rho_trim), 4)}}
     (REP / "results.json").write_text(json.dumps(results, indent=2))
     print(json.dumps(stab, indent=1)); print(coef.round(4).to_string())
     for c, s in sec.items(): print(f"\n-- {c} R2 {s['r2']:.3f} rho {s['spearman_vs_pooled']:.3f} overlap {s['top_decile_overlap_vs_pooled']:.0%}"); print(fm(s["spending"]))
-    print(f"\ndrop5: cut {cut:.0f}, rho {rho_trim:.3f}")
+    print(f"\ndrop5: cut {cut:.0f}, rho {rho_trim:.3f}"); print(f"fractional logit: pseudoR2 {fl_pseudo_r2:.3f} rho {rho_fl:.3f} overlap {ov_fl:.0%}")
 
 
 if __name__ == "__main__":

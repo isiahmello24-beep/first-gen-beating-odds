@@ -91,6 +91,12 @@ Coefficients (HC3 p-values for the sector fits):
 | Core (4 categories)   | $24,947          | $21,425             | 1.16×          | <0.001        | <0.001           |
 
 
+## (d) Fractional logit version of the main model
+
+Same predictors, binomial family with a logit link (quasi-likelihood for a 0-1 proportion, robust SEs). Deviance pseudo-R² = 0.538. Shrunken residuals from the logit fit vs the main OLS ranking: Spearman 0.999, top-decile overlap 96%. A logit keeps predictions inside 0-1 and lets effects shrink near the bounds; with an outcome that ranges 7-95% and no pile-up at either end, it should agree with OLS, and it does.
+
+
+
 ## (c) Drop the largest 5% of schools (undergrads > 23,641, 60 schools)
 
 Spearman between full-model and trimmed-model residuals on the remaining 1,138 schools: 0.997. Dropping 5% of a 1,251-school sample is a weak test; it is reported because the brief asked for it, and the bootstrap above is the stronger check.

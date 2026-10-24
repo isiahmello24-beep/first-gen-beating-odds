@@ -13,13 +13,15 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 - **Model:** OLS of first-gen same-institution 6-year completion on Pell share, admission rate, log enrollment, part-time share, first-gen share, share aged 25+, share exclusively online, HBCU and Carnegie group, with private × every trait (**R² = 0.550**; pooled version 0.526), HC3 robust SEs. The interaction model is the ranking model because its top decile overlaps the sector-only rankings at 96% (public) and 96% (private). Spending is not in the model.
 - **Ranking:** residual = actual − predicted, shrunk toward zero for small cohorts (empirical Bayes; τ = 9.6 pts). Shrinkage removed 11 small-cohort schools from the top decile. Top decile (120 schools) beat prediction by **≥ 11.2 points**.
 - **Spending, by sector:** in a public-only model, over-performing publics spent more on all four core functions (instruction 1.25×, academic support 1.48×, student services 1.28×). In a private-only model the gap is instruction 1.44× and academic support 1.36× with no student-services difference. Pooled: instruction 1.38×, academic support 1.54× (p < 0.001), student services 0.96×.
+- **Slopes differ by sector:** joint Wald F test of the eight private × trait terms, F(8, 1178) = 6.82, p = 0.0e+00. A fractional-logit version of the model ranks schools identically in practice (Spearman 0.999, top-decile overlap 96%).
+- **Level vs mix:** regressing the shrunken residual on log core spending, instruction share and academic-support share (sector and Carnegie controls): shares remain significant with the level fixed (instruction share p = 0.047, academic support p = 0.004), but level explains more (R² 0.044 vs 0.018).
 - **Robustness:** a Benjamini-Hochberg correction across 100 spending tests keeps the instruction and academic-support gaps everywhere and the student-services gap nowhere; dropping 82 Cook's-flagged schools leaves them at 1.56× / 1.47×. Results hold with FY2018-19 spending only (1.46× / 1.49×), in constant FY2023 dollars (1.37× / 1.54×), and within each Carnegie group. A 1,000-resample bootstrap keeps top-decile schools in the top decile 90% of the time.
 
 ![spending](reports/figures/07_spending_top_vs_bottom.png)
 
 ## What changed after review (see `decisions.md`)
 
-Four review passes found fourteen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, and an unreported VIF. All are fixed. Only 3 of the original top-20 schools survive in the corrected ranking (Spearman 0.64); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
+Five review passes found seventeen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, an unreported VIF, no joint test of the sector interactions, no check that spending *mix* matters with the level fixed, and no non-linear check on a 0-1 outcome. All are fixed. Only 3 of the original top-20 schools survive in the corrected ranking (Spearman 0.64); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
 
 ## Data
 
@@ -36,10 +38,20 @@ Join key: `UNITID`. Opportunity Insights is reached via OPEID → `super_opeid`.
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt          # or requirements.lock.txt for the exact versions used (Python 3.14)
 for s in src/0[1-8]_*.py src/10_memo.py; do python "$s"; done
 streamlit run app/app.py
 ```
+
+Raw data (~600 MB) is gitignored and re-downloaded by the first script. The cleaned outputs in `data/clean/` are committed, so the dashboard and all reports work without downloading anything.
+
+## Deploy the dashboard (Streamlit Community Cloud)
+
+1. Push this repository to GitHub (public or private; Community Cloud can read either).
+2. At share.streamlit.io choose **New app**, select the repo and branch, set **Main file path** to `app/app.py`.
+3. Under **Advanced settings** pick Python 3.12 or 3.13 (Cloud does not offer 3.14 yet) and leave the requirements file as `requirements.txt`; the lock file is for local reproduction on 3.14.
+4. Deploy. The app reads `data/clean/analysis_scored.parquet`, `data/clean/bootstrap_ranks.csv` and `reports/results.json` from the repo, so no secrets, databases or downloads are needed.
+5. After any pipeline rerun, commit the updated `data/clean/` and `reports/results.json`; Cloud redeploys on push.
 
 ## Pipeline (one script per build step)
 
@@ -57,7 +69,7 @@ streamlit run app/app.py
 | 10 | `src/10_memo.py` | `memo/memo.md`, this README |
 | check | `reports/11_spot_check.md` | three schools checked by hand against the College Scorecard website |
 
-`reports/06_rankings.md` also lists every California State University campus (raw and shrunken residual, rank, decile) and how the top 20 changed at each review pass.
+`requirements.lock.txt` pins the exact package versions used (Python 3.14). `reports/06_rankings.md` also lists every California State University campus (raw and shrunken residual, rank, decile) and how the top 20 changed at each review pass.
 
 `decisions.md` logs every modeling and cleaning choice with its reason. `reports/results.json` holds the key numbers the memo, README and dashboard read.
 

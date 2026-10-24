@@ -15,6 +15,7 @@ import pandas as pd
 from scipy import stats
 import plotly.express as px
 from statsmodels.stats.multitest import multipletests
+import statsmodels.formula.api as smf
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -78,6 +79,17 @@ def main():
     fam["reject_bh_05"], fam["p_bh"], _, _ = multipletests(fam["p_raw"], alpha=0.05, method="fdr_bh")
     bh_core = fam[fam.category.isin(core_lbl if False else ["Instruction", "Academic support", "Student services", "Institutional support", "Core (4 categories)"])].copy()
     bh_pivot = bh_core.assign(cell=lambda d: d.apply(lambda r: f"{r.median_ratio:.2f}× {'✔' if r.reject_bh_05 else '✘'} ({r.p_bh:.3f})", axis=1)).pivot(index="comparison", columns="category", values="cell")[["Instruction", "Academic support", "Student services", "Institutional support", "Core (4 categories)"]]
+    # ---- Step 7b: does the MIX matter once the LEVEL is fixed? shrunken residual ~ log core $/FTE + instruction share + academic-support share + controls
+    reg = df.copy(); reg["instr_share"] = reg["exp_instruction_share_core"]; reg["acad_share"] = reg["exp_academic_support_share_core"]
+    F7 = "residual_eb ~ log_core_per_fte + instr_share + acad_share + private + C(carnegie_group, Treatment(reference=\"Master's\"))"
+    m7 = smf.ols(F7, data=reg).fit(cov_type="HC3")
+    m7_level = smf.ols("residual_eb ~ log_core_per_fte + private + C(carnegie_group, Treatment(reference=\"Master's\"))", data=reg).fit(cov_type="HC3")
+    m7_mix = smf.ols("residual_eb ~ instr_share + acad_share + private + C(carnegie_group, Treatment(reference=\"Master's\"))", data=reg).fit(cov_type="HC3")
+    sd_i, sd_a = reg.instr_share.std(), reg.acad_share.std()
+    shares_hold = bool(m7.pvalues["instr_share"] < 0.05 or m7.pvalues["acad_share"] < 0.05)
+    lab7 = {"log_core_per_fte": "log core $/FTE", "instr_share": "instruction share of core", "acad_share": "academic-support share of core", "private": "private", "Intercept": "intercept"}
+    tab7 = pd.DataFrame({"term": [lab7.get(k, k) for k in m7.params.index], "coef": m7.params.values, "robust_se": m7.bse.values, "p": m7.pvalues.values}).round(4)
+    tab7 = tab7[~tab7.term.str.startswith("C(")]
     prof_cols = ["ugds", "pctpell", "adm_rate", "first_gen", "private", "fte_total", "firstgen_comp_orig_yr6_rt", "predicted"]
     profile = pd.DataFrame({"top 10%": top[prof_cols].median(), "bottom 10%": bot[prof_cols].median()}).round(3)
     carn_mix = pd.crosstab(df.group, df.carnegie_group, normalize="index").loc[["top 10%", "bottom 10%"]].round(3)
@@ -98,6 +110,10 @@ def main():
              "\n## Dollars per FTE (FY2018-23 average), all schools\n", fmt_money(all_cmp),
              "\n\n## Timing variants: median ratio top/bottom (Mann-Whitney p)\n", var_tab.to_markdown(),
              "\n\nFY2018-19 covers the cohort's first two years, when most attrition happens. Constant dollars use BLS CPI-U fiscal-year averages (see Step 3 report); because every school faces the same price years, deflating changes levels, not the cross-school comparison.\n",
+             f"\n## 7b. Level vs mix: shrunken residual regressed on spending (n = {int(m7.nobs):,}, HC3)\n\n`{F7}`\n\n", tab7.to_markdown(index=False),
+             f"\n\nR² = {m7.rsquared:.3f} (level only {m7_level.rsquared:.3f}; mix only {m7_mix.rsquared:.3f}). Holding total core spending per student fixed, one standard deviation more instruction share ({sd_i:.3f}) is associated with {m7.params['instr_share']*sd_i*100:+.2f} points of residual (p = {m7.pvalues['instr_share']:.3f}); "
+             f"one SD more academic-support share ({sd_a:.3f}) with {m7.params['acad_share']*sd_a*100:+.2f} points (p = {m7.pvalues['acad_share']:.3f}). A 10% higher core budget is associated with {m7.params['log_core_per_fte']*np.log(1.1)*100:+.2f} points (p = {m7.pvalues['log_core_per_fte']:.3f}). "
+             f"**Verdict: {'the mix matters with the level fixed' if shares_hold else 'the mix does NOT matter once the level is fixed; the decile gaps in instruction and academic-support dollars reflect schools that spend more overall'}.** The memo headline is generated from this verdict.\n",
              f"\n## Excluding the {n_cooks_dropped} schools flagged by Cook's distance in Step 5 (top n={len(top_nc)}, bottom n={len(bot_nc)})\n", fmt_money(cooks_cmp[cooks_cmp.category.isin(core_lbl + ['Core (4 categories)'])]),
              f"\n\n## Benjamini-Hochberg correction across all {len(fam)} Mann-Whitney p-values in this step (✔ = survives at FDR 0.05; BH-adjusted p in parentheses)\n", bh_pivot.to_markdown(),
              "\n\nBH controls the false-discovery rate: with this many comparisons, about 5% of the ✔ cells would be expected to be false if every true gap were zero. Raw p-values are in the tables above.\n",
@@ -115,6 +131,10 @@ def main():
     rec = lambda d: {r["category"]: {kk: (None if pd.isna(v) else round(float(v), 4)) for kk, v in r.items() if kk != "category"} for r in d.to_dict("records")}  # noqa: E731
     results["step7"] = {"n_top": len(top), "n_bottom": len(bot), "profile_medians": {k: {kk: float(vv) for kk, vv in v.items()} for k, v in profile.to_dict().items()},
                         "per_fte": rec(all_cmp), "per_fte_fy23_only": rec(fy23_cmp), "per_fte_fy1819": rec(variants["FY2018-19 only"]), "per_fte_real": rec(variants["FY2018-23 in FY2023 dollars"]), "share_core": rec(all_sh),
+                        "level_vs_mix": {"formula": F7, "n": int(m7.nobs), "r2": round(m7.rsquared, 4), "r2_level_only": round(m7_level.rsquared, 4), "r2_mix_only": round(m7_mix.rsquared, 4), "shares_hold": shares_hold,
+                                         "coef": {k: round(float(v), 5) for k, v in m7.params.items() if not k.startswith("C(")}, "p": {k: round(float(v), 5) for k, v in m7.pvalues.items() if not k.startswith("C(")},
+                                         "pp_per_sd_instr_share": round(float(m7.params["instr_share"] * sd_i * 100), 3), "pp_per_sd_acad_share": round(float(m7.params["acad_share"] * sd_a * 100), 3),
+                                         "pp_per_10pct_core": round(float(m7.params["log_core_per_fte"] * np.log(1.1) * 100), 3), "sd_instr_share": round(float(sd_i), 4), "sd_acad_share": round(float(sd_a), 4)},
                         "per_fte_no_cooks": rec(cooks_cmp), "n_cooks_dropped": n_cooks_dropped,
                         "bh": {"n_tests": int(len(fam)), "n_reject": int(fam.reject_bh_05.sum()),
                                "core": [{k: (None if pd.isna(v) else (round(float(v), 4) if isinstance(v, (float, np.floating)) else (bool(v) if isinstance(v, (bool, np.bool_)) else v))) for k, v in r.items()} for r in bh_core.to_dict("records")]},
@@ -122,6 +142,7 @@ def main():
                         "within_control": {c: {"n_top": nt, "n_bottom": nb, "per_fte": rec(cmp_), "share_core": rec(sh)} for c, (cmp_, sh, nt, nb) in by_ctrl.items()}}
     (REP / "results.json").write_text(json.dumps(results, indent=2))
     print(fmt_money(all_cmp[all_cmp.category.isin(core_lbl + ["Core (4 categories)"])])); print("\nvariants:"); print(var_tab.to_string())
+    print("\n-- 7b level vs mix"); print(tab7.to_string()); print(f"R2 {m7.rsquared:.3f} level {m7_level.rsquared:.3f} mix {m7_mix.rsquared:.3f} shares_hold={shares_hold}")
     print("\n-- excluding Cook's-flagged"); print(fmt_money(cooks_cmp[cooks_cmp.category.isin(core_lbl)])); print("\n-- BH"); print(bh_pivot.to_string())
     for c, (cmp_, sh, nt, nb) in by_ctrl.items():
         print(f"\n-- within {c} ({nt} vs {nb})"); print(fmt_money(cmp_[cmp_.category.isin(core_lbl)]))

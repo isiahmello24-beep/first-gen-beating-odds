@@ -58,6 +58,23 @@ Private share: top decile 57%, bottom decile 63%. Control is in the model, so th
 FY2018-19 covers the cohort's first two years, when most attrition happens. Constant dollars use BLS CPI-U fiscal-year averages (see Step 3 report); because every school faces the same price years, deflating changes levels, not the cross-school comparison.
 
 
+## 7b. Level vs mix: shrunken residual regressed on spending (n = 1,198, HC3)
+
+`residual_eb ~ log_core_per_fte + instr_share + acad_share + private + C(carnegie_group, Treatment(reference="Master's"))`
+
+
+| term                           |    coef |   robust_se |      p |
+|:-------------------------------|--------:|------------:|-------:|
+| intercept                      | -0.4828 |      0.0674 | 0      |
+| log core $/FTE                 |  0.0439 |      0.007  | 0      |
+| instruction share of core      |  0.0717 |      0.0362 | 0.0474 |
+| academic-support share of core |  0.1498 |      0.052  | 0.004  |
+| private                        | -0.0008 |      0.0078 | 0.9161 |
+
+
+R² = 0.051 (level only 0.044; mix only 0.018). Holding total core spending per student fixed, one standard deviation more instruction share (0.102) is associated with +0.73 points of residual (p = 0.047); one SD more academic-support share (0.059) with +0.88 points (p = 0.004). A 10% higher core budget is associated with +0.42 points (p = 0.000). **Verdict: the mix matters with the level fixed.** The memo headline is generated from this verdict.
+
+
 ## Excluding the 82 schools flagged by Cook's distance in Step 5 (top n=79, bottom n=84)
 
 | category              | top10_median_$   | bottom10_median_$   | median_diff_$   | median_ratio   | top10_mean_$   | bottom10_mean_$   | welch_p_log   | mann_whitney_p   |

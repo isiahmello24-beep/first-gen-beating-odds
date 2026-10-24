@@ -107,6 +107,11 @@ def main():
         d = cmp[cmp.private == flag]
         rc[f"spearman_int_vs_sector_{name}"] = stats.spearmanr(d.r_int, d.r_sec).statistic; rc[f"spearman_pool_vs_sector_{name}"] = stats.spearmanr(d.r_pool, d.r_sec).statistic
         rc[f"overlap_int_vs_sector_{name}"] = overlap("r_int", "r_sec", d); rc[f"overlap_pool_vs_sector_{name}"] = overlap("r_pool", "r_sec", d)
+    int_terms = [n for n in AI.params.index if n.startswith("private:")]
+    R = np.zeros((len(int_terms), len(AI.params))); 
+    for i, t in enumerate(int_terms): R[i, list(AI.params.index).index(t)] = 1.0
+    wald = AI.wald_test(R, use_f=True, scalar=True)
+    joint_F = {"F": float(wald.statistic), "df_num": int(wald.df_num), "df_denom": int(wald.df_denom), "p": float(wald.pvalue), "n_terms": len(int_terms)}
     use_int = rc["overlap_int_vs_sector_public"] > rc["overlap_pool_vs_sector_public"] and rc["overlap_int_vs_sector_private"] > rc["overlap_pool_vs_sector_private"]
     MAIN = AI if use_int else A; MAIN_FORMULA = FORMULA_INT if use_int else FORMULA_A; main_name = "A-int (interaction)" if use_int else "A (pooled)"
     B = fit(df, MAIN_FORMULA + " + log_core_per_fte + ug_share_fte")
@@ -154,6 +159,8 @@ def main():
              f"| Interaction vs public-only model (publics) | {rc['spearman_int_vs_sector_public']:.3f} | {rc['overlap_int_vs_sector_public']:.0%} |\n"
              f"| Pooled vs private-only model (privates) | {rc['spearman_pool_vs_sector_private']:.3f} | {rc['overlap_pool_vs_sector_private']:.0%} |\n"
              f"| Interaction vs private-only model (privates) | {rc['spearman_int_vs_sector_private']:.3f} | {rc['overlap_int_vs_sector_private']:.0%} |\n",
+             f"\n### Joint test of the {joint_F['n_terms']} private × trait terms (Wald F with HC3 covariance)\n\nF({joint_F['df_num']}, {joint_F['df_denom']}) = {joint_F['F']:.2f}, p = {joint_F['p']:.2e}. "
+             f"{'The slopes differ by sector: the interaction terms are jointly significant.' if joint_F['p'] < 0.05 else 'The interaction terms are not jointly significant.'}\n",
              f"\nRule: the interaction model becomes the main ranking model if its overlap with BOTH sector-only rankings beats the pooled model's. Result: **{'interaction model adopted' if use_int else 'pooled model kept'}** → main model = {main_name}. "
              "The interaction model differs from two separate sector fits only in sharing the Carnegie dummies and the residual variance, so it should sit close to the sector rankings; the point of the test is whether it gets there without splitting the sample.\n",
              f"\n## Specification comparisons on the same {len(df):,} schools\n\n- Model A without Carnegie dummies: R² = {A_noc.rsquared:.3f}.\n- Previous spec (distance-only flag instead of the age-25+ and exclusively-online shares): R² = {A_prev.rsquared:.3f}.\n- Original spec (no Carnegie, distance-only flag) on all {len(full):,} schools including excluded groups: R² = {A0.rsquared:.3f}.\n",
@@ -176,7 +183,7 @@ def main():
              "\n\n![diagnostics](figures/05_diagnostics_model_a.png)\n", "![actual vs predicted](figures/05_actual_vs_predicted.png)\n"]
     (REP / "05_regression.md").write_text("\n".join(lines))
     results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
-    results["step5"] = {"main_model": main_name, "main_formula": MAIN_FORMULA, "use_interaction": bool(use_int), "ranking_comparison": {k: round(float(v), 4) for k, v in rc.items()},
+    results["step5"] = {"joint_F_interactions": {k: (round(v, 6) if isinstance(v, float) else v) for k, v in joint_F.items()}, "main_model": main_name, "main_formula": MAIN_FORMULA, "use_interaction": bool(use_int), "ranking_comparison": {k: round(float(v), 4) for k, v in rc.items()},
                         "r2_int": round(AI.rsquared, 4), "r2_main": round(MAIN.rsquared, 4), "coef_main": {k: round(float(v), 5) for k, v in MAIN.params.items()}, "p_main": {k: round(float(v), 5) for k, v in MAIN.pvalues.items()},
                         "vif": {r.term: round(float(r.VIF), 2) for r in vif.itertuples()}, "vif_over5": [r.term for r in vif.itertuples() if r.VIF > 5], "corr_pell_firstgen": round(float(corr_pf.loc["pctpell", "first_gen"]), 3),
                         "n": int(A.nobs), "n_special_focus": int((sf.excluded_reason == "special focus / tribal").sum()), "n_nontraditional": int((sf.excluded_reason == "adult (25+) or online share > 50%").sum()), "n_anomaly": int((sf.excluded_reason == "outcome implausible vs IPEDS grad rate").sum()), "n_excluded": len(sf), "r2_A_prev_spec": round(A_prev.rsquared, 4), "r2_A": round(A.rsquared, 4), "adj_r2_A": round(A.rsquared_adj, 4), "resid_sd_A": round(float(np.sqrt(A.mse_resid)), 4),
@@ -191,7 +198,7 @@ def main():
                         "outcome_mean": round(float(df[OUTCOME].mean()), 4), "outcome_sd": round(float(df[OUTCOME].std()), 4),
                         "cohort": "NSLDS AY2017-18 entry cohort measured AY2023-24; predictors 2017-18; spending FY2018-FY2023 average"}
     RESULTS.write_text(json.dumps(results, indent=2))
-    print(fmt(coef_table(A))); print(f"\nmain={main_name} | " + " ".join(f"{k}={v:.3f}" for k, v in rc.items())); print(vif.round(2).to_string()); print(f"\nR2 A={A.rsquared:.3f} int={AI.rsquared:.3f} (no Carnegie {A_noc.rsquared:.3f}; prev spec {A_prev.rsquared:.3f}; original spec all schools {A0.rsquared:.3f}; n excluded {len(sf)})  B={B.rsquared:.3f}  C={C_.rsquared:.3f}/{C_base.rsquared:.3f} n={int(C_.nobs)}  BP p={bp_p:.1e} maxVIF={vif['VIF'].max():.2f} cooks>4/n={n_cooks}")
+    print(fmt(coef_table(A))); print(f"\njoint F interactions: {joint_F}"); print(f"\nmain={main_name} | " + " ".join(f"{k}={v:.3f}" for k, v in rc.items())); print(vif.round(2).to_string()); print(f"\nR2 A={A.rsquared:.3f} int={AI.rsquared:.3f} (no Carnegie {A_noc.rsquared:.3f}; prev spec {A_prev.rsquared:.3f}; original spec all schools {A0.rsquared:.3f}; n excluded {len(sf)})  B={B.rsquared:.3f}  C={C_.rsquared:.3f}/{C_base.rsquared:.3f} n={int(C_.nobs)}  BP p={bp_p:.1e} maxVIF={vif['VIF'].max():.2f} cooks>4/n={n_cooks}")
 
 
 if __name__ == "__main__":

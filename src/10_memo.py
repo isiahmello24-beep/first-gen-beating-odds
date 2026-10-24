@@ -29,66 +29,41 @@ def peers(rows):
     return "\n".join(f"| {r['school']} ({r['state']}) | {r['carnegie']} | {r['cohort']:,} | {r['pell']:.0%} | {r['actual']:.0%} | {r['predicted']:.0%} | {r['resid_eb_pp']:+.0f} |" for r in rows)
 
 
-memo = f"""# Memo: Which colleges beat the odds on first-generation completion, and what they spent on
+lm = s7["level_vs_mix"]
+mix_line = (f"With total spending held fixed, the mix still matters, modestly: one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points of residual (p = {pv(lm['p']['acad_share'])}), one SD more instruction share {lm['pp_per_sd_instr_share']:+.1f} (p = {pv(lm['p']['instr_share'])}); a 10% larger core budget adds {lm['pp_per_10pct_core']:+.1f}. Level explains more than mix (R² {lm['r2_level_only']:.3f} vs {lm['r2_mix_only']:.3f})."
+            if lm["shares_hold"] else
+            f"With total spending held fixed, the mix does not matter: instruction and academic-support shares are not significant (p = {pv(lm['p']['instr_share'])}, {pv(lm['p']['acad_share'])}). Over-performers simply spend more; a 10% larger core budget is associated with {lm['pp_per_10pct_core']:+.1f} points.")
+headline = ("Schools that beat their prediction spent more per student, and tilted that money toward instruction and academic support" if lm["shares_hold"]
+            else "Schools that beat their prediction spent more per student; how they split it did not matter")
 
-**To:** Director of Student Success  **From:** Isiah Mello  **Date:** {today}
-**Data:** College Scorecard (Oct 2026 release), IPEDS finance FY2018-FY2023, Opportunity Insights; {s5['n']:,} four-year public and private nonprofit colleges ({s5['n_excluded']} special-focus, adult- or online-dominant, or anomalous-data schools listed separately).
+memo = f"""# Memo: {headline}
 
-## Bottom line: the answer depends on your sector
+**To:** Director of Student Success · **From:** Isiah Mello · **Date:** {today}
 
-For first-generation students who entered college in 2017-18, the schools that graduated them well above what their student mix predicts spent more per student than comparable under-performers, but *where* the extra money sat differs by sector:
+## The answer depends on your sector
 
-- **Public universities.** Ranked against other publics, over-performers spent more on every core function during the cohort's years: instruction {pub['Instruction']['median_ratio']:.2f}× (p = {pv(pub['Instruction']['mann_whitney_p'])}), academic support {pub['Academic support']['median_ratio']:.2f}× (p = {pv(pub['Academic support']['mann_whitney_p'])}), student services {pub['Student services']['median_ratio']:.2f}× (p = {pv(pub['Student services']['mann_whitney_p'])}), institutional support {pub['Institutional support']['median_ratio']:.2f}×. The public signal is "more of everything that touches students," not a reallocation.
-- **Private nonprofits.** Over-performers spent {prv['Instruction']['median_ratio']:.2f}× on instruction and {prv['Academic support']['median_ratio']:.2f}× on academic support (both p < 0.001), with **no** student-services difference ({prv['Student services']['median_ratio']:.2f}×, p = {pv(prv['Student services']['mann_whitney_p'])}).
+For first-generation students who entered in 2017-18, schools that graduated them well above prediction spent more per student during those years than under-performers. Where the money sat differs by sector:
 
-Pooling both sectors, the instruction ({pf['Instruction']['median_ratio']:.2f}×) and academic-support ({pf['Academic support']['median_ratio']:.2f}×) gaps are clear and the student-services gap is zero ({pf['Student services']['median_ratio']:.2f}×), but that pooled picture is driven by private colleges: restricted to publics, the pooled-decile gaps shrink to {s7['within_control']['Public']['per_fte']['Instruction']['median_ratio']:.2f}× and {s7['within_control']['Public']['per_fte']['Academic support']['median_ratio']:.2f}× and are not statistically significant. A public director should read the public-only row, not the headline. This is a school-level correlation, not proof that moving money moves completion.
+- **Public universities** (ranked against publics): more on every core function. Instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×, institutional support {pub['Institutional support']['median_ratio']:.2f}× (medians, FY2018-23).
+- **Private nonprofits:** instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}×, with no student-services difference ({prv['Student services']['median_ratio']:.2f}×).
 
-## What we measured
+After correcting for {s7['bh']['n_tests']} comparisons, the instruction and academic-support gaps survive in every sector, Carnegie group and timing window; the student-services gap survives in none. {mix_line}
 
-- **Outcome:** share of first-generation federal-aid students in the 2017-18 entry cohort who completed at the same school within 6 years (mean {s5['outcome_mean']:.0%}, standard deviation {s5['outcome_sd']:.0%}).
-- **Timing:** predictors are the school's 2017-18 values; spending is averaged over fiscal years 2018-2023, the years the cohort was enrolled.
-- **Prediction model:** OLS on Pell share, admission rate, enrollment, part-time share, first-gen share, share of students aged 25+, share exclusively online, HBCU and Carnegie classification, all measured in 2017-18, with every slope allowed to differ between public and private schools (R² = {s5['r2_main']:.2f}). This interaction model was chosen over a single pooled slope because its ranking agrees with sector-only rankings far better ({s5['ranking_comparison']['overlap_int_vs_sector_public']:.0%} / {s5['ranking_comparison']['overlap_int_vs_sector_private']:.0%} top-decile overlap vs {s5['ranking_comparison']['overlap_pool_vs_sector_public']:.0%} / {s5['ranking_comparison']['overlap_pool_vs_sector_private']:.0%}). Spending is deliberately left out so the comparison above is not circular.
-- **Residual = actual − predicted,** shrunk toward zero for small cohorts (empirical Bayes). A 60-student cohort keeps about {s6['shrink_min']:.0%} of its raw residual, a 3,000-student cohort nearly all of it. Shrinkage removed {s6['top_decile_left']} schools from the top decile, all {s6['top_decile_left_under100']} with cohorts under 100. Top 10% = {s6['top_decile_n']} schools at **+{s6['top_decile_cut_pp']:.0f} points or better**.
+**Method.** {s5['n']:,} four-year public and private nonprofit colleges. Completion of first-gen federal-aid students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts. Top 10% = {s6['top_decile_n']} schools at +{s6['top_decile_cut_pp']:.0f} points or better; the ranking is stable across 1,000 bootstrap resamples.
 
-## What the model says about student mix (pooled slopes, for orientation)
+## Peers worth a call (Pell share ≥ 50%)
 
-Holding other traits fixed, each 10-point rise in Pell share predicts {abs(cA['pctpell'])*10:.1f} points lower first-gen completion; each 10-point rise in admission rate predicts {abs(cA['adm_rate'])*10:.1f} points lower; a 10-point rise in part-time share predicts {abs(cA['pptug_ef'])*10:.1f} points lower; HBCUs run {cA['hbcu_flag']*100:+.1f} points. Pell share and first-gen share overlap (correlation {s5['corr_pell_firstgen']:.2f}), so read them as one combined disadvantage headwind rather than two separate levers.
-
-## Pooled spending, top 10% vs bottom 10% (median dollars per FTE, FY2018-23 average)
-
-| Category | Top 10% | Bottom 10% | Ratio | Mann-Whitney p |
-|---|---:|---:|---:|---:|
-{row('Instruction', pf, 'Instruction')}
-{row('Academic support (advising, tutoring, libraries)', pf, 'Academic support')}
-{row('Student services (admissions, counseling, activities)', pf, 'Student services')}
-{row('Institutional support (administration)', pf, 'Institutional support')}
-
-Budgets sum to 100%, so a larger instruction share is the same fact as more instruction dollars, not a second finding. The gap also holds within Carnegie type: doctoral universities instruction {carn['Doctoral']['per_fte']['Instruction']['median_ratio']:.2f}× and academic support {carn['Doctoral']['per_fte']['Academic support']['median_ratio']:.2f}×; master's {carn["Master's"]['per_fte']['Instruction']['median_ratio']:.2f}× and {carn["Master's"]['per_fte']['Academic support']['median_ratio']:.2f}×; baccalaureate {carn['Baccalaureate']['per_fte']['Instruction']['median_ratio']:.2f}× and {carn['Baccalaureate']['per_fte']['Academic support']['median_ratio']:.2f}×.
-
-## Peers worth a phone call (high-Pell schools, Pell share ≥ 50% in 2017-18, largest shrunken residuals)
-
-| School | Carnegie | First-gen cohort | Pell | Actual | Predicted | Residual (pts) |
+| School | Type | Cohort | Pell | Actual | Predicted | Residual |
 |---|---|---:|---:|---:|---:|---:|
 {peers(s6['top5_high_pell'])}
 
-## Does it hold up?
-
-- **Multiple comparisons and influence:** after a Benjamini-Hochberg correction across all {s7['bh']['n_tests']} spending tests, the instruction and academic-support gaps survive in every comparison (pooled, each sector, each Carnegie group, each timing window) and the student-services gap survives in none. Dropping the {s7['n_cooks_dropped']} most influential schools leaves instruction at {s7['per_fte_no_cooks']['Instruction']['median_ratio']:.2f}× and academic support at {s7['per_fte_no_cooks']['Academic support']['median_ratio']:.2f}×.
-- **Timing variants:** using only FY2018-19 spending (the cohort's first two years) gives instruction {f1819['Instruction']['median_ratio']:.2f}× and academic support {f1819['Academic support']['median_ratio']:.2f}×; all six years in constant FY2023 dollars gives {real['Instruction']['median_ratio']:.2f}× and {real['Academic support']['median_ratio']:.2f}×. The gaps do not depend on the window or on inflation.
-- **Bootstrap (1,000 resamples):** the {bs['n_top_decile']} top-decile schools stay top-decile in {bs['mean_p_top_among_point_top']:.0%} of resamples on average; {bs['share_p_ge_0_9']:.0%} of them in at least 90% of resamples.
-- **Sector models** rank schools consistently with the pooled model (Spearman {sec['Public']['spearman_vs_pooled']:.2f} public, {sec['Private nonprofit']['spearman_vs_pooled']:.2f} private).
-- **Spending in the model:** adding core spending per student and the undergraduate share of enrollment raises R² from {s5['r2_A']:.2f} to {s5['r2_B']:.2f}; a 10% higher budget per student is associated with {s5['pp_per_10pct_spending']:+.1f} points.
-- **What the review changed:** the first version used a stale Scorecard file, 2024 traits, FY2023-only spending and no Carnegie control; only {s6['top20_overlap_vs_v1']} of its top-20 schools survive (rank correlation {s6['spearman_vs_v1_mistimed']:.2f}). The instruction and academic-support finding survived every fix.
-
 ## Limitations
 
-1. **School-level data.** We see institutions, not students; a school can over-perform because of program mix or who it enrolls in ways the model does not capture. Special-focus colleges (nursing, faith, arts), adult- or online-dominant campuses, and schools with implausible reported rates are excluded for this reason and listed separately.
-2. **Correlation only.** Over-performers spent differently; we cannot say that reallocating dollars would change completion.
-3. **Definition.** Completion at the same institution for federal-aid students; transfer-out completers count as non-completers. Privacy suppression removes the smallest schools.
+1. **School-level data.** We see institutions, not students; program mix or unmeasured preparation can produce a residual that has nothing to do with practice. Special-focus, adult-dominant and online-dominant campuses are listed separately for this reason.
+2. **Correlation only.** Over-performers spent differently; nothing here shows that reallocating dollars would change completion.
+3. **Definition.** Transfer-out completers count as non-completers, and privacy suppression removes the smallest schools.
 
-## Suggested next step
-
-Pick five peers from the table above in your own sector and compare advising ratios, tutoring reach and gateway-course redesign, the activities that sit inside "instruction" and "academic support" in IPEDS. The dashboard (`streamlit run app/app.py`) filters the ranking by state, sector, Carnegie group, size and Pell share.
+Full method and rankings: `streamlit run app/app.py`.
 """
 (ROOT / "memo/memo.md").write_text(memo)
 
@@ -107,13 +82,15 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 - **Model:** OLS of first-gen same-institution 6-year completion on Pell share, admission rate, log enrollment, part-time share, first-gen share, share aged 25+, share exclusively online, HBCU and Carnegie group, with private × every trait (**R² = {s5['r2_main']:.3f}**; pooled version {s5['r2_A']:.3f}), HC3 robust SEs. The interaction model is the ranking model because its top decile overlaps the sector-only rankings at {s5['ranking_comparison']['overlap_int_vs_sector_public']:.0%} (public) and {s5['ranking_comparison']['overlap_int_vs_sector_private']:.0%} (private). Spending is not in the model.
 - **Ranking:** residual = actual − predicted, shrunk toward zero for small cohorts (empirical Bayes; τ = {s6['tau_pp']:.1f} pts). Shrinkage removed {s6['top_decile_left']} small-cohort schools from the top decile. Top decile ({s6['top_decile_n']} schools) beat prediction by **≥ {s6['top_decile_cut_pp']:.1f} points**.
 - **Spending, by sector:** in a public-only model, over-performing publics spent more on all four core functions (instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×). In a private-only model the gap is instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}× with no student-services difference. Pooled: instruction {pf['Instruction']['median_ratio']:.2f}×, academic support {pf['Academic support']['median_ratio']:.2f}× (p < 0.001), student services {pf['Student services']['median_ratio']:.2f}×.
+- **Slopes differ by sector:** joint Wald F test of the eight private × trait terms, F({s5['joint_F_interactions']['df_num']}, {s5['joint_F_interactions']['df_denom']}) = {s5['joint_F_interactions']['F']:.2f}, p = {s5['joint_F_interactions']['p']:.1e}. A fractional-logit version of the model ranks schools identically in practice (Spearman {s8['fractional_logit']['spearman_vs_main']:.3f}, top-decile overlap {s8['fractional_logit']['top_decile_overlap_vs_main']:.0%}).
+- **Level vs mix:** regressing the shrunken residual on log core spending, instruction share and academic-support share (sector and Carnegie controls): {'shares remain significant with the level fixed' if s7['level_vs_mix']['shares_hold'] else 'shares are not significant once the level is fixed'} (instruction share p = {s7['level_vs_mix']['p']['instr_share']:.3f}, academic support p = {s7['level_vs_mix']['p']['acad_share']:.3f}), but level explains more (R² {s7['level_vs_mix']['r2_level_only']:.3f} vs {s7['level_vs_mix']['r2_mix_only']:.3f}).
 - **Robustness:** a Benjamini-Hochberg correction across {s7['bh']['n_tests']} spending tests keeps the instruction and academic-support gaps everywhere and the student-services gap nowhere; dropping {s7['n_cooks_dropped']} Cook's-flagged schools leaves them at {s7['per_fte_no_cooks']['Instruction']['median_ratio']:.2f}× / {s7['per_fte_no_cooks']['Academic support']['median_ratio']:.2f}×. Results hold with FY2018-19 spending only ({f1819['Instruction']['median_ratio']:.2f}× / {f1819['Academic support']['median_ratio']:.2f}×), in constant FY2023 dollars ({real['Instruction']['median_ratio']:.2f}× / {real['Academic support']['median_ratio']:.2f}×), and within each Carnegie group. A 1,000-resample bootstrap keeps top-decile schools in the top decile {bs['mean_p_top_among_point_top']:.0%} of the time.
 
 ![spending](reports/figures/07_spending_top_vs_bottom.png)
 
 ## What changed after review (see `decisions.md`)
 
-Four review passes found fourteen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, and an unreported VIF. All are fixed. Only {s6['top20_overlap_vs_v1']} of the original top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
+Five review passes found seventeen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, an unreported VIF, no joint test of the sector interactions, no check that spending *mix* matters with the level fixed, and no non-linear check on a 0-1 outcome. All are fixed. Only {s6['top20_overlap_vs_v1']} of the original top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
 
 ## Data
 
@@ -130,10 +107,20 @@ Join key: `UNITID`. Opportunity Insights is reached via OPEID → `super_opeid`.
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt          # or requirements.lock.txt for the exact versions used (Python 3.14)
 for s in src/0[1-8]_*.py src/10_memo.py; do python "$s"; done
 streamlit run app/app.py
 ```
+
+Raw data (~600 MB) is gitignored and re-downloaded by the first script. The cleaned outputs in `data/clean/` are committed, so the dashboard and all reports work without downloading anything.
+
+## Deploy the dashboard (Streamlit Community Cloud)
+
+1. Push this repository to GitHub (public or private; Community Cloud can read either).
+2. At share.streamlit.io choose **New app**, select the repo and branch, set **Main file path** to `app/app.py`.
+3. Under **Advanced settings** pick Python 3.12 or 3.13 (Cloud does not offer 3.14 yet) and leave the requirements file as `requirements.txt`; the lock file is for local reproduction on 3.14.
+4. Deploy. The app reads `data/clean/analysis_scored.parquet`, `data/clean/bootstrap_ranks.csv` and `reports/results.json` from the repo, so no secrets, databases or downloads are needed.
+5. After any pipeline rerun, commit the updated `data/clean/` and `reports/results.json`; Cloud redeploys on push.
 
 ## Pipeline (one script per build step)
 
@@ -151,7 +138,7 @@ streamlit run app/app.py
 | 10 | `src/10_memo.py` | `memo/memo.md`, this README |
 | check | `reports/11_spot_check.md` | three schools checked by hand against the College Scorecard website |
 
-`reports/06_rankings.md` also lists every California State University campus (raw and shrunken residual, rank, decile) and how the top 20 changed at each review pass.
+`requirements.lock.txt` pins the exact package versions used (Python 3.14). `reports/06_rankings.md` also lists every California State University campus (raw and shrunken residual, rank, decile) and how the top 20 changed at each review pass.
 
 `decisions.md` logs every modeling and cleaning choice with its reason. `reports/results.json` holds the key numbers the memo, README and dashboard read.
 

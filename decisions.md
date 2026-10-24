@@ -67,3 +67,11 @@ One line per decision: what was chosen and why.
 - Spending comparison repeated without the schools flagged by Cook's distance (4/n rule) under the ranking model: the instruction and academic-support gaps grow slightly, so no handful of influential schools creates them.
 - Benjamini-Hochberg false-discovery-rate correction applied across every Mann-Whitney p-value Step 7 produces (100 tests): the instruction and academic-support gaps survive at FDR 0.05 in every comparison and the student-services gap in none, which is the claim the memo now makes.
 - VIF reported for every predictor; only the share aged 25+ exceeds 5 (5.03), driven by its overlap with part-time share and enrollment; Pell share (2.43) and first-gen share (2.58) correlate at 0.62, so the memo reads them as one combined headwind.
+
+## Fifth review pass (2026-10-23)
+
+- Joint Wald F test (HC3) on the eight private × trait terms: F(8, 1178) = 6.82, p < 1e-8, so the interaction model is justified by a test as well as by the ranking-overlap rule.
+- Level vs mix: the shrunken residual regressed on log core spending per FTE, instruction share and academic-support share with sector and Carnegie controls keeps both shares significant (p 0.047 and 0.004) but total spending explains more (R² 0.044 vs 0.018 for the mix alone); the memo headline is generated from this verdict so it cannot drift from the result.
+- Fractional logit (binomial GLM, logit link) of the main model: Spearman 0.999 and 96% top-decile overlap with the OLS ranking, so the linear model is kept for interpretability with the logit reported as a check.
+- Memo cut to under 450 words: sector split first, peer table, three limitations; everything else lives in the reports and dashboard.
+- Public release: raw data confirmed absent from git, requirements.lock.txt pinned from the working environment (Python 3.14), Streamlit Community Cloud steps in the README (select Python 3.12/3.13 there and use requirements.txt).
