@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 st.set_page_config(page_title="First-Gen Completion: Over-performing Colleges", layout="wide", page_icon="🎓")
 CORE = {"exp_instruction": "Instruction", "exp_academic_support": "Academic support", "exp_student_services": "Student services", "exp_institutional_support": "Institutional support"}
 CARN = "C(carnegie_group, Treatment(reference=\"Master's\"))"
-LABELS = {"pctpell": "Pell share", "adm_rate": "Admission rate", "log_ugds": "log(enrollment)", "pptug_ef": "Part-time share", "first_gen": "First-gen share",
+LABELS = {**{f"private:{t}": f"Private × {v}" for t, v in {"pctpell": "Pell share", "adm_rate": "admission rate", "log_ugds": "log(enrollment)", "pptug_ef": "part-time share", "first_gen": "first-gen share", "ug25abv": "share aged 25+", "pct_distance": "share online", "hbcu_flag": "HBCU"}.items()},
+          "pctpell": "Pell share", "adm_rate": "Admission rate", "log_ugds": "log(enrollment)", "pptug_ef": "Part-time share", "first_gen": "First-gen share",
           "ug25abv": "Share aged 25+", "pct_distance": "Share exclusively online", "private": "Private nonprofit", "hbcu_flag": "HBCU", f"{CARN}[T.Doctoral]": "Carnegie: Doctoral", f"{CARN}[T.Baccalaureate]": "Carnegie: Baccalaureate"}
 TOP, BOT = "#2a9d8f", "#e76f51"
 
@@ -42,7 +43,7 @@ tab_over, tab_rank, tab_spend, tab_school, tab_method = st.tabs(["Overview", "Ra
 with tab_over:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Schools in model", f"{s5['n']:,}", f"+{s5['n_excluded']} excluded, scored separately")
-    c2.metric("R² (Model A)", f"{s5['r2_A']:.2f}")
+    c2.metric(f"R² ({s5['main_model']})", f"{s5['r2_main']:.2f}", f"pooled Model A {s5['r2_A']:.2f}")
     c3.metric("Mean first-gen 6-yr completion", f"{s5['outcome_mean']:.1%}")
     c4.metric("Top-decile residual cut", f"+{s6['top_decile_cut_pp']:.1f} pts")
     left, right = st.columns([3, 2])
@@ -56,10 +57,11 @@ with tab_over:
     with right:
         terms = [k for k in LABELS if k in s5["coef_A"]]
         co = pd.DataFrame({"term": [LABELS[k] for k in terms], "coef": [s5["coef_A"][k] for k in terms], "se": [s5["se_A"][k] for k in terms]})
+        st.caption(f"Coefficients shown are the pooled Model A (one slope per trait). The ranking uses {s5['main_model']}, which lets every slope differ between public and private schools; its coefficients are in reports/05_regression.md.")
         figc = go.Figure(go.Bar(x=co["coef"], y=co["term"], orientation="h", error_x=dict(type="data", array=1.96 * co["se"]), marker_color="#457b9d"))
         figc.update_layout(title="Model A coefficients (±95% CI, HC3)", xaxis_title="Change in completion rate per 1-unit change", height=520, yaxis=dict(autorange="reversed"))
         st.plotly_chart(figc, use_container_width=True)
-    st.markdown(f"**Reading the model.** A 10-point higher Pell share (in 2017-18) predicts {abs(s5['coef_A']['pctpell'])*10:.1f} points lower first-gen completion; a 10-point higher admission rate predicts "
+    st.markdown(f"**Reading the pooled model.** A 10-point higher Pell share (in 2017-18) predicts {abs(s5['coef_A']['pctpell'])*10:.1f} points lower first-gen completion; a 10-point higher admission rate predicts "
                 f"{abs(s5['coef_A']['adm_rate'])*10:.1f} points lower; doubling enrollment predicts {s5['coef_A']['log_ugds']*np.log(2)*100:+.1f} points. Spending is not in this model. "
                 f"Adding FY2018-23 core spending per student (Model B) lifts R² from {s5['r2_A']:.2f} to {s5['r2_B']:.2f}: a 10% higher budget per student is associated with {s5['pp_per_10pct_spending']:+.2f} points.")
 
@@ -152,9 +154,9 @@ with tab_method:
 
 **Sample.** {s5['n']:,} schools (Carnegie doctoral, master's, baccalaureate) after dropping privacy-suppressed outcomes, first-gen cohorts under 50, schools missing an entry-year predictor, and schools with fewer than 3 fiscal years of finance data. Scored but not ranked: {s5['n_special_focus']} special-focus / tribal schools, {s5['n_nontraditional']} campuses with more than 50% of undergraduates aged 25+ or exclusively online, and {s5['n_anomaly']} schools with implausible Scorecard completion rates.
 
-**Model A.** OLS: first-gen 6-year same-institution completion ~ Pell share + admission rate (open-admission = 1.0) + log enrollment + part-time share + first-gen share + private + HBCU + distance-only + Carnegie group. HC3 robust SEs. R² = {s5['r2_A']:.3f}. Residual = actual − predicted, then shrunk toward zero by τ²/(τ²+σ²) with σ² the binomial variance for the school's first-gen cohort (empirical Bayes; τ = {s6['tau_pp']:.1f} pts, median shrink {s6['shrink_median']:.2f}). Spending is left out on purpose so the spending comparison is not circular; Model B adds log core spending per FTE and the undergraduate share of FTE (R² {s5['r2_B']:.3f}).
+**Models.** Pooled Model A, OLS: first-gen 6-year same-institution completion ~ Pell share + admission rate (open-admission = 1.0) + log enrollment + part-time share + first-gen share + private + HBCU + distance-only + Carnegie group. HC3 robust SEs. R² = {s5['r2_A']:.3f}. Residual = actual − predicted, then shrunk toward zero by τ²/(τ²+σ²) with σ² the binomial variance for the school's first-gen cohort (empirical Bayes; τ = {s6['tau_pp']:.1f} pts, median shrink {s6['shrink_median']:.2f}). The ranking model is {s5['main_model']}: Model A plus private × every trait, adopted because its shrunken ranking overlaps the public-only and private-only rankings' top deciles at {s5['ranking_comparison']['overlap_int_vs_sector_public']:.0%} and {s5['ranking_comparison']['overlap_int_vs_sector_private']:.0%} versus {s5['ranking_comparison']['overlap_pool_vs_sector_public']:.0%} and {s5['ranking_comparison']['overlap_pool_vs_sector_private']:.0%} for the pooled model (R² {s5['r2_main']:.3f}). Spending is left out on purpose so the spending comparison is not circular; Model B adds log core spending per FTE and the undergraduate share of FTE (R² {s5['r2_B']:.3f}).
 
-**Robustness.** Spending gaps hold with FY2018-19 spending only, in constant FY2023 dollars (BLS CPI-U), and within each Carnegie group. Bootstrap of 1,000 resamples (shrinkage re-applied each draw): top-decile schools stay top-decile {bs['mean_p_top_among_point_top']:.0%} of the time; two random resamples share {bs['mean_pairwise_top_decile_overlap']:.0%} of their top decile. Separate public and private models rank schools consistently with the pooled model (Spearman {sec['Public']['spearman_vs_pooled']:.2f} / {sec['Private nonprofit']['spearman_vs_pooled']:.2f}). Dropping the largest 5% of schools: Spearman {s8['drop5']['spearman']:.3f} (weak test, kept because the brief asked).
+**Robustness.** Spending gaps hold with FY2018-19 spending only, in constant FY2023 dollars (BLS CPI-U), within each Carnegie group, and after dropping the {s7['n_cooks_dropped']} Cook's-distance-flagged schools; a Benjamini-Hochberg correction across all {s7['bh']['n_tests']} spending p-values keeps the instruction and academic-support gaps in every comparison and never the student-services gap. VIF: only the share aged 25+ exceeds 5 ({s5['vif']['ug25abv']:.2f}); Pell share and first-gen share correlate at {s5['corr_pell_firstgen']:.2f} with VIFs of {s5['vif']['pctpell']:.2f} and {s5['vif']['first_gen']:.2f}. Bootstrap of 1,000 resamples (shrinkage re-applied each draw): top-decile schools stay top-decile {bs['mean_p_top_among_point_top']:.0%} of the time; two random resamples share {bs['mean_pairwise_top_decile_overlap']:.0%} of their top decile. Separate public and private models rank schools consistently with the pooled model (Spearman {sec['Public']['spearman_vs_pooled']:.2f} / {sec['Private nonprofit']['spearman_vs_pooled']:.2f}). Dropping the largest 5% of schools: Spearman {s8['drop5']['spearman']:.3f} (weak test, kept because the brief asked).
 
 **What changed after review.** The first build used a stale Scorecard file, 2024 traits, FY2023-only spending and no Carnegie control. Only {s6['top20_overlap_vs_v1']} of its top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support spending pattern held.
 

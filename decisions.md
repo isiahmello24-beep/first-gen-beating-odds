@@ -59,3 +59,11 @@ One line per decision: what was chosen and why.
 - Outcome-anomaly screen added: a school whose first-gen AND non-first-gen 6-year Scorecard rates are both below 25% of its IPEDS 150%-time graduation rate is listed, not ranked. San Jose State (3.8% and 4.5% vs 68%) made this necessary; the two measures differ in definition but not by a factor of four, so this is treated as a reporting problem rather than a true outcome.
 - The pre-pass ranking is archived as reports/archive/v2_... and compared in Step 6 (Spearman 0.980, 14 of 20 top-20 schools retained), so the effect of the new controls is visible.
 - Pre-COVID (FY2018-19), constant-dollar and undergraduate-FTE-share checks were already completed in the second pass; they are reported again with the new sample in reports/07 and 05.
+
+## Fourth review pass (2026-10-23)
+
+- Interaction model (private × every trait, Carnegie dummies shared) adopted as the ranking model by a pre-stated rule: its shrunken top decile overlaps the public-only ranking at 96% and the private-only ranking at 96%, against 69% and 89% for the pooled model; the pooled coefficients are still reported for orientation because single slopes are easier to read.
+- The switch moved large public universities down the list (e.g. SDSU from rank 47 to 116, still top decile) because the public slope on part-time share and enrollment differs from the pooled one; this is reported in Step 6 rather than hidden, and the v3 pooled-control ranking is archived.
+- Spending comparison repeated without the schools flagged by Cook's distance (4/n rule) under the ranking model: the instruction and academic-support gaps grow slightly, so no handful of influential schools creates them.
+- Benjamini-Hochberg false-discovery-rate correction applied across every Mann-Whitney p-value Step 7 produces (100 tests): the instruction and academic-support gaps survive at FDR 0.05 in every comparison and the student-services gap in none, which is the claim the memo now makes.
+- VIF reported for every predictor; only the share aged 25+ exceeds 5 (5.03), driven by its overlap with part-time share and enrollment; Pell share (2.43) and first-gen share (2.58) correlate at 0.62, so the memo reads them as one combined headwind.

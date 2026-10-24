@@ -1,5 +1,83 @@
 {
   "step5": {
+    "main_model": "A-int (interaction)",
+    "main_formula": "firstgen_comp_orig_yr6_rt ~ pctpell + adm_rate + log_ugds + pptug_ef + first_gen + ug25abv + pct_distance + private + hbcu_flag + C(carnegie_group, Treatment(reference=\"Master's\")) + private:pctpell + private:adm_rate + private:log_ugds + private:pptug_ef + private:first_gen + private:ug25abv + private:pct_distance + private:hbcu_flag",
+    "use_interaction": true,
+    "ranking_comparison": {
+      "spearman_int_vs_pool": 0.9729,
+      "top_decile_overlap_int_vs_pool": 0.8167,
+      "spearman_int_vs_sector_public": 0.9946,
+      "spearman_pool_vs_sector_public": 0.9565,
+      "overlap_int_vs_sector_public": 0.9592,
+      "overlap_pool_vs_sector_public": 0.6939,
+      "spearman_int_vs_sector_private": 0.9986,
+      "spearman_pool_vs_sector_private": 0.9798,
+      "overlap_int_vs_sector_private": 0.9577,
+      "overlap_pool_vs_sector_private": 0.8873
+    },
+    "r2_int": 0.5503,
+    "r2_main": 0.5503,
+    "coef_main": {
+      "Intercept": 0.28756,
+      "C(carnegie_group, Treatment(reference=\"Master's\"))[T.Baccalaureate]": 3e-05,
+      "C(carnegie_group, Treatment(reference=\"Master's\"))[T.Doctoral]": 0.00679,
+      "pctpell": -0.21054,
+      "adm_rate": -0.21318,
+      "log_ugds": 0.05221,
+      "pptug_ef": -0.3748,
+      "first_gen": 0.08275,
+      "ug25abv": 0.12094,
+      "pct_distance": -0.20754,
+      "private": 0.17641,
+      "hbcu_flag": -0.11171,
+      "private:pctpell": -0.16715,
+      "private:adm_rate": 0.09958,
+      "private:log_ugds": -0.00615,
+      "private:pptug_ef": 0.15327,
+      "private:first_gen": -0.38348,
+      "private:ug25abv": 0.19642,
+      "private:pct_distance": -0.02767,
+      "private:hbcu_flag": 0.00566
+    },
+    "p_main": {
+      "Intercept": 0.00012,
+      "C(carnegie_group, Treatment(reference=\"Master's\"))[T.Baccalaureate]": 0.99712,
+      "C(carnegie_group, Treatment(reference=\"Master's\"))[T.Doctoral]": 0.43349,
+      "pctpell": 3e-05,
+      "adm_rate": 0.0,
+      "log_ugds": 0.0,
+      "pptug_ef": 0.00102,
+      "first_gen": 0.29546,
+      "ug25abv": 0.29844,
+      "pct_distance": 0.01245,
+      "private": 0.05216,
+      "hbcu_flag": 0.0,
+      "private:pctpell": 0.0132,
+      "private:adm_rate": 0.00823,
+      "private:log_ugds": 0.47174,
+      "private:pptug_ef": 0.26516,
+      "private:first_gen": 0.00118,
+      "private:ug25abv": 0.17173,
+      "private:pct_distance": 0.78115,
+      "private:hbcu_flag": 0.87138
+    },
+    "vif": {
+      "pctpell": 2.43,
+      "adm_rate": 1.1,
+      "log_ugds": 3.45,
+      "pptug_ef": 3.74,
+      "first_gen": 2.58,
+      "ug25abv": 5.03,
+      "pct_distance": 1.76,
+      "private": 2.21,
+      "hbcu_flag": 1.44,
+      "carnegie_group_Baccalaureate": 1.64,
+      "carnegie_group_Doctoral": 1.68
+    },
+    "vif_over5": [
+      "ug25abv"
+    ],
+    "corr_pell_firstgen": 0.621,
     "n": 1198,
     "n_special_focus": 50,
     "n_nontraditional": 49,
@@ -54,21 +132,21 @@
       "private": 0.00939,
       "hbcu_flag": 0.01784
     },
-    "r2_B": 0.5596,
-    "coef_B_log_core": 0.08571,
+    "r2_B": 0.5832,
+    "coef_B_log_core": 0.08755,
     "p_B_log_core": 0.0,
-    "pp_per_10pct_spending": 0.817,
-    "pp_per_10pct_spending_no_ugshare": 0.83,
-    "r2_B_no_ugshare": 0.5591,
-    "coef_B_ug_share": -0.03375,
-    "p_B_ug_share": 0.32991,
+    "pp_per_10pct_spending": 0.834,
+    "pp_per_10pct_spending_no_ugshare": 0.845,
+    "r2_B_no_ugshare": 0.5829,
+    "coef_B_ug_share": -0.02823,
+    "p_B_ug_share": 0.42104,
     "n_C": 1013,
-    "r2_C": 0.5446,
-    "r2_C_base": 0.5011,
-    "coef_C_sat_per_100": 0.05385,
-    "bp_p": 0.03115417700185405,
-    "jb_p": 6.187570652546509e-05,
-    "n_cooks_4n": 69,
+    "r2_C": 0.5648,
+    "r2_C_base": 0.5258,
+    "coef_C_sat_per_100": 0.05176,
+    "bp_p": 0.014191968089901948,
+    "jb_p": 1.847271347650198e-06,
+    "n_cooks_4n": 82,
     "max_vif": 5.03,
     "outcome_mean": 0.5125,
     "outcome_sd": 0.152,
@@ -77,45 +155,19 @@
   "step6": {
     "n_ranked": 1198,
     "top_decile_n": 120,
-    "top_decile_cut_pp": 11.76,
-    "bottom_decile_cut_pp": -12.51,
-    "tau2": 0.009704,
-    "tau_pp": 9.85,
-    "shrink_median": 0.9159,
-    "shrink_min": 0.6644,
-    "spearman_raw_vs_eb": 0.9982,
-    "top_decile_left": 10,
-    "top_decile_left_under100": 10,
-    "top_decile_entered": 10,
-    "bottom_decile_left": 6,
-    "bottom_decile_left_under100": 3,
+    "top_decile_cut_pp": 11.21,
+    "bottom_decile_cut_pp": -12.04,
+    "tau2": 0.009157,
+    "tau_pp": 9.57,
+    "shrink_median": 0.9116,
+    "shrink_min": 0.6513,
+    "spearman_raw_vs_eb": 0.9979,
+    "top_decile_left": 11,
+    "top_decile_left_under100": 8,
+    "top_decile_entered": 11,
+    "bottom_decile_left": 10,
+    "bottom_decile_left_under100": 6,
     "top5": [
-      {
-        "school": "University of California-Merced",
-        "state": "CA",
-        "carnegie": "Doctoral",
-        "ugds": 7375,
-        "cohort": 1343,
-        "pell": 0.61,
-        "actual": 0.692,
-        "predicted": 0.419,
-        "resid_pp": 27.3,
-        "resid_eb_pp": 26.8,
-        "rank_raw": 3
-      },
-      {
-        "school": "California State University-Channel Islands",
-        "state": "CA",
-        "carnegie": "Master's",
-        "ugds": 7047,
-        "cohort": 1105,
-        "pell": 0.51,
-        "actual": 0.709,
-        "predicted": 0.449,
-        "resid_pp": 26.0,
-        "resid_eb_pp": 25.4,
-        "rank_raw": 5
-      },
       {
         "school": "Warner Pacific University",
         "state": "OR",
@@ -124,9 +176,9 @@
         "cohort": 135,
         "pell": 0.52,
         "actual": 0.637,
-        "predicted": 0.34,
-        "resid_pp": 29.7,
-        "resid_eb_pp": 25.4,
+        "predicted": 0.323,
+        "resid_pp": 31.4,
+        "resid_eb_pp": 26.7,
         "rank_raw": 1
       },
       {
@@ -137,37 +189,35 @@
         "cohort": 4066,
         "pell": 0.43,
         "actual": 0.744,
-        "predicted": 0.493,
-        "resid_pp": 25.1,
-        "resid_eb_pp": 24.9,
-        "rank_raw": 6
+        "predicted": 0.488,
+        "resid_pp": 25.6,
+        "resid_eb_pp": 25.4,
+        "rank_raw": 4
       },
       {
-        "school": "Columbia College",
-        "state": "SC",
+        "school": "Heritage University",
+        "state": "WA",
         "carnegie": "Master's",
-        "ugds": 1378,
-        "cohort": 163,
-        "pell": 0.47,
-        "actual": 0.626,
-        "predicted": 0.345,
-        "resid_pp": 28.1,
-        "resid_eb_pp": 24.6,
+        "ugds": 778,
+        "cohort": 174,
+        "pell": 0.76,
+        "actual": 0.546,
+        "predicted": 0.266,
+        "resid_pp": 28.0,
+        "resid_eb_pp": 25.0,
         "rank_raw": 2
-      }
-    ],
-    "top5_high_pell": [
+      },
       {
-        "school": "University of California-Merced",
-        "state": "CA",
-        "carnegie": "Doctoral",
-        "ugds": 7375,
-        "cohort": 1343,
-        "pell": 0.61,
-        "actual": 0.692,
-        "predicted": 0.419,
+        "school": "University of Maine at Fort Kent",
+        "state": "ME",
+        "carnegie": "Baccalaureate",
+        "ugds": 1036,
+        "cohort": 127,
+        "pell": 0.23,
+        "actual": 0.512,
+        "predicted": 0.239,
         "resid_pp": 27.3,
-        "resid_eb_pp": 26.8,
+        "resid_eb_pp": 23.6,
         "rank_raw": 3
       },
       {
@@ -178,11 +228,13 @@
         "cohort": 1105,
         "pell": 0.51,
         "actual": 0.709,
-        "predicted": 0.449,
-        "resid_pp": 26.0,
-        "resid_eb_pp": 25.4,
-        "rank_raw": 5
-      },
+        "predicted": 0.481,
+        "resid_pp": 22.8,
+        "resid_eb_pp": 22.2,
+        "rank_raw": 11
+      }
+    ],
+    "top5_high_pell": [
       {
         "school": "Warner Pacific University",
         "state": "OR",
@@ -191,23 +243,10 @@
         "cohort": 135,
         "pell": 0.52,
         "actual": 0.637,
-        "predicted": 0.34,
-        "resid_pp": 29.7,
-        "resid_eb_pp": 25.4,
+        "predicted": 0.323,
+        "resid_pp": 31.4,
+        "resid_eb_pp": 26.7,
         "rank_raw": 1
-      },
-      {
-        "school": "University of California-Riverside",
-        "state": "CA",
-        "carnegie": "Doctoral",
-        "ugds": 20044,
-        "cohort": 2503,
-        "pell": 0.56,
-        "actual": 0.762,
-        "predicted": 0.528,
-        "resid_pp": 23.4,
-        "resid_eb_pp": 23.2,
-        "rank_raw": 9
       },
       {
         "school": "Heritage University",
@@ -217,38 +256,77 @@
         "cohort": 174,
         "pell": 0.76,
         "actual": 0.546,
-        "predicted": 0.315,
-        "resid_pp": 23.1,
-        "resid_eb_pp": 20.5,
+        "predicted": 0.266,
+        "resid_pp": 28.0,
+        "resid_eb_pp": 25.0,
+        "rank_raw": 2
+      },
+      {
+        "school": "California State University-Channel Islands",
+        "state": "CA",
+        "carnegie": "Master's",
+        "ugds": 7047,
+        "cohort": 1105,
+        "pell": 0.51,
+        "actual": 0.709,
+        "predicted": 0.481,
+        "resid_pp": 22.8,
+        "resid_eb_pp": 22.2,
         "rank_raw": 11
+      },
+      {
+        "school": "Universidad Adventista de las Antillas",
+        "state": "PR",
+        "carnegie": "Baccalaureate",
+        "ugds": 1162,
+        "cohort": 139,
+        "pell": 0.83,
+        "actual": 0.54,
+        "predicted": 0.292,
+        "resid_pp": 24.8,
+        "resid_eb_pp": 21.3,
+        "rank_raw": 5
+      },
+      {
+        "school": "Saint Peter's University",
+        "state": "NJ",
+        "carnegie": "Master's",
+        "ugds": 2547,
+        "cohort": 414,
+        "pell": 0.6,
+        "actual": 0.616,
+        "predicted": 0.394,
+        "resid_pp": 22.2,
+        "resid_eb_pp": 20.9,
+        "rank_raw": 12
       }
     ],
     "bottom3": [
       {
-        "school": "University of Alaska Anchorage",
-        "state": "AK",
+        "school": "University of West Alabama",
+        "state": "AL",
         "carnegie": "Master's",
-        "ugds": 11332,
-        "cohort": 1035,
-        "pell": 0.22,
-        "actual": 0.179,
-        "predicted": 0.51,
-        "resid_pp": -33.1,
-        "resid_eb_pp": -32.3,
-        "rank_raw": 1193
+        "ugds": 2106,
+        "cohort": 350,
+        "pell": 0.53,
+        "actual": 0.129,
+        "predicted": 0.494,
+        "resid_pp": -36.6,
+        "resid_eb_pp": -33.9,
+        "rank_raw": 1196
       },
       {
-        "school": "Florida Institute of Technology",
-        "state": "FL",
-        "carnegie": "Doctoral",
-        "ugds": 3395,
-        "cohort": 546,
-        "pell": 0.2,
-        "actual": 0.256,
-        "predicted": 0.609,
-        "resid_pp": -35.2,
-        "resid_eb_pp": -33.7,
-        "rank_raw": 1196
+        "school": "Saint Joseph's University - Philadelphia",
+        "state": "PA",
+        "carnegie": "Master's",
+        "ugds": 5040,
+        "cohort": 474,
+        "pell": 0.12,
+        "actual": 0.295,
+        "predicted": 0.655,
+        "resid_pp": -35.9,
+        "resid_eb_pp": -34.2,
+        "rank_raw": 1195
       },
       {
         "school": "Louisiana Tech University",
@@ -258,16 +336,16 @@
         "cohort": 528,
         "pell": 0.22,
         "actual": 0.172,
-        "predicted": 0.583,
-        "resid_pp": -41.0,
-        "resid_eb_pp": -39.2,
-        "rank_raw": 1198
+        "predicted": 0.586,
+        "resid_pp": -41.3,
+        "resid_eb_pp": -39.4,
+        "rank_raw": 1197
       }
     ],
-    "spearman_old_vs_new": 0.9736,
-    "spearman_vs_v2": 0.9798,
-    "top20_overlap_vs_v2": 14,
-    "top_decile_overlap_vs_v2": 0.8667,
+    "spearman_old_vs_new": 0.9493,
+    "spearman_vs_v2": 0.9545,
+    "top20_overlap_vs_v2": 10,
+    "top_decile_overlap_vs_v2": 0.7333,
     "v2_top20_left": [
       {
         "rank_v2": 1,
@@ -282,16 +360,40 @@
         "rank": null
       },
       {
+        "rank_v2": 6,
+        "instnm_v2": "University of California-Merced",
+        "excluded_reason": "",
+        "rank": 34.0
+      },
+      {
+        "rank_v2": 9,
+        "instnm_v2": "California State University-Monterey Bay",
+        "excluded_reason": "",
+        "rank": 37.0
+      },
+      {
+        "rank_v2": 10,
+        "instnm_v2": "University of California-Riverside",
+        "excluded_reason": "",
+        "rank": 49.0
+      },
+      {
         "rank_v2": 12,
         "instnm_v2": "College of Our Lady of the Elms",
         "excluded_reason": "",
-        "rank": 22.0
+        "rank": 21.0
       },
       {
-        "rank_v2": 14,
-        "instnm_v2": "University of Houston-Clear Lake",
+        "rank_v2": 15,
+        "instnm_v2": "Ursuline College",
         "excluded_reason": "",
-        "rank": 25.0
+        "rank": 23.0
+      },
+      {
+        "rank_v2": 16,
+        "instnm_v2": "California State University-Stanislaus",
+        "excluded_reason": "",
+        "rank": 83.0
       },
       {
         "rank_v2": 18,
@@ -303,7 +405,7 @@
         "rank_v2": 20,
         "instnm_v2": "Harris-Stowe State University",
         "excluded_reason": "",
-        "rank": 21.0
+        "rank": 38.0
       }
     ],
     "csu": [
@@ -313,11 +415,11 @@
         "FG cohort": 1105.0,
         "Pell 2017-18": 0.5065,
         "actual": 0.708597285068,
-        "predicted": 0.44862899372747206,
-        "raw resid (pts)": 25.996829134052795,
-        "shrink": 0.9774520607761353,
-        "shrunken resid (pts)": 25.41065421072498,
-        "rank": 2.0,
+        "predicted": 0.48064574544512945,
+        "raw resid (pts)": 22.795153962287056,
+        "shrink": 0.9759241330251532,
+        "shrunken resid (pts)": 22.24634086781988,
+        "rank": 5.0,
         "decile": 10.0,
         "group": "top 10%"
       },
@@ -327,11 +429,11 @@
         "FG cohort": 985.0,
         "Pell 2017-18": 0.4939,
         "actual": 0.720812182741,
-        "predicted": 0.502456649930915,
-        "raw resid (pts)": 21.8355532810085,
-        "shrink": 0.9745127359851644,
-        "shrunken resid (pts)": 21.27902476962543,
-        "rank": 8.0,
+        "predicted": 0.559057458000427,
+        "raw resid (pts)": 16.175472474057294,
+        "shrink": 0.973396942470764,
+        "shrunken resid (pts)": 15.745155449267376,
+        "rank": 37.0,
         "decile": 10.0,
         "group": "top 10%"
       },
@@ -341,11 +443,11 @@
         "FG cohort": 1693.0,
         "Pell 2017-18": 0.6006,
         "actual": 0.609568812758,
-        "predicted": 0.4167344092427189,
-        "raw resid (pts)": 19.283440351528114,
-        "shrink": 0.9854208266280656,
-        "shrunken resid (pts)": 19.00230373143583,
-        "rank": 20.0,
+        "predicted": 0.48286344985903057,
+        "raw resid (pts)": 12.670536289896944,
+        "shrink": 0.9841484196094658,
+        "shrunken resid (pts)": 12.469688265306461,
+        "rank": 83.0,
         "decile": 10.0,
         "group": "top 10%"
       },
@@ -355,137 +457,11 @@
         "FG cohort": 2535.0,
         "Pell 2017-18": 0.3444,
         "actual": 0.809072978304,
-        "predicted": 0.6568710246424658,
-        "raw resid (pts)": 15.220195366153423,
-        "shrink": 0.9909209387787753,
-        "shrunken resid (pts)": 15.082010280625113,
-        "rank": 47.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Dominguez Hills",
-        "undergrads 2017": 13258.0,
-        "FG cohort": 2824.0,
-        "Pell 2017-18": 0.6194,
-        "actual": 0.626770538244,
-        "predicted": 0.4809803503587584,
-        "raw resid (pts)": 14.579018788524156,
-        "shrink": 0.9909728511588707,
-        "shrunken resid (pts)": 14.447411815962527,
-        "rank": 57.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Long Beach",
-        "undergrads 2017": 31402.0,
-        "FG cohort": 4138.0,
-        "Pell 2017-18": 0.508,
-        "actual": 0.753745770904,
-        "predicted": 0.6129013343457611,
-        "raw resid (pts)": 14.084443655823886,
-        "shrink": 0.9941263811884778,
-        "shrunken resid (pts)": 14.001717002617214,
-        "rank": 63.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Fullerton",
-        "undergrads 2017": 35045.0,
-        "FG cohort": 4585.0,
-        "Pell 2017-18": 0.4689,
-        "actual": 0.724100327154,
-        "predicted": 0.5840554403978447,
-        "raw resid (pts)": 14.004488675615523,
-        "shrink": 0.9945696504132857,
-        "shrunken resid (pts)": 13.92843940632375,
-        "rank": 65.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State Polytechnic University-Pomona",
-        "undergrads 2017": 24205.0,
-        "FG cohort": 2947.0,
-        "Pell 2017-18": 0.4629,
-        "actual": 0.712249745504,
-        "predicted": 0.5730983898962956,
-        "raw resid (pts)": 13.915135560770441,
-        "shrink": 0.9915175820116912,
-        "shrunken resid (pts)": 13.797101564580005,
-        "rank": 68.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Chico",
-        "undergrads 2017": 16546.0,
-        "FG cohort": 1977.0,
-        "Pell 2017-18": 0.4493,
-        "actual": 0.67172483561,
-        "predicted": 0.5365238329066816,
-        "raw resid (pts)": 13.520100270331836,
-        "shrink": 0.987204441085278,
-        "shrunken resid (pts)": 13.347103030789857,
-        "rank": 80.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-San Bernardino",
-        "undergrads 2017": 18088.0,
-        "FG cohort": 2823.0,
-        "Pell 2017-18": 0.6376,
-        "actual": 0.627701027276,
-        "predicted": 0.4933645169843971,
-        "raw resid (pts)": 13.433651029160288,
-        "shrink": 0.9909582932488953,
-        "shrunken resid (pts)": 13.312187895957944,
-        "rank": 81.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Bakersfield",
-        "undergrads 2017": 8705.0,
-        "FG cohort": 1700.0,
-        "Pell 2017-18": 0.6113,
-        "actual": 0.575882352941,
-        "predicted": 0.4450321557821249,
-        "raw resid (pts)": 13.085019715887508,
-        "shrink": 0.985249761800888,
-        "shrunken resid (pts)": 12.89201255823809,
-        "rank": 91.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-San Marcos",
-        "undergrads 2017": 14516.0,
-        "FG cohort": 2066.0,
-        "Pell 2017-18": 0.4849,
-        "actual": 0.638915779284,
-        "predicted": 0.5109926488929423,
-        "raw resid (pts)": 12.792313039105775,
-        "shrink": 0.9876898675431893,
-        "shrunken resid (pts)": 12.634837971165394,
-        "rank": 99.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Fresno",
-        "undergrads 2017": 21877.0,
-        "FG cohort": 3276.0,
-        "Pell 2017-18": 0.574,
-        "actual": 0.637973137973,
-        "predicted": 0.5132144069061135,
-        "raw resid (pts)": 12.47587310668865,
-        "shrink": 0.9922028562695668,
-        "shrunken resid (pts)": 12.378596930913153,
-        "rank": 104.0,
+        "predicted": 0.6956093880834368,
+        "raw resid (pts)": 11.34635902205633,
+        "shrink": 0.9909611183736213,
+        "shrunken resid (pts)": 11.243800625965568,
+        "rank": 116.0,
         "decile": 10.0,
         "group": "top 10%"
       },
@@ -495,39 +471,11 @@
         "FG cohort": 911.0,
         "Pell 2017-18": 0.3271,
         "actual": 0.647639956092,
-        "predicted": 0.5230067541752919,
-        "raw resid (pts)": 12.463320191670812,
-        "shrink": 0.9725553386287977,
-        "shrunken resid (pts)": 12.121268589449539,
-        "rank": 110.0,
-        "decile": 10.0,
-        "group": "top 10%"
-      },
-      {
-        "campus": "California State University-Sacramento",
-        "undergrads 2017": 28410.0,
-        "FG cohort": 3930.0,
-        "Pell 2017-18": 0.5242,
-        "actual": 0.649618320611,
-        "predicted": 0.5368494808270737,
-        "raw resid (pts)": 11.276883978392627,
-        "shrink": 0.9935225765817778,
-        "shrunken resid (pts)": 11.203838826026411,
-        "rank": 125.0,
-        "decile": 9.0,
-        "group": "middle"
-      },
-      {
-        "campus": "California State University-Los Angeles",
-        "undergrads 2017": 24780.0,
-        "FG cohort": 4511.0,
-        "Pell 2017-18": 0.6699,
-        "actual": 0.625581910885,
-        "predicted": 0.5131156560456164,
-        "raw resid (pts)": 11.246625483938367,
-        "shrink": 0.994325348903035,
-        "shrunken resid (pts)": 11.182804808298782,
-        "rank": 127.0,
+        "predicted": 0.5324210597335725,
+        "raw resid (pts)": 11.521889635842752,
+        "shrink": 0.9710225305115036,
+        "shrunken resid (pts)": 11.188014430470297,
+        "rank": 122.0,
         "decile": 9.0,
         "group": "middle"
       },
@@ -537,26 +485,152 @@
         "FG cohort": 815.0,
         "Pell 2017-18": 0.1764,
         "actual": 0.81226993865,
-        "predicted": 0.7127946980432747,
-        "raw resid (pts)": 9.94752406067253,
-        "shrink": 0.9747684928787159,
-        "shrunken resid (pts)": 9.696533036496527,
-        "rank": 177.0,
+        "predicted": 0.707499820540552,
+        "raw resid (pts)": 10.477011810944791,
+        "shrink": 0.9730191510981947,
+        "shrunken resid (pts)": 10.194333138331261,
+        "rank": 142.0,
         "decile": 9.0,
         "group": "middle"
       },
       {
-        "campus": "California State University-Northridge",
-        "undergrads 2017": 35620.0,
-        "FG cohort": 5269.0,
-        "Pell 2017-18": 0.5428,
-        "actual": 0.63123932435,
-        "predicted": 0.5486399459252249,
-        "raw resid (pts)": 8.259937842477505,
-        "shrink": 0.9951802280412171,
-        "shrunken resid (pts)": 8.220126825683042,
-        "rank": 224.0,
+        "campus": "California State University-Fullerton",
+        "undergrads 2017": 35045.0,
+        "FG cohort": 4585.0,
+        "Pell 2017-18": 0.4689,
+        "actual": 0.724100327154,
+        "predicted": 0.6259006210050959,
+        "raw resid (pts)": 9.819970614890405,
+        "shrink": 0.9944540352673562,
+        "shrunken resid (pts)": 9.765509404184625,
+        "rank": 154.0,
         "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-San Marcos",
+        "undergrads 2017": 14516.0,
+        "FG cohort": 2066.0,
+        "Pell 2017-18": 0.4849,
+        "actual": 0.638915779284,
+        "predicted": 0.5444023641591775,
+        "raw resid (pts)": 9.451341512482248,
+        "shrink": 0.987059418170847,
+        "shrunken resid (pts)": 9.329035654244699,
+        "rank": 166.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Dominguez Hills",
+        "undergrads 2017": 13258.0,
+        "FG cohort": 2824.0,
+        "Pell 2017-18": 0.6194,
+        "actual": 0.626770538244,
+        "predicted": 0.5333791249845591,
+        "raw resid (pts)": 9.33914132594409,
+        "shrink": 0.9904673204000964,
+        "shrunken resid (pts)": 9.250114283945646,
+        "rank": 168.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State Polytechnic University-Pomona",
+        "undergrads 2017": 24205.0,
+        "FG cohort": 2947.0,
+        "Pell 2017-18": 0.4629,
+        "actual": 0.712249745504,
+        "predicted": 0.6198581878276782,
+        "raw resid (pts)": 9.239155767632178,
+        "shrink": 0.9913439142230296,
+        "shrunken resid (pts)": 9.159180842800764,
+        "rank": 172.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Chico",
+        "undergrads 2017": 16546.0,
+        "FG cohort": 1977.0,
+        "Pell 2017-18": 0.4493,
+        "actual": 0.67172483561,
+        "predicted": 0.5791046847640721,
+        "raw resid (pts)": 9.26201508459279,
+        "shrink": 0.9867151801372424,
+        "shrunken resid (pts)": 9.13897088262783,
+        "rank": 174.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Long Beach",
+        "undergrads 2017": 31402.0,
+        "FG cohort": 4138.0,
+        "Pell 2017-18": 0.508,
+        "actual": 0.753745770904,
+        "predicted": 0.6736431436989208,
+        "raw resid (pts)": 8.01026272050792,
+        "shrink": 0.9942315511092459,
+        "shrunken resid (pts)": 7.964055929403157,
+        "rank": 229.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Sacramento",
+        "undergrads 2017": 28410.0,
+        "FG cohort": 3930.0,
+        "Pell 2017-18": 0.5242,
+        "actual": 0.649618320611,
+        "predicted": 0.5695227775645123,
+        "raw resid (pts)": 8.00955430464877,
+        "shrink": 0.9932335718521446,
+        "shrunken resid (pts)": 7.955358230950018,
+        "rank": 230.0,
+        "decile": 9.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Bakersfield",
+        "undergrads 2017": 8705.0,
+        "FG cohort": 1700.0,
+        "Pell 2017-18": 0.6113,
+        "actual": 0.575882352941,
+        "predicted": 0.5188113959595176,
+        "raw resid (pts)": 5.707095698148235,
+        "shrink": 0.9842164068050531,
+        "shrunken resid (pts)": 5.617017221324031,
+        "rank": 322.0,
+        "decile": 8.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Fresno",
+        "undergrads 2017": 21877.0,
+        "FG cohort": 3276.0,
+        "Pell 2017-18": 0.574,
+        "actual": 0.637973137973,
+        "predicted": 0.5877377396920627,
+        "raw resid (pts)": 5.023539828093737,
+        "shrink": 0.9919876687034629,
+        "shrunken resid (pts)": 4.983289562709701,
+        "rank": 363.0,
+        "decile": 7.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-San Bernardino",
+        "undergrads 2017": 18088.0,
+        "FG cohort": 2823.0,
+        "Pell 2017-18": 0.6376,
+        "actual": 0.627701027276,
+        "predicted": 0.5785185173483557,
+        "raw resid (pts)": 4.918250992764428,
+        "shrink": 0.9906556954270419,
+        "shrunken resid (pts)": 4.872293357521784,
+        "rank": 374.0,
+        "decile": 7.0,
         "group": "middle"
       },
       {
@@ -565,12 +639,26 @@
         "FG cohort": 963.0,
         "Pell 2017-18": 0.5573,
         "actual": 0.539979231568,
-        "predicted": 0.45843067932264103,
-        "raw resid (pts)": 8.154855224535895,
-        "shrink": 0.9741204624440131,
-        "shrunken resid (pts)": 7.943811342488882,
-        "rank": 241.0,
-        "decile": 8.0,
+        "predicted": 0.49129487097078534,
+        "raw resid (pts)": 4.868436059721465,
+        "shrink": 0.9724396901892894,
+        "shrunken resid (pts)": 4.734260453621906,
+        "rank": 382.0,
+        "decile": 7.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Northridge",
+        "undergrads 2017": 35620.0,
+        "FG cohort": 5269.0,
+        "Pell 2017-18": 0.5428,
+        "actual": 0.63123932435,
+        "predicted": 0.6023829680857283,
+        "raw resid (pts)": 2.885635626427163,
+        "shrink": 0.9950603266020547,
+        "shrunken resid (pts)": 2.8713815288871376,
+        "rank": 471.0,
+        "decile": 7.0,
         "group": "middle"
       },
       {
@@ -579,12 +667,26 @@
         "FG cohort": 3494.0,
         "Pell 2017-18": 0.4267,
         "actual": 0.609330280481,
-        "predicted": 0.5547653209663748,
-        "raw resid (pts)": 5.456495951462525,
-        "shrink": 0.9927678818748847,
-        "shrunken resid (pts)": 5.417033928192335,
-        "rank": 351.0,
-        "decile": 8.0,
+        "predicted": 0.5811234388145489,
+        "raw resid (pts)": 2.8206841666451155,
+        "shrink": 0.9924494376056766,
+        "shrunken resid (pts)": 2.7993864148501815,
+        "rank": 476.0,
+        "decile": 7.0,
+        "group": "middle"
+      },
+      {
+        "campus": "California State University-Los Angeles",
+        "undergrads 2017": 24780.0,
+        "FG cohort": 4511.0,
+        "Pell 2017-18": 0.6699,
+        "actual": 0.625581910885,
+        "predicted": 0.5991451015151298,
+        "raw resid (pts)": 2.643680936987025,
+        "shrink": 0.9942194654382759,
+        "shrunken resid (pts)": 2.6283990479606003,
+        "rank": 491.0,
+        "decile": 6.0,
         "group": "middle"
       },
       {
@@ -593,12 +695,12 @@
         "FG cohort": 2103.0,
         "Pell 2017-18": 0.471,
         "actual": 0.54160722777,
-        "predicted": 0.5108136492440934,
-        "raw resid (pts)": 3.0793578525906584,
-        "shrink": 0.987903644452278,
-        "shrunken resid (pts)": 3.042108845147052,
-        "rank": 455.0,
-        "decile": 7.0,
+        "predicted": 0.5339182101626532,
+        "raw resid (pts)": 0.768901760734686,
+        "shrink": 0.9872426385817089,
+        "shrunken resid (pts)": 0.7590926030778332,
+        "rank": 589.0,
+        "decile": 6.0,
         "group": "middle"
       },
       {
@@ -607,8 +709,8 @@
         "FG cohort": 3409.0,
         "Pell 2017-18": 0.4104,
         "actual": 0.037547667938,
-        "predicted": 0.5633308383448682,
-        "raw resid (pts)": -52.57831704068682,
+        "predicted": 0.5908322564502076,
+        "raw resid (pts)": -55.328458851220766,
         "shrink": null,
         "shrunken resid (pts)": null,
         "rank": null,
@@ -617,13 +719,13 @@
       }
     ],
     "special_focus_in_old_top20": 4,
-    "spearman_vs_v1_mistimed": 0.6578,
-    "top20_overlap_vs_v1": 4,
-    "top_decile_overlap_vs_v1": 0.3833,
+    "spearman_vs_v1_mistimed": 0.6375,
+    "top20_overlap_vs_v1": 3,
+    "top_decile_overlap_vs_v1": 0.3333,
     "n_common_v1": 1177,
-    "top_decile_mean_pell": 0.389,
-    "bottom_decile_mean_pell": 0.349,
-    "top_decile_private_share": 0.558,
+    "top_decile_mean_pell": 0.372,
+    "bottom_decile_mean_pell": 0.354,
+    "top_decile_private_share": 0.567,
     "bottom_decile_private_share": 0.633
   },
   "step7": {
@@ -631,1018 +733,1527 @@
     "n_bottom": 120,
     "profile_medians": {
       "top 10%": {
-        "ugds": 2529.0,
-        "pctpell": 0.387,
-        "adm_rate": 0.697,
-        "first_gen": 0.374,
+        "ugds": 2352.0,
+        "pctpell": 0.355,
+        "adm_rate": 0.703,
+        "first_gen": 0.35,
         "private": 1.0,
-        "fte_total": 3000.917,
+        "fte_total": 2762.333,
         "firstgen_comp_orig_yr6_rt": 0.666,
-        "predicted": 0.504
+        "predicted": 0.488
       },
       "bottom 10%": {
-        "ugds": 3293.0,
-        "pctpell": 0.337,
-        "adm_rate": 0.669,
-        "first_gen": 0.337,
+        "ugds": 3229.0,
+        "pctpell": 0.345,
+        "adm_rate": 0.662,
+        "first_gen": 0.345,
         "private": 1.0,
-        "fte_total": 3792.667,
-        "firstgen_comp_orig_yr6_rt": 0.338,
-        "predicted": 0.523
+        "fte_total": 3868.083,
+        "firstgen_comp_orig_yr6_rt": 0.332,
+        "predicted": 0.519
       }
     },
     "per_fte": {
       "Instruction": {
-        "top10_median_$": 11073.0029,
-        "bottom10_median_$": 8364.2379,
-        "median_diff_$": 2708.7651,
-        "median_ratio": 1.3239,
-        "top10_mean_$": 14503.0686,
-        "bottom10_mean_$": 9478.4254,
+        "top10_median_$": 11403.9296,
+        "bottom10_median_$": 8292.4185,
+        "median_diff_$": 3111.5111,
+        "median_ratio": 1.3752,
+        "top10_mean_$": 14898.0835,
+        "bottom10_mean_$": 9436.5487,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
       },
       "Academic support": {
-        "top10_median_$": 2825.5402,
-        "bottom10_median_$": 2065.163,
-        "median_diff_$": 760.3771,
-        "median_ratio": 1.3682,
-        "top10_mean_$": 4079.0174,
-        "bottom10_mean_$": 2489.2417,
+        "top10_median_$": 2950.2536,
+        "bottom10_median_$": 1918.5178,
+        "median_diff_$": 1031.7358,
+        "median_ratio": 1.5378,
+        "top10_mean_$": 4843.458,
+        "bottom10_mean_$": 2463.0088,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
       },
       "Student services": {
-        "top10_median_$": 3970.8602,
-        "bottom10_median_$": 4094.9364,
-        "median_diff_$": -124.0763,
-        "median_ratio": 0.9697,
-        "top10_mean_$": 4688.594,
-        "bottom10_mean_$": 4257.5617,
-        "welch_p_log": 0.2718,
-        "mann_whitney_p": 0.7414
+        "top10_median_$": 3974.6248,
+        "bottom10_median_$": 4148.1538,
+        "median_diff_$": -173.529,
+        "median_ratio": 0.9582,
+        "top10_mean_$": 4861.8996,
+        "bottom10_mean_$": 4271.6942,
+        "welch_p_log": 0.3724,
+        "mann_whitney_p": 0.7343
       },
       "Institutional support": {
-        "top10_median_$": 5048.9801,
-        "bottom10_median_$": 4253.3816,
-        "median_diff_$": 795.5985,
-        "median_ratio": 1.1871,
-        "top10_mean_$": 6156.1962,
-        "bottom10_mean_$": 4563.5258,
-        "welch_p_log": 0.0013,
-        "mann_whitney_p": 0.0055
+        "top10_median_$": 5411.4055,
+        "bottom10_median_$": 4336.743,
+        "median_diff_$": 1074.6626,
+        "median_ratio": 1.2478,
+        "top10_mean_$": 6638.5936,
+        "bottom10_mean_$": 4685.8405,
+        "welch_p_log": 0.0003,
+        "mann_whitney_p": 0.0019
       },
       "Research": {
-        "top10_median_$": 131.7108,
-        "bottom10_median_$": 83.3675,
-        "median_diff_$": 48.3433,
-        "median_ratio": 1.5799,
-        "top10_mean_$": 4389.354,
-        "bottom10_mean_$": 2243.4248,
-        "welch_p_log": 0.2201,
-        "mann_whitney_p": 0.2545
+        "top10_median_$": 178.7391,
+        "bottom10_median_$": 91.7928,
+        "median_diff_$": 86.9463,
+        "median_ratio": 1.9472,
+        "top10_mean_$": 4798.9728,
+        "bottom10_mean_$": 1973.427,
+        "welch_p_log": 0.0883,
+        "mann_whitney_p": 0.0929
       },
       "Public service": {
-        "top10_median_$": 88.6926,
-        "bottom10_median_$": 58.2057,
-        "median_diff_$": 30.4869,
-        "median_ratio": 1.5238,
-        "top10_mean_$": 874.9714,
-        "bottom10_mean_$": 693.6579,
-        "welch_p_log": 0.1982,
-        "mann_whitney_p": 0.2378
+        "top10_median_$": 132.8254,
+        "bottom10_median_$": 85.7783,
+        "median_diff_$": 47.0471,
+        "median_ratio": 1.5485,
+        "top10_mean_$": 1124.8075,
+        "bottom10_mean_$": 615.6519,
+        "welch_p_log": 0.1301,
+        "mann_whitney_p": 0.1371
       },
       "Scholarships (expensed)": {
-        "top10_median_$": 46.2418,
+        "top10_median_$": 200.2224,
         "bottom10_median_$": 0.0,
-        "median_diff_$": 46.2418,
+        "median_diff_$": 200.2224,
         "median_ratio": null,
-        "top10_mean_$": 1232.2685,
-        "bottom10_mean_$": 641.2822,
-        "welch_p_log": 0.3344,
-        "mann_whitney_p": 0.0317
+        "top10_mean_$": 1120.7314,
+        "bottom10_mean_$": 678.6413,
+        "welch_p_log": 0.3755,
+        "mann_whitney_p": 0.0979
       },
       "Auxiliary enterprises": {
-        "top10_median_$": 3515.8552,
-        "bottom10_median_$": 3522.9339,
-        "median_diff_$": -7.0787,
-        "median_ratio": 0.998,
-        "top10_mean_$": 4829.4858,
-        "bottom10_mean_$": 3826.0495,
-        "welch_p_log": 0.9998,
-        "mann_whitney_p": 0.8883
+        "top10_median_$": 3577.5115,
+        "bottom10_median_$": 3497.8335,
+        "median_diff_$": 79.678,
+        "median_ratio": 1.0228,
+        "top10_mean_$": 5134.4533,
+        "bottom10_mean_$": 3752.6886,
+        "welch_p_log": 0.9274,
+        "mann_whitney_p": 0.3276
       },
       "Core (4 categories)": {
-        "top10_median_$": 22407.0336,
-        "bottom10_median_$": 19904.2869,
-        "median_diff_$": 2502.7467,
-        "median_ratio": 1.1257,
-        "top10_mean_$": 29426.8762,
-        "bottom10_mean_$": 20788.7546,
+        "top10_median_$": 22750.4321,
+        "bottom10_median_$": 20146.2577,
+        "median_diff_$": 2604.1744,
+        "median_ratio": 1.1293,
+        "top10_mean_$": 31242.0347,
+        "bottom10_mean_$": 20857.0921,
         "welch_p_log": 0.0,
-        "mann_whitney_p": 0.0001
+        "mann_whitney_p": 0.0
       },
       "Total expenses": {
-        "top10_median_$": 31333.6935,
-        "bottom10_median_$": 26621.0111,
-        "median_diff_$": 4712.6824,
-        "median_ratio": 1.177,
-        "top10_mean_$": 50295.4114,
-        "bottom10_mean_$": 30320.3873,
-        "welch_p_log": 0.0002,
-        "mann_whitney_p": 0.0009
+        "top10_median_$": 32198.2942,
+        "bottom10_median_$": 26376.5399,
+        "median_diff_$": 5821.7543,
+        "median_ratio": 1.2207,
+        "top10_mean_$": 51395.177,
+        "bottom10_mean_$": 30132.8996,
+        "welch_p_log": 0.0001,
+        "mann_whitney_p": 0.0001
       }
     },
     "per_fte_fy23_only": {
       "Instruction": {
-        "top10_median_$": 11666.1923,
-        "bottom10_median_$": 9415.0265,
-        "median_diff_$": 2251.1658,
-        "median_ratio": 1.2391,
-        "top10_mean_$": 15833.5862,
-        "bottom10_mean_$": 10260.1083,
-        "welch_p_log": 0.0086,
+        "top10_median_$": 12013.0704,
+        "bottom10_median_$": 9277.7176,
+        "median_diff_$": 2735.3529,
+        "median_ratio": 1.2948,
+        "top10_mean_$": 16389.8508,
+        "bottom10_mean_$": 10168.2872,
+        "welch_p_log": 0.003,
         "mann_whitney_p": 0.0
       },
       "Academic support": {
-        "top10_median_$": 3116.1,
-        "bottom10_median_$": 2242.3842,
-        "median_diff_$": 873.7157,
-        "median_ratio": 1.3896,
-        "top10_mean_$": 4639.4416,
-        "bottom10_mean_$": 2820.5234,
-        "welch_p_log": 0.0906,
+        "top10_median_$": 3326.3307,
+        "bottom10_median_$": 2171.1776,
+        "median_diff_$": 1155.153,
+        "median_ratio": 1.532,
+        "top10_mean_$": 5421.6522,
+        "bottom10_mean_$": 2786.6156,
+        "welch_p_log": 0.0497,
         "mann_whitney_p": 0.0
       },
       "Student services": {
-        "top10_median_$": 4507.2048,
-        "bottom10_median_$": 4571.3665,
-        "median_diff_$": -64.1617,
-        "median_ratio": 0.986,
-        "top10_mean_$": 5437.0472,
-        "bottom10_mean_$": 4973.2218,
-        "welch_p_log": 0.9408,
-        "mann_whitney_p": 0.7024
+        "top10_median_$": 4628.5983,
+        "bottom10_median_$": 4645.8146,
+        "median_diff_$": -17.2164,
+        "median_ratio": 0.9963,
+        "top10_mean_$": 5615.921,
+        "bottom10_mean_$": 4968.7268,
+        "welch_p_log": 0.9533,
+        "mann_whitney_p": 0.675
       },
       "Institutional support": {
-        "top10_median_$": 5569.7555,
-        "bottom10_median_$": 4949.4833,
-        "median_diff_$": 620.2722,
-        "median_ratio": 1.1253,
-        "top10_mean_$": 6782.1518,
-        "bottom10_mean_$": 5318.7086,
-        "welch_p_log": 0.1389,
-        "mann_whitney_p": 0.0125
+        "top10_median_$": 5953.7236,
+        "bottom10_median_$": 5044.5341,
+        "median_diff_$": 909.1894,
+        "median_ratio": 1.1802,
+        "top10_mean_$": 7404.1551,
+        "bottom10_mean_$": 5481.7582,
+        "welch_p_log": 0.0748,
+        "mann_whitney_p": 0.0046
       },
       "Research": {
-        "top10_median_$": 137.0489,
-        "bottom10_median_$": 89.3774,
-        "median_diff_$": 47.6715,
-        "median_ratio": 1.5334,
-        "top10_mean_$": 4916.8437,
-        "bottom10_mean_$": 2726.085,
-        "welch_p_log": 0.4397,
-        "mann_whitney_p": 0.4683
+        "top10_median_$": 192.9151,
+        "bottom10_median_$": 95.0325,
+        "median_diff_$": 97.8826,
+        "median_ratio": 2.03,
+        "top10_mean_$": 5367.182,
+        "bottom10_mean_$": 2399.3293,
+        "welch_p_log": 0.1897,
+        "mann_whitney_p": 0.1787
       },
       "Public service": {
-        "top10_median_$": 94.7976,
-        "bottom10_median_$": 85.7068,
-        "median_diff_$": 9.0908,
-        "median_ratio": 1.1061,
-        "top10_mean_$": 1097.2952,
-        "bottom10_mean_$": 870.2334,
-        "welch_p_log": 0.4706,
-        "mann_whitney_p": 0.5636
+        "top10_median_$": 115.968,
+        "bottom10_median_$": 93.4579,
+        "median_diff_$": 22.5102,
+        "median_ratio": 1.2409,
+        "top10_mean_$": 1265.4541,
+        "bottom10_mean_$": 772.8456,
+        "welch_p_log": 0.3032,
+        "mann_whitney_p": 0.3536
       },
       "Scholarships (expensed)": {
-        "top10_median_$": 0.0,
+        "top10_median_$": 1.7588,
         "bottom10_median_$": 0.0,
-        "median_diff_$": 0.0,
+        "median_diff_$": 1.7588,
         "median_ratio": null,
-        "top10_mean_$": 1235.2413,
-        "bottom10_mean_$": 591.2052,
-        "welch_p_log": 0.2146,
-        "mann_whitney_p": 0.0272
+        "top10_mean_$": 1159.6834,
+        "bottom10_mean_$": 642.22,
+        "welch_p_log": 0.1912,
+        "mann_whitney_p": 0.0581
       },
       "Auxiliary enterprises": {
-        "top10_median_$": 4023.9632,
-        "bottom10_median_$": 4177.544,
-        "median_diff_$": -153.5808,
-        "median_ratio": 0.9632,
-        "top10_mean_$": 5546.5151,
-        "bottom10_mean_$": 4464.7883,
-        "welch_p_log": 0.5642,
-        "mann_whitney_p": 0.8972
+        "top10_median_$": 4197.9319,
+        "bottom10_median_$": 3951.8405,
+        "median_diff_$": 246.0913,
+        "median_ratio": 1.0623,
+        "top10_mean_$": 5828.748,
+        "bottom10_mean_$": 4356.8331,
+        "welch_p_log": 0.4593,
+        "mann_whitney_p": 0.4159
       },
       "Core (4 categories)": {
-        "top10_median_$": 26146.9566,
-        "bottom10_median_$": 20927.7208,
-        "median_diff_$": 5219.2358,
-        "median_ratio": 1.2494,
-        "top10_mean_$": 32692.2268,
-        "bottom10_mean_$": 23372.5621,
-        "welch_p_log": 0.0773,
-        "mann_whitney_p": 0.0001
+        "top10_median_$": 26713.658,
+        "bottom10_median_$": 20965.2195,
+        "median_diff_$": 5748.4384,
+        "median_ratio": 1.2742,
+        "top10_mean_$": 34831.5791,
+        "bottom10_mean_$": 23405.3878,
+        "welch_p_log": 0.0363,
+        "mann_whitney_p": 0.0
       },
       "Total expenses": {
-        "top10_median_$": 34881.7252,
+        "top10_median_$": 35886.5216,
         "bottom10_median_$": 28866.3145,
-        "median_diff_$": 6015.4107,
-        "median_ratio": 1.2084,
-        "top10_mean_$": 56944.1657,
-        "bottom10_mean_$": 34567.8551,
-        "welch_p_log": 0.0924,
-        "mann_whitney_p": 0.0017
+        "median_diff_$": 7020.2071,
+        "median_ratio": 1.2432,
+        "top10_mean_$": 58294.4137,
+        "bottom10_mean_$": 34366.0116,
+        "welch_p_log": 0.0531,
+        "mann_whitney_p": 0.0001
       }
     },
     "per_fte_fy1819": {
       "Instruction": {
-        "top10_median_$": 11299.4834,
-        "bottom10_median_$": 7750.5419,
-        "median_diff_$": 3548.9415,
-        "median_ratio": 1.4579,
-        "top10_mean_$": 13986.2609,
-        "bottom10_mean_$": 9136.404,
+        "top10_median_$": 11311.6475,
+        "bottom10_median_$": 7741.3685,
+        "median_diff_$": 3570.279,
+        "median_ratio": 1.4612,
+        "top10_mean_$": 14340.9211,
+        "bottom10_mean_$": 9106.4245,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
       },
       "Academic support": {
-        "top10_median_$": 2543.5113,
-        "bottom10_median_$": 1825.5672,
-        "median_diff_$": 717.9441,
-        "median_ratio": 1.3933,
-        "top10_mean_$": 3824.7709,
-        "bottom10_mean_$": 2297.6119,
+        "top10_median_$": 2687.0876,
+        "bottom10_median_$": 1801.9744,
+        "median_diff_$": 885.1132,
+        "median_ratio": 1.4912,
+        "top10_mean_$": 4502.0671,
+        "bottom10_mean_$": 2275.3277,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
       },
       "Student services": {
-        "top10_median_$": 3687.4978,
-        "bottom10_median_$": 3523.342,
-        "median_diff_$": 164.1558,
-        "median_ratio": 1.0466,
-        "top10_mean_$": 4292.003,
-        "bottom10_mean_$": 3815.9979,
-        "welch_p_log": 0.1425,
-        "mann_whitney_p": 0.4632
+        "top10_median_$": 3544.6965,
+        "bottom10_median_$": 3683.2491,
+        "median_diff_$": -138.5526,
+        "median_ratio": 0.9624,
+        "top10_mean_$": 4437.8936,
+        "bottom10_mean_$": 3829.5785,
+        "welch_p_log": 0.2105,
+        "mann_whitney_p": 0.5266
       },
       "Institutional support": {
-        "top10_median_$": 4792.8483,
-        "bottom10_median_$": 3805.4408,
-        "median_diff_$": 987.4076,
-        "median_ratio": 1.2595,
-        "top10_mean_$": 5659.6268,
-        "bottom10_mean_$": 4138.2942,
-        "welch_p_log": 0.0009,
-        "mann_whitney_p": 0.0057
+        "top10_median_$": 4935.3552,
+        "bottom10_median_$": 3923.2175,
+        "median_diff_$": 1012.1377,
+        "median_ratio": 1.258,
+        "top10_mean_$": 6063.5825,
+        "bottom10_mean_$": 4226.7916,
+        "welch_p_log": 0.0002,
+        "mann_whitney_p": 0.0013
       },
       "Research": {
-        "top10_median_$": 127.6021,
+        "top10_median_$": 194.2491,
         "bottom10_median_$": 42.8603,
-        "median_diff_$": 84.7419,
-        "median_ratio": 2.9772,
-        "top10_mean_$": 4037.3607,
-        "bottom10_mean_$": 1969.2723,
-        "welch_p_log": 0.1446,
-        "mann_whitney_p": 0.1944
+        "median_diff_$": 151.3889,
+        "median_ratio": 4.5321,
+        "top10_mean_$": 4422.2616,
+        "bottom10_mean_$": 1717.2064,
+        "welch_p_log": 0.0543,
+        "mann_whitney_p": 0.0671
       },
       "Public service": {
-        "top10_median_$": 89.8443,
-        "bottom10_median_$": 43.2284,
-        "median_diff_$": 46.6159,
-        "median_ratio": 2.0784,
-        "top10_mean_$": 786.1096,
-        "bottom10_mean_$": 641.1632,
-        "welch_p_log": 0.2104,
-        "mann_whitney_p": 0.2295
+        "top10_median_$": 123.2707,
+        "bottom10_median_$": 47.1154,
+        "median_diff_$": 76.1553,
+        "median_ratio": 2.6164,
+        "top10_mean_$": 1014.4994,
+        "bottom10_mean_$": 575.8385,
+        "welch_p_log": 0.1464,
+        "mann_whitney_p": 0.1364
+      },
+      "Scholarships (expensed)": {
+        "top10_median_$": 3.6962,
+        "bottom10_median_$": 0.0,
+        "median_diff_$": 3.6962,
+        "median_ratio": null,
+        "top10_mean_$": 881.6528,
+        "bottom10_mean_$": 506.9778,
+        "welch_p_log": 0.1585,
+        "mann_whitney_p": 0.0552
+      },
+      "Auxiliary enterprises": {
+        "top10_median_$": 3626.957,
+        "bottom10_median_$": 3190.4913,
+        "median_diff_$": 436.4657,
+        "median_ratio": 1.1368,
+        "top10_mean_$": 5140.0184,
+        "bottom10_mean_$": 3593.4998,
+        "welch_p_log": 0.9298,
+        "mann_whitney_p": 0.1767
+      },
+      "Core (4 categories)": {
+        "top10_median_$": 22081.1504,
+        "bottom10_median_$": 18043.9149,
+        "median_diff_$": 4037.2355,
+        "median_ratio": 1.2237,
+        "top10_mean_$": 29344.4643,
+        "bottom10_mean_$": 19438.1223,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Total expenses": {
+        "top10_median_$": 28758.2775,
+        "bottom10_median_$": 23971.3062,
+        "median_diff_$": 4786.9712,
+        "median_ratio": 1.1997,
+        "top10_mean_$": 47353.8253,
+        "bottom10_mean_$": 27742.2497,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0001
+      }
+    },
+    "per_fte_real": {
+      "Instruction": {
+        "top10_median_$": 12789.7782,
+        "bottom10_median_$": 9317.1803,
+        "median_diff_$": 3472.5979,
+        "median_ratio": 1.3727,
+        "top10_mean_$": 16725.5097,
+        "bottom10_mean_$": 10598.3528,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Academic support": {
+        "top10_median_$": 3320.7646,
+        "bottom10_median_$": 2157.2561,
+        "median_diff_$": 1163.5085,
+        "median_ratio": 1.5393,
+        "top10_mean_$": 5432.6726,
+        "bottom10_mean_$": 2758.5174,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Student services": {
+        "top10_median_$": 4438.7778,
+        "bottom10_median_$": 4599.4605,
+        "median_diff_$": -160.6827,
+        "median_ratio": 0.9651,
+        "top10_mean_$": 5443.0404,
+        "bottom10_mean_$": 4777.013,
+        "welch_p_log": 0.3665,
+        "mann_whitney_p": 0.7315
+      },
+      "Institutional support": {
+        "top10_median_$": 6054.7719,
+        "bottom10_median_$": 4808.6684,
+        "median_diff_$": 1246.1035,
+        "median_ratio": 1.2591,
+        "top10_mean_$": 7441.9328,
+        "bottom10_mean_$": 5242.4081,
+        "welch_p_log": 0.0003,
+        "mann_whitney_p": 0.0018
+      },
+      "Research": {
+        "top10_median_$": 202.4614,
+        "bottom10_median_$": 101.3529,
+        "median_diff_$": 101.1085,
+        "median_ratio": 1.9976,
+        "top10_mean_$": 5379.2475,
+        "bottom10_mean_$": 2201.4187,
+        "welch_p_log": 0.0869,
+        "mann_whitney_p": 0.0896
+      },
+      "Public service": {
+        "top10_median_$": 151.2668,
+        "bottom10_median_$": 90.9589,
+        "median_diff_$": 60.3079,
+        "median_ratio": 1.663,
+        "top10_mean_$": 1260.3006,
+        "bottom10_mean_$": 687.622,
+        "welch_p_log": 0.1283,
+        "mann_whitney_p": 0.1345
+      },
+      "Scholarships (expensed)": {
+        "top10_median_$": 229.1348,
+        "bottom10_median_$": 0.0,
+        "median_diff_$": 229.1348,
+        "median_ratio": null,
+        "top10_mean_$": 1251.1203,
+        "bottom10_mean_$": 757.0217,
+        "welch_p_log": 0.3767,
+        "mann_whitney_p": 0.0975
+      },
+      "Auxiliary enterprises": {
+        "top10_median_$": 4008.8536,
+        "bottom10_median_$": 3916.2777,
+        "median_diff_$": 92.576,
+        "median_ratio": 1.0236,
+        "top10_mean_$": 5763.9858,
+        "bottom10_mean_$": 4205.3996,
+        "welch_p_log": 0.9206,
+        "mann_whitney_p": 0.3444
+      },
+      "Core (4 categories)": {
+        "top10_median_$": 25313.247,
+        "bottom10_median_$": 22590.2803,
+        "median_diff_$": 2722.9667,
+        "median_ratio": 1.1205,
+        "top10_mean_$": 35043.1555,
+        "bottom10_mean_$": 23376.2914,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Total expenses": {
+        "top10_median_$": 36048.5627,
+        "bottom10_median_$": 29574.6068,
+        "median_diff_$": 6473.9559,
+        "median_ratio": 1.2189,
+        "top10_mean_$": 57585.6754,
+        "bottom10_mean_$": 33735.6168,
+        "welch_p_log": 0.0001,
+        "mann_whitney_p": 0.0001
+      }
+    },
+    "share_core": {
+      "Instruction": {
+        "top10_mean_share": 0.48,
+        "bottom10_mean_share": 0.456
+      },
+      "Academic support": {
+        "top10_mean_share": 0.1343,
+        "bottom10_mean_share": 0.1139
+      },
+      "Student services": {
+        "top10_mean_share": 0.1644,
+        "bottom10_mean_share": 0.2069
+      },
+      "Institutional support": {
+        "top10_mean_share": 0.2212,
+        "bottom10_mean_share": 0.2232
+      }
+    },
+    "per_fte_no_cooks": {
+      "Instruction": {
+        "top10_median_$": 13415.1002,
+        "bottom10_median_$": 8608.0527,
+        "median_diff_$": 4807.0475,
+        "median_ratio": 1.5584,
+        "top10_mean_$": 16232.4535,
+        "bottom10_mean_$": 10031.0832,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Academic support": {
+        "top10_median_$": 3090.4476,
+        "bottom10_median_$": 2101.5065,
+        "median_diff_$": 988.941,
+        "median_ratio": 1.4706,
+        "top10_mean_$": 5681.2441,
+        "bottom10_mean_$": 2573.1631,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0
+      },
+      "Student services": {
+        "top10_median_$": 4244.4729,
+        "bottom10_median_$": 4455.2131,
+        "median_diff_$": -210.7403,
+        "median_ratio": 0.9527,
+        "top10_mean_$": 5470.196,
+        "bottom10_mean_$": 4596.8243,
+        "welch_p_log": 0.2337,
+        "mann_whitney_p": 0.4784
+      },
+      "Institutional support": {
+        "top10_median_$": 5833.1011,
+        "bottom10_median_$": 4289.3785,
+        "median_diff_$": 1543.7226,
+        "median_ratio": 1.3599,
+        "top10_mean_$": 7021.4529,
+        "bottom10_mean_$": 4603.8541,
+        "welch_p_log": 0.0,
+        "mann_whitney_p": 0.0002
+      },
+      "Research": {
+        "top10_median_$": 196.6675,
+        "bottom10_median_$": 44.5948,
+        "median_diff_$": 152.0727,
+        "median_ratio": 4.4101,
+        "top10_mean_$": 5896.6441,
+        "bottom10_mean_$": 1672.4401,
+        "welch_p_log": 0.0734,
+        "mann_whitney_p": 0.0688
+      },
+      "Public service": {
+        "top10_median_$": 81.1979,
+        "bottom10_median_$": 53.0458,
+        "median_diff_$": 28.1521,
+        "median_ratio": 1.5307,
+        "top10_mean_$": 1334.8969,
+        "bottom10_mean_$": 587.643,
+        "welch_p_log": 0.2708,
+        "mann_whitney_p": 0.2552
       },
       "Scholarships (expensed)": {
         "top10_median_$": 0.0,
         "bottom10_median_$": 0.0,
         "median_diff_$": 0.0,
         "median_ratio": null,
-        "top10_mean_$": 959.657,
-        "bottom10_mean_$": 477.0446,
-        "welch_p_log": 0.1858,
-        "mann_whitney_p": 0.0228
+        "top10_mean_$": 874.0855,
+        "bottom10_mean_$": 637.4555,
+        "welch_p_log": 0.9103,
+        "mann_whitney_p": 0.6128
       },
       "Auxiliary enterprises": {
-        "top10_median_$": 3396.2879,
-        "bottom10_median_$": 3352.9735,
-        "median_diff_$": 43.3144,
-        "median_ratio": 1.0129,
-        "top10_mean_$": 4814.4823,
-        "bottom10_mean_$": 3668.3432,
-        "welch_p_log": 0.9837,
-        "mann_whitney_p": 0.6818
+        "top10_median_$": 3859.404,
+        "bottom10_median_$": 3509.0642,
+        "median_diff_$": 350.3398,
+        "median_ratio": 1.0998,
+        "top10_mean_$": 5345.1172,
+        "bottom10_mean_$": 3946.5711,
+        "welch_p_log": 0.9468,
+        "mann_whitney_p": 0.1399
       },
       "Core (4 categories)": {
-        "top10_median_$": 21818.2156,
-        "bottom10_median_$": 18043.9149,
-        "median_diff_$": 3774.3007,
-        "median_ratio": 1.2092,
-        "top10_mean_$": 27762.6616,
-        "bottom10_mean_$": 19388.3081,
-        "welch_p_log": 0.0,
-        "mann_whitney_p": 0.0001
-      },
-      "Total expenses": {
-        "top10_median_$": 28120.4437,
-        "bottom10_median_$": 24310.972,
-        "median_diff_$": 3809.4717,
-        "median_ratio": 1.1567,
-        "top10_mean_$": 46442.1899,
-        "bottom10_mean_$": 28003.8662,
-        "welch_p_log": 0.0001,
-        "mann_whitney_p": 0.0003
-      }
-    },
-    "per_fte_real": {
-      "Instruction": {
-        "top10_median_$": 12417.7316,
-        "bottom10_median_$": 9382.7562,
-        "median_diff_$": 3034.9754,
-        "median_ratio": 1.3235,
-        "top10_mean_$": 16285.3946,
-        "bottom10_mean_$": 10643.9008,
+        "top10_median_$": 26126.7288,
+        "bottom10_median_$": 20360.6223,
+        "median_diff_$": 5766.1065,
+        "median_ratio": 1.2832,
+        "top10_mean_$": 34405.3464,
+        "bottom10_mean_$": 21804.9247,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
       },
-      "Academic support": {
-        "top10_median_$": 3152.8899,
-        "bottom10_median_$": 2311.8457,
-        "median_diff_$": 841.0441,
-        "median_ratio": 1.3638,
-        "top10_mean_$": 4574.6828,
-        "bottom10_mean_$": 2787.7549,
+      "Total expenses": {
+        "top10_median_$": 33976.6036,
+        "bottom10_median_$": 26376.5399,
+        "median_diff_$": 7600.0637,
+        "median_ratio": 1.2881,
+        "top10_mean_$": 57527.053,
+        "bottom10_mean_$": 31025.2489,
         "welch_p_log": 0.0,
         "mann_whitney_p": 0.0
-      },
-      "Student services": {
-        "top10_median_$": 4464.9093,
-        "bottom10_median_$": 4563.4494,
-        "median_diff_$": -98.5401,
-        "median_ratio": 0.9784,
-        "top10_mean_$": 5249.2712,
-        "bottom10_mean_$": 4760.7354,
-        "welch_p_log": 0.2668,
-        "mann_whitney_p": 0.7385
-      },
-      "Institutional support": {
-        "top10_median_$": 5657.3988,
-        "bottom10_median_$": 4758.9593,
-        "median_diff_$": 898.4395,
-        "median_ratio": 1.1888,
-        "top10_mean_$": 6904.2118,
-        "bottom10_mean_$": 5107.5116,
-        "welch_p_log": 0.0012,
-        "mann_whitney_p": 0.0053
-      },
-      "Research": {
-        "top10_median_$": 147.0525,
-        "bottom10_median_$": 93.1978,
-        "median_diff_$": 53.8548,
-        "median_ratio": 1.5779,
-        "top10_mean_$": 4918.9158,
-        "bottom10_mean_$": 2503.3981,
-        "welch_p_log": 0.2131,
-        "mann_whitney_p": 0.2459
-      },
-      "Public service": {
-        "top10_median_$": 98.3812,
-        "bottom10_median_$": 65.1597,
-        "median_diff_$": 33.2215,
-        "median_ratio": 1.5098,
-        "top10_mean_$": 978.0603,
-        "bottom10_mean_$": 774.5721,
-        "welch_p_log": 0.1927,
-        "mann_whitney_p": 0.234
-      },
-      "Scholarships (expensed)": {
-        "top10_median_$": 51.3744,
-        "bottom10_median_$": 0.0,
-        "median_diff_$": 51.3744,
-        "median_ratio": null,
-        "top10_mean_$": 1376.2019,
-        "bottom10_mean_$": 715.6853,
-        "welch_p_log": 0.337,
-        "mann_whitney_p": 0.0317
-      },
-      "Auxiliary enterprises": {
-        "top10_median_$": 3946.4699,
-        "bottom10_median_$": 3935.4645,
-        "median_diff_$": 11.0054,
-        "median_ratio": 1.0028,
-        "top10_mean_$": 5419.4685,
-        "bottom10_mean_$": 4286.9906,
-        "welch_p_log": 0.9928,
-        "mann_whitney_p": 0.9119
-      },
-      "Core (4 categories)": {
-        "top10_median_$": 25111.3454,
-        "bottom10_median_$": 22353.9007,
-        "median_diff_$": 2757.4447,
-        "median_ratio": 1.1234,
-        "top10_mean_$": 33013.5604,
-        "bottom10_mean_$": 23299.9027,
-        "welch_p_log": 0.0,
-        "mann_whitney_p": 0.0001
-      },
-      "Total expenses": {
-        "top10_median_$": 35077.2461,
-        "bottom10_median_$": 29821.2053,
-        "median_diff_$": 5256.0408,
-        "median_ratio": 1.1763,
-        "top10_mean_$": 56359.8281,
-        "bottom10_mean_$": 33949.0901,
-        "welch_p_log": 0.0002,
-        "mann_whitney_p": 0.0009
       }
     },
-    "share_core": {
-      "Instruction": {
-        "top10_mean_share": 0.4841,
-        "bottom10_mean_share": 0.4605
-      },
-      "Academic support": {
-        "top10_mean_share": 0.1324,
-        "bottom10_mean_share": 0.1155
-      },
-      "Student services": {
-        "top10_mean_share": 0.1701,
-        "bottom10_mean_share": 0.2071
-      },
-      "Institutional support": {
-        "top10_mean_share": 0.2134,
-        "bottom10_mean_share": 0.2169
-      }
+    "n_cooks_dropped": 82,
+    "bh": {
+      "n_tests": 100,
+      "n_reject": 50,
+      "core": [
+        {
+          "comparison": "pooled, FY2018-23",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.3752,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2018-23",
+          "category": "Academic support",
+          "p_raw": 0.0,
+          "median_ratio": 1.5378,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2018-23",
+          "category": "Student services",
+          "p_raw": 0.7343,
+          "median_ratio": 0.9582,
+          "reject_bh_05": false,
+          "p_bh": 0.7812
+        },
+        {
+          "comparison": "pooled, FY2018-23",
+          "category": "Institutional support",
+          "p_raw": 0.0019,
+          "median_ratio": 1.2478,
+          "reject_bh_05": true,
+          "p_bh": 0.0053
+        },
+        {
+          "comparison": "pooled, FY2018-23",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0,
+          "median_ratio": 1.1293,
+          "reject_bh_05": true,
+          "p_bh": 0.0001
+        },
+        {
+          "comparison": "pooled, FY2023 only",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.2948,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2023 only",
+          "category": "Academic support",
+          "p_raw": 0.0,
+          "median_ratio": 1.532,
+          "reject_bh_05": true,
+          "p_bh": 0.0001
+        },
+        {
+          "comparison": "pooled, FY2023 only",
+          "category": "Student services",
+          "p_raw": 0.675,
+          "median_ratio": 0.9963,
+          "reject_bh_05": false,
+          "p_bh": 0.7417
+        },
+        {
+          "comparison": "pooled, FY2023 only",
+          "category": "Institutional support",
+          "p_raw": 0.0046,
+          "median_ratio": 1.1802,
+          "reject_bh_05": true,
+          "p_bh": 0.012
+        },
+        {
+          "comparison": "pooled, FY2023 only",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0,
+          "median_ratio": 1.2742,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2018-19",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.4612,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2018-19",
+          "category": "Academic support",
+          "p_raw": 0.0,
+          "median_ratio": 1.4912,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, FY2018-19",
+          "category": "Student services",
+          "p_raw": 0.5266,
+          "median_ratio": 0.9624,
+          "reject_bh_05": false,
+          "p_bh": 0.5917
+        },
+        {
+          "comparison": "pooled, FY2018-19",
+          "category": "Institutional support",
+          "p_raw": 0.0013,
+          "median_ratio": 1.258,
+          "reject_bh_05": true,
+          "p_bh": 0.0039
+        },
+        {
+          "comparison": "pooled, FY2018-19",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0,
+          "median_ratio": 1.2237,
+          "reject_bh_05": true,
+          "p_bh": 0.0001
+        },
+        {
+          "comparison": "pooled, constant $",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.3727,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, constant $",
+          "category": "Academic support",
+          "p_raw": 0.0,
+          "median_ratio": 1.5393,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, constant $",
+          "category": "Student services",
+          "p_raw": 0.7315,
+          "median_ratio": 0.9651,
+          "reject_bh_05": false,
+          "p_bh": 0.7812
+        },
+        {
+          "comparison": "pooled, constant $",
+          "category": "Institutional support",
+          "p_raw": 0.0018,
+          "median_ratio": 1.2591,
+          "reject_bh_05": true,
+          "p_bh": 0.0053
+        },
+        {
+          "comparison": "pooled, constant $",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0,
+          "median_ratio": 1.1205,
+          "reject_bh_05": true,
+          "p_bh": 0.0001
+        },
+        {
+          "comparison": "pooled, excl. 82 Cook's-flagged",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.5584,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "pooled, excl. 82 Cook's-flagged",
+          "category": "Academic support",
+          "p_raw": 0.0,
+          "median_ratio": 1.4706,
+          "reject_bh_05": true,
+          "p_bh": 0.0002
+        },
+        {
+          "comparison": "pooled, excl. 82 Cook's-flagged",
+          "category": "Student services",
+          "p_raw": 0.4784,
+          "median_ratio": 0.9527,
+          "reject_bh_05": false,
+          "p_bh": 0.5498
+        },
+        {
+          "comparison": "pooled, excl. 82 Cook's-flagged",
+          "category": "Institutional support",
+          "p_raw": 0.0002,
+          "median_ratio": 1.3599,
+          "reject_bh_05": true,
+          "p_bh": 0.0007
+        },
+        {
+          "comparison": "pooled, excl. 82 Cook's-flagged",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0,
+          "median_ratio": 1.2832,
+          "reject_bh_05": true,
+          "p_bh": 0.0
+        },
+        {
+          "comparison": "within Public",
+          "category": "Instruction",
+          "p_raw": 0.01,
+          "median_ratio": 1.2439,
+          "reject_bh_05": true,
+          "p_bh": 0.0226
+        },
+        {
+          "comparison": "within Public",
+          "category": "Academic support",
+          "p_raw": 0.0009,
+          "median_ratio": 1.5921,
+          "reject_bh_05": true,
+          "p_bh": 0.0031
+        },
+        {
+          "comparison": "within Public",
+          "category": "Student services",
+          "p_raw": 0.0282,
+          "median_ratio": 1.2763,
+          "reject_bh_05": false,
+          "p_bh": 0.0552
+        },
+        {
+          "comparison": "within Public",
+          "category": "Institutional support",
+          "p_raw": 0.0118,
+          "median_ratio": 1.2516,
+          "reject_bh_05": true,
+          "p_bh": 0.0262
+        },
+        {
+          "comparison": "within Public",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0005,
+          "median_ratio": 1.2647,
+          "reject_bh_05": true,
+          "p_bh": 0.0022
+        },
+        {
+          "comparison": "within Private nonprofit",
+          "category": "Instruction",
+          "p_raw": 0.0,
+          "median_ratio": 1.444,
+          "reject_bh_05": true,
+          "p_bh": 0.0001
+        },
+        {
+          "comparison": "within Private nonprofit",
+          "category": "Academic support",
+          "p_raw": 0.0011,
+          "median_ratio": 1.2962,
+          "reject_bh_05": true,
+          "p_bh": 0.0037
+        },
+        {
+          "comparison": "within Private nonprofit",
+          "category": "Student services",
+          "p_raw": 0.9824,
+          "median_ratio": 0.9765,
+          "reject_bh_05": false,
+          "p_bh": 0.9853
+        },
+        {
+          "comparison": "within Private nonprofit",
+          "category": "Institutional support",
+          "p_raw": 0.001,
+          "median_ratio": 1.1957,
+          "reject_bh_05": true,
+          "p_bh": 0.0035
+        },
+        {
+          "comparison": "within Private nonprofit",
+          "category": "Core (4 categories)",
+          "p_raw": 0.0003,
+          "median_ratio": 1.1666,
+          "reject_bh_05": true,
+          "p_bh": 0.0015
+        },
+        {
+          "comparison": "within Carnegie Doctoral",
+          "category": "Instruction",
+          "p_raw": 0.0013,
+          "median_ratio": 1.4268,
+          "reject_bh_05": true,
+          "p_bh": 0.0039
+        },
+        {
+          "comparison": "within Carnegie Doctoral",
+          "category": "Academic support",
+          "p_raw": 0.0008,
+          "median_ratio": 1.8777,
+          "reject_bh_05": true,
+          "p_bh": 0.0029
+        },
+        {
+          "comparison": "within Carnegie Doctoral",
+          "category": "Student services",
+          "p_raw": 0.1235,
+          "median_ratio": 1.3678,
+          "reject_bh_05": false,
+          "p_bh": 0.1816
+        },
+        {
+          "comparison": "within Carnegie Doctoral",
+          "category": "Institutional support",
+          "p_raw": 0.1235,
+          "median_ratio": 1.2951,
+          "reject_bh_05": false,
+          "p_bh": 0.1816
+        },
+        {
+          "comparison": "within Carnegie Doctoral",
+          "category": "Core (4 categories)",
+          "p_raw": 0.002,
+          "median_ratio": 1.4097,
+          "reject_bh_05": true,
+          "p_bh": 0.0056
+        },
+        {
+          "comparison": "within Carnegie Master's",
+          "category": "Instruction",
+          "p_raw": 0.0007,
+          "median_ratio": 1.1915,
+          "reject_bh_05": true,
+          "p_bh": 0.0026
+        },
+        {
+          "comparison": "within Carnegie Master's",
+          "category": "Academic support",
+          "p_raw": 0.001,
+          "median_ratio": 1.4513,
+          "reject_bh_05": true,
+          "p_bh": 0.0035
+        },
+        {
+          "comparison": "within Carnegie Master's",
+          "category": "Student services",
+          "p_raw": 0.3324,
+          "median_ratio": 0.8354,
+          "reject_bh_05": false,
+          "p_bh": 0.4208
+        },
+        {
+          "comparison": "within Carnegie Master's",
+          "category": "Institutional support",
+          "p_raw": 0.0219,
+          "median_ratio": 1.1646,
+          "reject_bh_05": true,
+          "p_bh": 0.0447
+        },
+        {
+          "comparison": "within Carnegie Master's",
+          "category": "Core (4 categories)",
+          "p_raw": 0.007,
+          "median_ratio": 1.1831,
+          "reject_bh_05": true,
+          "p_bh": 0.017
+        },
+        {
+          "comparison": "within Carnegie Baccalaureate",
+          "category": "Instruction",
+          "p_raw": 0.0005,
+          "median_ratio": 1.7674,
+          "reject_bh_05": true,
+          "p_bh": 0.0022
+        },
+        {
+          "comparison": "within Carnegie Baccalaureate",
+          "category": "Academic support",
+          "p_raw": 0.0152,
+          "median_ratio": 1.4046,
+          "reject_bh_05": true,
+          "p_bh": 0.0331
+        },
+        {
+          "comparison": "within Carnegie Baccalaureate",
+          "category": "Student services",
+          "p_raw": 0.9853,
+          "median_ratio": 0.9404,
+          "reject_bh_05": false,
+          "p_bh": 0.9853
+        },
+        {
+          "comparison": "within Carnegie Baccalaureate",
+          "category": "Institutional support",
+          "p_raw": 0.0593,
+          "median_ratio": 1.2319,
+          "reject_bh_05": false,
+          "p_bh": 0.1059
+        },
+        {
+          "comparison": "within Carnegie Baccalaureate",
+          "category": "Core (4 categories)",
+          "p_raw": 0.018,
+          "median_ratio": 1.4236,
+          "reject_bh_05": true,
+          "p_bh": 0.0383
+        }
+      ]
     },
     "within_carnegie": {
       "Doctoral": {
-        "n_top": 34,
-        "n_bottom": 37,
+        "n_top": 35,
+        "n_bottom": 38,
         "per_fte": {
           "Instruction": {
-            "top10_median_$": 15761.1396,
-            "bottom10_median_$": 11308.8206,
-            "median_diff_$": 4452.319,
-            "median_ratio": 1.3937,
-            "top10_mean_$": 22786.3593,
-            "bottom10_mean_$": 12021.9187,
-            "welch_p_log": 0.0014,
-            "mann_whitney_p": 0.0021
+            "top10_median_$": 15763.9822,
+            "bottom10_median_$": 11048.6999,
+            "median_diff_$": 4715.2823,
+            "median_ratio": 1.4268,
+            "top10_mean_$": 23167.4307,
+            "bottom10_mean_$": 11814.1639,
+            "welch_p_log": 0.0008,
+            "mann_whitney_p": 0.0013
           },
           "Academic support": {
-            "top10_median_$": 5126.8354,
-            "bottom10_median_$": 2912.2977,
-            "median_diff_$": 2214.5377,
-            "median_ratio": 1.7604,
-            "top10_mean_$": 7101.2698,
-            "bottom10_mean_$": 3672.7056,
-            "welch_p_log": 0.0019,
-            "mann_whitney_p": 0.0028
-          },
-          "Student services": {
-            "top10_median_$": 3925.7521,
-            "bottom10_median_$": 2550.3734,
-            "median_diff_$": 1375.3787,
-            "median_ratio": 1.5393,
-            "top10_mean_$": 4266.4229,
-            "bottom10_mean_$": 2915.3302,
-            "welch_p_log": 0.005,
-            "mann_whitney_p": 0.0159
-          },
-          "Institutional support": {
-            "top10_median_$": 5195.5219,
-            "bottom10_median_$": 3653.4376,
-            "median_diff_$": 1542.0843,
-            "median_ratio": 1.4221,
-            "top10_mean_$": 6896.934,
-            "bottom10_mean_$": 4228.1097,
-            "welch_p_log": 0.0142,
-            "mann_whitney_p": 0.0292
-          },
-          "Research": {
-            "top10_median_$": 5227.3502,
-            "bottom10_median_$": 5159.869,
-            "median_diff_$": 67.4812,
-            "median_ratio": 1.0131,
-            "top10_mean_$": 11329.6248,
-            "bottom10_mean_$": 6845.7014,
-            "welch_p_log": 0.7601,
-            "mann_whitney_p": 0.6242
-          },
-          "Public service": {
-            "top10_median_$": 606.5891,
-            "bottom10_median_$": 758.5188,
-            "median_diff_$": -151.9297,
-            "median_ratio": 0.7997,
-            "top10_mean_$": 2090.1578,
-            "bottom10_mean_$": 1536.6262,
-            "welch_p_log": 0.7803,
-            "mann_whitney_p": 0.8759
-          },
-          "Scholarships (expensed)": {
-            "top10_median_$": 2026.204,
-            "bottom10_median_$": 1048.639,
-            "median_diff_$": 977.565,
-            "median_ratio": 1.9322,
-            "top10_mean_$": 1991.5934,
-            "bottom10_mean_$": 987.3529,
-            "welch_p_log": 0.3601,
-            "mann_whitney_p": 0.0154
-          },
-          "Auxiliary enterprises": {
-            "top10_median_$": 3909.5505,
-            "bottom10_median_$": 3725.7709,
-            "median_diff_$": 183.7796,
-            "median_ratio": 1.0493,
-            "top10_mean_$": 7170.5936,
-            "bottom10_mean_$": 4296.9992,
-            "welch_p_log": 0.1993,
-            "mann_whitney_p": 0.5007
-          },
-          "Core (4 categories)": {
-            "top10_median_$": 30221.2241,
-            "bottom10_median_$": 21353.3835,
-            "median_diff_$": 8867.8406,
-            "median_ratio": 1.4153,
-            "top10_mean_$": 41050.986,
-            "bottom10_mean_$": 22838.0642,
-            "welch_p_log": 0.0006,
+            "top10_median_$": 4839.0573,
+            "bottom10_median_$": 2577.1576,
+            "median_diff_$": 2261.8997,
+            "median_ratio": 1.8777,
+            "top10_mean_$": 9324.0594,
+            "bottom10_mean_$": 3545.2128,
+            "welch_p_log": 0.0007,
             "mann_whitney_p": 0.0008
           },
+          "Student services": {
+            "top10_median_$": 3455.2785,
+            "bottom10_median_$": 2526.0678,
+            "median_diff_$": 929.2108,
+            "median_ratio": 1.3678,
+            "top10_mean_$": 4732.0858,
+            "bottom10_mean_$": 3053.5582,
+            "welch_p_log": 0.0732,
+            "mann_whitney_p": 0.1235
+          },
+          "Institutional support": {
+            "top10_median_$": 5022.8659,
+            "bottom10_median_$": 3878.2659,
+            "median_diff_$": 1144.6,
+            "median_ratio": 1.2951,
+            "top10_mean_$": 7445.8249,
+            "bottom10_mean_$": 4434.5065,
+            "welch_p_log": 0.0301,
+            "mann_whitney_p": 0.1235
+          },
+          "Research": {
+            "top10_median_$": 6750.3573,
+            "bottom10_median_$": 2438.4048,
+            "median_diff_$": 4311.9525,
+            "median_ratio": 2.7683,
+            "top10_mean_$": 12371.3709,
+            "bottom10_mean_$": 5815.2699,
+            "welch_p_log": 0.3861,
+            "mann_whitney_p": 0.0674
+          },
+          "Public service": {
+            "top10_median_$": 541.9918,
+            "bottom10_median_$": 405.9553,
+            "median_diff_$": 136.0365,
+            "median_ratio": 1.3351,
+            "top10_mean_$": 2173.2391,
+            "bottom10_mean_$": 1255.7138,
+            "welch_p_log": 0.3081,
+            "mann_whitney_p": 0.3544
+          },
+          "Scholarships (expensed)": {
+            "top10_median_$": 1949.124,
+            "bottom10_median_$": 949.1146,
+            "median_diff_$": 1000.0094,
+            "median_ratio": 2.0536,
+            "top10_mean_$": 2042.0874,
+            "bottom10_mean_$": 1014.0455,
+            "welch_p_log": 0.0612,
+            "mann_whitney_p": 0.0056
+          },
+          "Auxiliary enterprises": {
+            "top10_median_$": 3633.1224,
+            "bottom10_median_$": 3614.1655,
+            "median_diff_$": 18.9569,
+            "median_ratio": 1.0052,
+            "top10_mean_$": 7010.9357,
+            "bottom10_mean_$": 4089.6473,
+            "welch_p_log": 0.7138,
+            "mann_whitney_p": 0.5112
+          },
+          "Core (4 categories)": {
+            "top10_median_$": 29827.6472,
+            "bottom10_median_$": 21158.1636,
+            "median_diff_$": 8669.4836,
+            "median_ratio": 1.4097,
+            "top10_mean_$": 44669.4009,
+            "bottom10_mean_$": 22847.4414,
+            "welch_p_log": 0.0011,
+            "mann_whitney_p": 0.002
+          },
           "Total expenses": {
-            "top10_median_$": 45290.4077,
-            "bottom10_median_$": 34069.104,
-            "median_diff_$": 11221.3037,
-            "median_ratio": 1.3294,
-            "top10_mean_$": 93802.156,
-            "bottom10_mean_$": 41059.6745,
-            "welch_p_log": 0.006,
-            "mann_whitney_p": 0.0192
+            "top10_median_$": 44695.4977,
+            "bottom10_median_$": 31284.658,
+            "median_diff_$": 13410.8397,
+            "median_ratio": 1.4287,
+            "top10_mean_$": 93004.9958,
+            "bottom10_mean_$": 39654.1879,
+            "welch_p_log": 0.003,
+            "mann_whitney_p": 0.0057
           }
         }
       },
       "Master's": {
-        "n_top": 56,
-        "n_bottom": 52,
+        "n_top": 49,
+        "n_bottom": 50,
         "per_fte": {
           "Instruction": {
-            "top10_median_$": 8697.1557,
+            "top10_median_$": 9408.9478,
             "bottom10_median_$": 7896.4358,
-            "median_diff_$": 800.7199,
-            "median_ratio": 1.1014,
-            "top10_mean_$": 9573.6962,
-            "bottom10_mean_$": 8130.0067,
-            "welch_p_log": 0.0016,
-            "mann_whitney_p": 0.0068
+            "median_diff_$": 1512.512,
+            "median_ratio": 1.1915,
+            "top10_mean_$": 9849.9598,
+            "bottom10_mean_$": 8051.2128,
+            "welch_p_log": 0.0003,
+            "mann_whitney_p": 0.0007
           },
           "Academic support": {
-            "top10_median_$": 2330.0314,
-            "bottom10_median_$": 1841.6536,
-            "median_diff_$": 488.3779,
-            "median_ratio": 1.2652,
-            "top10_mean_$": 2538.7449,
-            "bottom10_mean_$": 1990.0512,
-            "welch_p_log": 0.003,
-            "mann_whitney_p": 0.0056
+            "top10_median_$": 2412.0133,
+            "bottom10_median_$": 1661.9528,
+            "median_diff_$": 750.0606,
+            "median_ratio": 1.4513,
+            "top10_mean_$": 2668.7639,
+            "bottom10_mean_$": 1947.9016,
+            "welch_p_log": 0.0014,
+            "mann_whitney_p": 0.001
           },
           "Student services": {
-            "top10_median_$": 3435.1295,
+            "top10_median_$": 3465.3746,
             "bottom10_median_$": 4148.1538,
-            "median_diff_$": -713.0243,
-            "median_ratio": 0.8281,
-            "top10_mean_$": 3759.0621,
-            "bottom10_mean_$": 4193.6782,
-            "welch_p_log": 0.3861,
-            "mann_whitney_p": 0.1637
+            "median_diff_$": -682.7792,
+            "median_ratio": 0.8354,
+            "top10_mean_$": 3853.6657,
+            "bottom10_mean_$": 4170.0747,
+            "welch_p_log": 0.5572,
+            "mann_whitney_p": 0.3324
           },
           "Institutional support": {
-            "top10_median_$": 4725.1666,
+            "top10_median_$": 4858.0586,
             "bottom10_median_$": 4171.5385,
-            "median_diff_$": 553.6281,
-            "median_ratio": 1.1327,
-            "top10_mean_$": 4838.007,
-            "bottom10_mean_$": 4097.5665,
-            "welch_p_log": 0.0395,
-            "mann_whitney_p": 0.1
+            "median_diff_$": 686.5201,
+            "median_ratio": 1.1646,
+            "top10_mean_$": 5189.2969,
+            "bottom10_mean_$": 4229.5252,
+            "welch_p_log": 0.0072,
+            "mann_whitney_p": 0.0219
           },
           "Research": {
-            "top10_median_$": 75.7348,
+            "top10_median_$": 74.5343,
             "bottom10_median_$": 10.4799,
-            "median_diff_$": 65.2548,
-            "median_ratio": 7.2267,
-            "top10_mean_$": 2258.807,
-            "bottom10_mean_$": 258.5588,
-            "welch_p_log": 0.2381,
-            "mann_whitney_p": 0.3116
+            "median_diff_$": 64.0544,
+            "median_ratio": 7.1121,
+            "top10_mean_$": 2580.1207,
+            "bottom10_mean_$": 261.943,
+            "welch_p_log": 0.3457,
+            "mann_whitney_p": 0.3616
           },
           "Public service": {
-            "top10_median_$": 80.6457,
-            "bottom10_median_$": 32.1465,
-            "median_diff_$": 48.4992,
-            "median_ratio": 2.5087,
-            "top10_mean_$": 449.3914,
-            "bottom10_mean_$": 278.2585,
-            "welch_p_log": 0.1649,
-            "mann_whitney_p": 0.2021
+            "top10_median_$": 80.0935,
+            "bottom10_median_$": 58.2057,
+            "median_diff_$": 21.8878,
+            "median_ratio": 1.376,
+            "top10_mean_$": 459.7856,
+            "bottom10_mean_$": 273.4962,
+            "welch_p_log": 0.495,
+            "mann_whitney_p": 0.4547
           },
           "Scholarships (expensed)": {
             "top10_median_$": 0.0,
-            "bottom10_median_$": 144.1245,
-            "median_diff_$": -144.1245,
+            "bottom10_median_$": 252.8092,
+            "median_diff_$": -252.8092,
             "median_ratio": 0.0,
-            "top10_mean_$": 1202.4693,
-            "bottom10_mean_$": 699.6661,
-            "welch_p_log": 0.869,
-            "mann_whitney_p": 0.2869
+            "top10_mean_$": 869.2076,
+            "bottom10_mean_$": 737.605,
+            "welch_p_log": 0.3386,
+            "mann_whitney_p": 0.6939
           },
           "Auxiliary enterprises": {
-            "top10_median_$": 2405.0308,
+            "top10_median_$": 2573.3822,
             "bottom10_median_$": 2474.5515,
-            "median_diff_$": -69.5207,
-            "median_ratio": 0.9719,
-            "top10_mean_$": 3069.5178,
-            "bottom10_mean_$": 2929.0528,
-            "welch_p_log": 0.4821,
-            "mann_whitney_p": 0.5571
+            "median_diff_$": 98.8307,
+            "median_ratio": 1.0399,
+            "top10_mean_$": 3455.5368,
+            "bottom10_mean_$": 2879.5508,
+            "welch_p_log": 0.8882,
+            "mann_whitney_p": 0.8694
           },
           "Core (4 categories)": {
-            "top10_median_$": 19389.9701,
-            "bottom10_median_$": 17789.3561,
-            "median_diff_$": 1600.614,
-            "median_ratio": 1.09,
-            "top10_mean_$": 20709.5102,
-            "bottom10_mean_$": 18411.3026,
-            "welch_p_log": 0.0244,
-            "mann_whitney_p": 0.0595
+            "top10_median_$": 21071.0914,
+            "bottom10_median_$": 17809.7912,
+            "median_diff_$": 3261.3002,
+            "median_ratio": 1.1831,
+            "top10_mean_$": 21561.6863,
+            "bottom10_mean_$": 18398.7142,
+            "welch_p_log": 0.0018,
+            "mann_whitney_p": 0.007
           },
           "Total expenses": {
-            "top10_median_$": 25812.4877,
-            "bottom10_median_$": 22511.4958,
-            "median_diff_$": 3300.9918,
-            "median_ratio": 1.1466,
-            "top10_mean_$": 29516.9031,
-            "bottom10_mean_$": 23406.2661,
+            "top10_median_$": 26847.9239,
+            "bottom10_median_$": 22920.4783,
+            "median_diff_$": 3927.4455,
+            "median_ratio": 1.1714,
+            "top10_mean_$": 30251.9228,
+            "bottom10_mean_$": 23571.6156,
             "welch_p_log": 0.0019,
-            "mann_whitney_p": 0.0056
+            "mann_whitney_p": 0.0036
           }
         }
       },
       "Baccalaureate": {
-        "n_top": 30,
-        "n_bottom": 31,
+        "n_top": 36,
+        "n_bottom": 32,
         "per_fte": {
           "Instruction": {
-            "top10_median_$": 13255.1846,
-            "bottom10_median_$": 7717.0875,
-            "median_diff_$": 5538.0971,
-            "median_ratio": 1.7176,
-            "top10_mean_$": 14316.8346,
-            "bottom10_mean_$": 8704.5066,
-            "welch_p_log": 0.0006,
-            "mann_whitney_p": 0.0006
+            "top10_median_$": 13078.9273,
+            "bottom10_median_$": 7400.0327,
+            "median_diff_$": 5678.8946,
+            "median_ratio": 1.7674,
+            "top10_mean_$": 13729.4976,
+            "bottom10_mean_$": 8777.718,
+            "welch_p_log": 0.0008,
+            "mann_whitney_p": 0.0005
           },
           "Academic support": {
-            "top10_median_$": 2721.4829,
-            "bottom10_median_$": 1752.102,
-            "median_diff_$": 969.3809,
-            "median_ratio": 1.5533,
-            "top10_mean_$": 3528.9733,
-            "bottom10_mean_$": 1914.0722,
-            "welch_p_log": 0.0093,
-            "mann_whitney_p": 0.0038
+            "top10_median_$": 2514.7214,
+            "bottom10_median_$": 1790.3748,
+            "median_diff_$": 724.3465,
+            "median_ratio": 1.4046,
+            "top10_mean_$": 3447.3181,
+            "bottom10_mean_$": 1982.7463,
+            "welch_p_log": 0.0152,
+            "mann_whitney_p": 0.0152
           },
           "Student services": {
-            "top10_median_$": 6375.4981,
-            "bottom10_median_$": 6108.7586,
-            "median_diff_$": 266.7396,
-            "median_ratio": 1.0437,
-            "top10_mean_$": 6902.1806,
-            "bottom10_mean_$": 5966.7395,
-            "welch_p_log": 0.8068,
-            "mann_whitney_p": 0.5209
+            "top10_median_$": 5529.0061,
+            "bottom10_median_$": 5879.6796,
+            "median_diff_$": -350.6734,
+            "median_ratio": 0.9404,
+            "top10_mean_$": 6360.4259,
+            "bottom10_mean_$": 5877.0112,
+            "welch_p_log": 0.8976,
+            "mann_whitney_p": 0.9853
           },
           "Institutional support": {
             "top10_median_$": 7188.8261,
-            "bottom10_median_$": 5787.2379,
-            "median_diff_$": 1401.5882,
-            "median_ratio": 1.2422,
-            "top10_mean_$": 7777.313,
-            "bottom10_mean_$": 5745.4702,
-            "welch_p_log": 0.219,
-            "mann_whitney_p": 0.0617
+            "bottom10_median_$": 5835.7198,
+            "median_diff_$": 1353.1062,
+            "median_ratio": 1.2319,
+            "top10_mean_$": 7826.4394,
+            "bottom10_mean_$": 5697.2923,
+            "welch_p_log": 0.1832,
+            "mann_whitney_p": 0.0593
           },
           "Research": {
-            "top10_median_$": 53.0274,
+            "top10_median_$": 91.177,
             "bottom10_median_$": 0.0,
-            "median_diff_$": 53.0274,
+            "median_diff_$": 91.177,
             "median_ratio": null,
-            "top10_mean_$": 500.7349,
-            "bottom10_mean_$": 79.8378,
-            "welch_p_log": 0.0189,
-            "mann_whitney_p": 0.0221
+            "top10_mean_$": 457.0234,
+            "bottom10_mean_$": 85.4323,
+            "welch_p_log": 0.0148,
+            "mann_whitney_p": 0.0203
           },
           "Public service": {
-            "top10_median_$": 0.2963,
+            "top10_median_$": 20.693,
             "bottom10_median_$": 0.0,
-            "median_diff_$": 0.2963,
+            "median_diff_$": 20.693,
             "median_ratio": null,
-            "top10_mean_$": 292.1761,
-            "bottom10_mean_$": 384.3332,
-            "welch_p_log": 0.3968,
-            "mann_whitney_p": 0.3091
+            "top10_mean_$": 1010.6678,
+            "bottom10_mean_$": 390.1966,
+            "welch_p_log": 0.1386,
+            "mann_whitney_p": 0.1213
           },
           "Scholarships (expensed)": {
             "top10_median_$": 0.0,
             "bottom10_median_$": 0.0,
             "median_diff_$": 0.0,
             "median_ratio": null,
-            "top10_mean_$": 427.3254,
-            "bottom10_mean_$": 130.2957,
-            "welch_p_log": 0.2553,
-            "mann_whitney_p": 0.2551
+            "top10_mean_$": 567.3205,
+            "bottom10_mean_$": 188.2179,
+            "welch_p_log": 0.087,
+            "mann_whitney_p": 0.0861
           },
           "Auxiliary enterprises": {
-            "top10_median_$": 5959.8521,
-            "bottom10_median_$": 4779.8748,
-            "median_diff_$": 1179.9773,
-            "median_ratio": 1.2469,
-            "top10_mean_$": 5461.5038,
-            "bottom10_mean_$": 4768.588,
-            "welch_p_log": 0.9649,
-            "mann_whitney_p": 0.3484
+            "top10_median_$": 5932.1895,
+            "bottom10_median_$": 4577.7532,
+            "median_diff_$": 1354.4363,
+            "median_ratio": 1.2959,
+            "top10_mean_$": 5595.2872,
+            "bottom10_mean_$": 4716.8279,
+            "welch_p_log": 0.7747,
+            "mann_whitney_p": 0.3472
           },
           "Core (4 categories)": {
-            "top10_median_$": 31249.293,
-            "bottom10_median_$": 20725.3164,
-            "median_diff_$": 10523.9766,
-            "median_ratio": 1.5078,
-            "top10_mean_$": 32525.3015,
-            "bottom10_mean_$": 22330.7885,
-            "welch_p_log": 0.0281,
-            "mann_whitney_p": 0.017
+            "top10_median_$": 29499.8681,
+            "bottom10_median_$": 20721.6193,
+            "median_diff_$": 8778.2487,
+            "median_ratio": 1.4236,
+            "top10_mean_$": 31363.6809,
+            "bottom10_mean_$": 22334.7677,
+            "welch_p_log": 0.0313,
+            "mann_whitney_p": 0.018
           },
           "Total expenses": {
-            "top10_median_$": 40564.6527,
-            "bottom10_median_$": 26750.252,
-            "median_diff_$": 13814.4007,
-            "median_ratio": 1.5164,
-            "top10_mean_$": 39774.3163,
-            "bottom10_mean_$": 29100.4092,
-            "welch_p_log": 0.0752,
-            "mann_whitney_p": 0.0222
+            "top10_median_$": 39202.3952,
+            "bottom10_median_$": 26712.4294,
+            "median_diff_$": 12489.9657,
+            "median_ratio": 1.4676,
+            "top10_mean_$": 39719.5049,
+            "bottom10_mean_$": 29078.376,
+            "welch_p_log": 0.0598,
+            "mann_whitney_p": 0.0242
           }
         }
       }
     },
     "within_control": {
       "Public": {
-        "n_top": 53,
+        "n_top": 52,
         "n_bottom": 44,
         "per_fte": {
           "Instruction": {
-            "top10_median_$": 9322.421,
-            "bottom10_median_$": 8652.2705,
-            "median_diff_$": 670.1505,
-            "median_ratio": 1.0775,
-            "top10_mean_$": 12678.3934,
-            "bottom10_mean_$": 10149.4768,
-            "welch_p_log": 0.0762,
-            "mann_whitney_p": 0.1503
+            "top10_median_$": 10664.0379,
+            "bottom10_median_$": 8572.8374,
+            "median_diff_$": 2091.2005,
+            "median_ratio": 1.2439,
+            "top10_mean_$": 12059.1377,
+            "bottom10_mean_$": 9728.0627,
+            "welch_p_log": 0.01,
+            "mann_whitney_p": 0.01
           },
           "Academic support": {
-            "top10_median_$": 2976.7071,
-            "bottom10_median_$": 2162.751,
-            "median_diff_$": 813.9561,
-            "median_ratio": 1.3764,
-            "top10_mean_$": 4106.8327,
-            "bottom10_mean_$": 2803.238,
-            "welch_p_log": 0.014,
-            "mann_whitney_p": 0.017
+            "top10_median_$": 3087.7516,
+            "bottom10_median_$": 1939.4073,
+            "median_diff_$": 1148.3443,
+            "median_ratio": 1.5921,
+            "top10_mean_$": 3603.7306,
+            "bottom10_mean_$": 2633.4486,
+            "welch_p_log": 0.002,
+            "mann_whitney_p": 0.0009
           },
           "Student services": {
-            "top10_median_$": 2662.3853,
-            "bottom10_median_$": 2136.4256,
-            "median_diff_$": 525.9597,
-            "median_ratio": 1.2462,
-            "top10_mean_$": 2923.7889,
-            "bottom10_mean_$": 2285.7752,
-            "welch_p_log": 0.0069,
-            "mann_whitney_p": 0.0081
+            "top10_median_$": 2568.15,
+            "bottom10_median_$": 2012.2489,
+            "median_diff_$": 555.901,
+            "median_ratio": 1.2763,
+            "top10_mean_$": 2913.9591,
+            "bottom10_mean_$": 2240.3748,
+            "welch_p_log": 0.0286,
+            "mann_whitney_p": 0.0282
           },
           "Institutional support": {
-            "top10_median_$": 3353.0806,
-            "bottom10_median_$": 2710.1799,
-            "median_diff_$": 642.9007,
-            "median_ratio": 1.2372,
-            "top10_mean_$": 4280.6401,
-            "bottom10_mean_$": 3066.7809,
-            "welch_p_log": 0.0029,
-            "mann_whitney_p": 0.0074
+            "top10_median_$": 3727.8044,
+            "bottom10_median_$": 2978.4444,
+            "median_diff_$": 749.36,
+            "median_ratio": 1.2516,
+            "top10_mean_$": 4570.1926,
+            "bottom10_mean_$": 3346.7298,
+            "welch_p_log": 0.0064,
+            "mann_whitney_p": 0.0118
           },
           "Research": {
-            "top10_median_$": 464.6529,
-            "bottom10_median_$": 1290.9719,
-            "median_diff_$": -826.319,
-            "median_ratio": 0.3599,
-            "top10_mean_$": 6069.381,
-            "bottom10_mean_$": 5313.9811,
-            "welch_p_log": 0.3682,
-            "mann_whitney_p": 0.3244
+            "top10_median_$": 625.2146,
+            "bottom10_median_$": 703.3406,
+            "median_diff_$": -78.126,
+            "median_ratio": 0.8889,
+            "top10_mean_$": 5776.6235,
+            "bottom10_mean_$": 4573.2152,
+            "welch_p_log": 0.8589,
+            "mann_whitney_p": 0.9677
           },
           "Public service": {
-            "top10_median_$": 501.9485,
-            "bottom10_median_$": 853.6038,
-            "median_diff_$": -351.6553,
-            "median_ratio": 0.588,
-            "top10_mean_$": 1422.0803,
-            "bottom10_mean_$": 1533.0059,
-            "welch_p_log": 0.0666,
-            "mann_whitney_p": 0.0596
+            "top10_median_$": 502.9134,
+            "bottom10_median_$": 592.7667,
+            "median_diff_$": -89.8532,
+            "median_ratio": 0.8484,
+            "top10_mean_$": 1311.3234,
+            "bottom10_mean_$": 1243.785,
+            "welch_p_log": 0.1691,
+            "mann_whitney_p": 0.2668
           },
           "Scholarships (expensed)": {
-            "top10_median_$": 2739.3319,
-            "bottom10_median_$": 1580.7785,
-            "median_diff_$": 1158.5534,
-            "median_ratio": 1.7329,
-            "top10_mean_$": 2476.2589,
-            "bottom10_mean_$": 1580.3564,
-            "welch_p_log": 0.4703,
-            "mann_whitney_p": 0.0
+            "top10_median_$": 2171.9659,
+            "bottom10_median_$": 1669.9935,
+            "median_diff_$": 501.9724,
+            "median_ratio": 1.3006,
+            "top10_mean_$": 2051.2341,
+            "bottom10_mean_$": 1678.8359,
+            "welch_p_log": 0.8183,
+            "mann_whitney_p": 0.088
           },
           "Auxiliary enterprises": {
-            "top10_median_$": 3633.1224,
+            "top10_median_$": 4001.1251,
             "bottom10_median_$": 2826.2092,
-            "median_diff_$": 806.9132,
-            "median_ratio": 1.2855,
-            "top10_mean_$": 4676.0263,
-            "bottom10_mean_$": 3540.6165,
-            "welch_p_log": 0.9447,
-            "mann_whitney_p": 0.6145
+            "median_diff_$": 1174.9158,
+            "median_ratio": 1.4157,
+            "top10_mean_$": 5424.2492,
+            "bottom10_mean_$": 3355.7046,
+            "welch_p_log": 0.6786,
+            "mann_whitney_p": 0.0518
           },
           "Core (4 categories)": {
-            "top10_median_$": 19197.2715,
-            "bottom10_median_$": 15777.9381,
-            "median_diff_$": 3419.3334,
-            "median_ratio": 1.2167,
-            "top10_mean_$": 23989.6551,
-            "bottom10_mean_$": 18305.2709,
-            "welch_p_log": 0.004,
-            "mann_whitney_p": 0.0051
+            "top10_median_$": 20314.7934,
+            "bottom10_median_$": 16062.4048,
+            "median_diff_$": 4252.3886,
+            "median_ratio": 1.2647,
+            "top10_mean_$": 23147.0201,
+            "bottom10_mean_$": 17948.616,
+            "welch_p_log": 0.0005,
+            "mann_whitney_p": 0.0005
           },
           "Total expenses": {
-            "top10_median_$": 31580.0626,
-            "bottom10_median_$": 26060.1942,
-            "median_diff_$": 5519.8684,
-            "median_ratio": 1.2118,
-            "top10_mean_$": 47872.5848,
-            "bottom10_mean_$": 34729.2715,
-            "welch_p_log": 0.0551,
-            "mann_whitney_p": 0.0372
+            "top10_median_$": 33341.9325,
+            "bottom10_median_$": 25106.0888,
+            "median_diff_$": 8235.8437,
+            "median_ratio": 1.328,
+            "top10_mean_$": 43434.987,
+            "bottom10_mean_$": 33618.9873,
+            "welch_p_log": 0.0335,
+            "mann_whitney_p": 0.0091
           }
         },
         "share_core": {
           "Instruction": {
-            "top10_mean_share": 0.517,
-            "bottom10_mean_share": 0.556
+            "top10_mean_share": 0.5183,
+            "bottom10_mean_share": 0.5445
           },
           "Academic support": {
-            "top10_mean_share": 0.1594,
-            "bottom10_mean_share": 0.1458
+            "top10_mean_share": 0.1556,
+            "bottom10_mean_share": 0.1399
           },
           "Student services": {
-            "top10_mean_share": 0.1369,
-            "bottom10_mean_share": 0.1314
+            "top10_mean_share": 0.1311,
+            "bottom10_mean_share": 0.1304
           },
           "Institutional support": {
-            "top10_mean_share": 0.1867,
-            "bottom10_mean_share": 0.1668
+            "top10_mean_share": 0.195,
+            "bottom10_mean_share": 0.1852
           }
         }
       },
       "Private nonprofit": {
-        "n_top": 67,
+        "n_top": 68,
         "n_bottom": 76,
         "per_fte": {
           "Instruction": {
-            "top10_median_$": 12155.112,
-            "bottom10_median_$": 7948.2952,
-            "median_diff_$": 4206.8168,
-            "median_ratio": 1.5293,
-            "top10_mean_$": 15946.4684,
-            "bottom10_mean_$": 9089.9219,
+            "top10_median_$": 11782.0249,
+            "bottom10_median_$": 8159.5709,
+            "median_diff_$": 3622.454,
+            "median_ratio": 1.444,
+            "top10_mean_$": 17069.042,
+            "bottom10_mean_$": 9267.7774,
             "welch_p_log": 0.0,
             "mann_whitney_p": 0.0
           },
           "Academic support": {
-            "top10_median_$": 2582.6706,
+            "top10_median_$": 2486.7455,
             "bottom10_median_$": 1918.5178,
-            "median_diff_$": 664.1529,
-            "median_ratio": 1.3462,
-            "top10_mean_$": 4057.0143,
-            "bottom10_mean_$": 2307.4544,
-            "welch_p_log": 0.0003,
-            "mann_whitney_p": 0.0003
+            "median_diff_$": 568.2278,
+            "median_ratio": 1.2962,
+            "top10_mean_$": 5791.4848,
+            "bottom10_mean_$": 2364.333,
+            "welch_p_log": 0.0004,
+            "mann_whitney_p": 0.0011
           },
           "Student services": {
-            "top10_median_$": 5100.3367,
+            "top10_median_$": 5147.6642,
             "bottom10_median_$": 5271.7866,
-            "median_diff_$": -171.45,
-            "median_ratio": 0.9675,
-            "top10_mean_$": 6084.6338,
-            "bottom10_mean_$": 5399.1224,
-            "welch_p_log": 0.4156,
-            "mann_whitney_p": 0.979
+            "median_diff_$": -124.1224,
+            "median_ratio": 0.9765,
+            "top10_mean_$": 6351.5012,
+            "bottom10_mean_$": 5447.7212,
+            "welch_p_log": 0.4711,
+            "mann_whitney_p": 0.9824
           },
           "Institutional support": {
-            "top10_median_$": 6147.6104,
+            "top10_median_$": 6211.5397,
             "bottom10_median_$": 5194.7119,
-            "median_diff_$": 952.8985,
-            "median_ratio": 1.1834,
-            "top10_mean_$": 7639.845,
-            "bottom10_mean_$": 5430.0623,
-            "welch_p_log": 0.0027,
-            "mann_whitney_p": 0.0066
+            "median_diff_$": 1016.8278,
+            "median_ratio": 1.1957,
+            "top10_mean_$": 8220.312,
+            "bottom10_mean_$": 5461.1151,
+            "welch_p_log": 0.0005,
+            "mann_whitney_p": 0.001
           },
           "Research": {
             "top10_median_$": 0.0,
             "bottom10_median_$": 0.0,
             "median_diff_$": 0.0,
             "median_ratio": null,
-            "top10_mean_$": 3060.3774,
-            "bottom10_mean_$": 465.7344,
-            "welch_p_log": 0.1911,
-            "mann_whitney_p": 0.2102
+            "top10_mean_$": 4051.3575,
+            "bottom10_mean_$": 468.2865,
+            "welch_p_log": 0.1028,
+            "mann_whitney_p": 0.1501
           },
           "Public service": {
             "top10_median_$": 0.0,
             "bottom10_median_$": 0.0,
             "median_diff_$": 0.0,
             "median_ratio": null,
-            "top10_mean_$": 442.1837,
-            "bottom10_mean_$": 207.7195,
-            "welch_p_log": 0.0726,
-            "mann_whitney_p": 0.0772
+            "top10_mean_$": 982.1777,
+            "bottom10_mean_$": 251.9959,
+            "welch_p_log": 0.0506,
+            "mann_whitney_p": 0.0591
           },
           "Scholarships (expensed)": {
             "top10_median_$": 0.0,
             "bottom10_median_$": 0.0,
             "median_diff_$": 0.0,
             "median_ratio": null,
-            "top10_mean_$": 248.2164,
-            "bottom10_mean_$": 97.6076,
-            "welch_p_log": 0.7055,
-            "mann_whitney_p": 0.6847
+            "top10_mean_$": 409.1705,
+            "bottom10_mean_$": 99.5813,
+            "welch_p_log": 0.8283,
+            "mann_whitney_p": 0.8803
           },
           "Auxiliary enterprises": {
-            "top10_median_$": 3456.586,
-            "bottom10_median_$": 3908.4774,
-            "median_diff_$": -451.8913,
-            "median_ratio": 0.8844,
-            "top10_mean_$": 4950.8791,
-            "bottom10_mean_$": 3991.3003,
-            "welch_p_log": 0.9089,
-            "mann_whitney_p": 0.8874
+            "top10_median_$": 3440.5779,
+            "bottom10_median_$": 3810.4511,
+            "median_diff_$": -369.8732,
+            "median_ratio": 0.9029,
+            "top10_mean_$": 4912.8447,
+            "bottom10_mean_$": 3982.5215,
+            "welch_p_log": 0.6758,
+            "mann_whitney_p": 0.7717
           },
           "Core (4 categories)": {
-            "top10_median_$": 24829.9037,
-            "bottom10_median_$": 20983.1735,
-            "median_diff_$": 3846.7302,
-            "median_ratio": 1.1833,
-            "top10_mean_$": 33727.9615,
-            "bottom10_mean_$": 22226.5609,
-            "welch_p_log": 0.0003,
+            "top10_median_$": 24888.4369,
+            "bottom10_median_$": 21333.2626,
+            "median_diff_$": 3555.1743,
+            "median_ratio": 1.1666,
+            "top10_mean_$": 37432.34,
+            "bottom10_mean_$": 22540.9467,
+            "welch_p_log": 0.0002,
             "mann_whitney_p": 0.0003
           },
           "Total expenses": {
-            "top10_median_$": 30204.7954,
+            "top10_median_$": 30507.1433,
             "bottom10_median_$": 26621.0111,
-            "median_diff_$": 3583.7842,
-            "median_ratio": 1.1346,
-            "top10_mean_$": 52211.9756,
-            "bottom10_mean_$": 27767.8754,
-            "welch_p_log": 0.0023,
-            "mann_whitney_p": 0.0075
+            "median_diff_$": 3886.1322,
+            "median_ratio": 1.146,
+            "top10_mean_$": 57482.3812,
+            "bottom10_mean_$": 28114.6383,
+            "welch_p_log": 0.0011,
+            "mann_whitney_p": 0.0077
           }
         },
         "share_core": {
           "Instruction": {
-            "top10_mean_share": 0.458,
-            "bottom10_mean_share": 0.4053
+            "top10_mean_share": 0.4508,
+            "bottom10_mean_share": 0.4048
           },
           "Academic support": {
-            "top10_mean_share": 0.111,
-            "bottom10_mean_share": 0.0979
+            "top10_mean_share": 0.118,
+            "bottom10_mean_share": 0.0988
           },
           "Student services": {
-            "top10_mean_share": 0.1964,
-            "bottom10_mean_share": 0.2509
+            "top10_mean_share": 0.1899,
+            "bottom10_mean_share": 0.2512
           },
           "Institutional support": {
-            "top10_mean_share": 0.2345,
-            "bottom10_mean_share": 0.2459
+            "top10_mean_share": 0.2413,
+            "bottom10_mean_share": 0.2453
           }
         }
       }
@@ -1653,21 +2264,21 @@
       "B": 1000,
       "seed": 20261023,
       "n_top_decile": 120,
-      "mean_p_top_among_point_top": 0.9283,
-      "share_p_ge_0_9": 0.7667,
+      "mean_p_top_among_point_top": 0.8959,
+      "share_p_ge_0_9": 0.6583,
       "share_p_ge_0_5": 1.0,
-      "expected_overlap": 0.9283,
-      "n_outside_with_p_ge_0_5": 1,
-      "median_rank_ci_width_top_decile": 57.5125,
-      "median_rank_ci_width_all": 119.025,
-      "mean_pairwise_top_decile_overlap": 0.8953
+      "expected_overlap": 0.8959,
+      "n_outside_with_p_ge_0_5": 3,
+      "median_rank_ci_width_top_decile": 67.0125,
+      "median_rank_ci_width_all": 147.55,
+      "mean_pairwise_top_decile_overlap": 0.8574
     },
     "sector": {
       "Public": {
         "n": 491,
         "r2": 0.5324,
-        "spearman_vs_pooled": 0.9565,
-        "top_decile_overlap_vs_pooled": 0.6939,
+        "spearman_vs_pooled": 0.9946,
+        "top_decile_overlap_vs_pooled": 0.9592,
         "n_dec": 49,
         "spending": {
           "Instruction": {
@@ -1720,8 +2331,8 @@
       "Private nonprofit": {
         "n": 707,
         "r2": 0.5605,
-        "spearman_vs_pooled": 0.9798,
-        "top_decile_overlap_vs_pooled": 0.8873,
+        "spearman_vs_pooled": 0.9986,
+        "top_decile_overlap_vs_pooled": 0.9577,
         "n_dec": 71,
         "spending": {
           "Instruction": {
@@ -1775,7 +2386,7 @@
     "drop5": {
       "ugds_cut": 23640.899999999983,
       "n_dropped": 60,
-      "spearman": 0.9976
+      "spearman": 0.9968
     }
   }
 }
