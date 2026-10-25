@@ -67,6 +67,8 @@ Ask about first-year advising, gateway courses and first-gen programming. Full r
 
 readme = f"""# Which 4-year colleges graduate first-generation students above prediction, and how much of it is money?
 
+**Live dashboard:** https://first-gen-beating-odds.streamlit.app
+
 Some colleges graduate far more of their first-generation students than you would expect from who they enroll, and this project finds them and asks whether money is the reason. The answer: how much a college spends, and what it spends it on, explains only about 5 percent of why some schools beat the odds. The takeaway for a college that wants to do better is to learn from the peer schools that beat the odds with similar students, not to move money between budget lines.
 
 Portfolio project. Python · DuckDB · pandas · statsmodels · plotly · Streamlit.
@@ -146,7 +148,7 @@ Raw data (~600 MB) is gitignored and re-downloaded by the first script. The clea
 
 ## Dashboard
 
-`streamlit run app/app.py`: actual-vs-predicted scatter with hover, coefficient chart, filterable ranking (state, sector, Carnegie group, size, Pell share) with raw and shrunken residuals, bootstrap rank intervals and CSV download, spending comparison (pooled, sector models, Carnegie groups, timing variants), per-school lookup with peer comparison, methods and limitations.
+Live at https://first-gen-beating-odds.streamlit.app. Locally, `streamlit run app/app.py`: actual-vs-predicted scatter with hover, coefficient chart, filterable ranking (state, sector, Carnegie group, size, Pell share) with raw and shrunken residuals, bootstrap rank intervals and CSV download, spending comparison (pooled, sector models, Carnegie groups, timing variants), per-school lookup with peer comparison, methods and limitations.
 
 ## Limitations
 

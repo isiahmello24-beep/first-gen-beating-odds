@@ -10,6 +10,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 st.set_page_config(page_title="First-Gen Completion: Over-performing Colleges", layout="wide", page_icon="🎓")
@@ -22,6 +23,25 @@ TOP, BOT = "#2a9d8f", "#e76f51"
 
 
 FILES = [ROOT / "data/clean/analysis_scored.parquet", ROOT / "data/clean/bootstrap_ranks.csv", ROOT / "reports/results.json"]
+
+
+def shrink(resid, pred, n):
+    pred = pred.clip(0.05, 0.95); sigma2 = pred * (1 - pred) / n
+    tau2 = max(float(resid.var() - sigma2.mean()), 1e-6)
+    return resid * tau2 / (tau2 + sigma2)
+
+
+def decile_groups(d, resid_col):
+    dec = pd.qcut(d[resid_col], 10, labels=range(1, 11)).astype(int)
+    return d[dec == 10], d[dec == 1]
+
+
+def compare_table(top, bot):
+    rows = []
+    for k, lbl in list(CORE.items()) + [("exp_core", "Core (4 categories)")]:
+        a, b = top[f"{k}_per_fte"], bot[f"{k}_per_fte"]
+        rows.append({"category": lbl, "top 10%": a.median(), "bottom 10%": b.median(), "ratio": a.median() / b.median(), "Mann-Whitney p": stats.mannwhitneyu(a, b, alternative="two-sided").pvalue})
+    return pd.DataFrame(rows)
 
 
 @st.cache_data
@@ -43,11 +63,13 @@ st.caption("College Scorecard (Oct 2026) + IPEDS FY2018-23 + Opportunity Insight
 tab_over, tab_rank, tab_spend, tab_school, tab_method = st.tabs(["Overview", "Rankings", "Spending comparison", "School lookup", "Methods & limitations"])
 
 with tab_over:
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Schools in model", f"{s5['n']:,}", f"+{s5['n_excluded']} excluded, scored separately")
     c2.metric(f"R² ({s5['main_model']})", f"{s5['r2_main']:.2f}", f"pooled Model A {s5['r2_A']:.2f}")
     c3.metric("Mean first-gen 6-yr completion", f"{s5['outcome_mean']:.1%}")
     c4.metric("Top-decile residual cut", f"+{s6['top_decile_cut_pp']:.1f} pts")
+    c5.metric("Spending explains", f"{s7['level_vs_mix']['r2']*100:.1f}%", "of over-performance")
+    c5.caption("R² of the shrunken residual on spending level + mix (reports/07, section 7b).")
     left, right = st.columns([3, 2])
     with left:
         fig = px.scatter(df, x="predicted", y="firstgen_comp_orig_yr6_rt", color="group", hover_name="instnm",
@@ -98,9 +120,13 @@ with tab_rank:
                      .style.format({"Pell": "{:.2f}", "Age 25+ share": "{:.2f}", "Online share": "{:.2f}", "Actual": "{:.3f}", "Predicted": "{:.3f}", "Residual (pts)": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
 
 with tab_spend:
-    scope = st.radio("Comparison", ["All schools (pooled model deciles)", "Public (public-only model deciles)", "Private nonprofit (private-only model deciles)", "Carnegie: Doctoral", "Carnegie: Master's", "Carnegie: Baccalaureate"], horizontal=True)
-    if scope.startswith("All"):
-        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; note = "Deciles of the pooled Model A shrunken residual."
+    scope = st.radio("Comparison", [f"Main ranking: {s5['main_model']} deciles (default, matches the README)", "Pooled Model A deciles (single slope per trait)", "Public (public-only model deciles)", "Private nonprofit (private-only model deciles)", "Carnegie: Doctoral", "Carnegie: Master's", "Carnegie: Baccalaureate"], horizontal=True)
+    if scope.startswith("Main"):
+        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; note = f"Top and bottom deciles of the shrunken residual from the main model ({s5['main_model']}): the ranking shown on the Rankings tab and in the README."
+    elif scope.startswith("Pooled"):
+        dp = df.assign(resid_pooled_eb=shrink(df["residual_pooled"], df["predicted_pooled"], df["firstgen_yr6_n"]))
+        top, bot = decile_groups(dp, "resid_pooled_eb"); tab = None
+        note = "Deciles of the shrunken residual from the pooled Model A (one slope per trait, computed here). Kept for comparison; the interaction model is the main ranking."
     elif scope.startswith("Carnegie"):
         g = scope.split(": ")[1]; dd = df[df.carnegie_group == g]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = s7["within_carnegie"][g]["per_fte"]
         note = f"Pooled-model deciles restricted to Carnegie {g} schools (top n = {len(top)}, bottom n = {len(bot)})."
@@ -112,7 +138,7 @@ with tab_spend:
     long = pd.DataFrame([{"category": lbl, "group": g, "median $ per FTE": dd_[f"{k}_per_fte"].median()} for k, lbl in CORE.items() for g, dd_ in [("top 10%", top), ("bottom 10%", bot)]])
     a, b = st.columns([3, 2])
     a.plotly_chart(px.bar(long, x="category", y="median $ per FTE", color="group", barmode="group", color_discrete_map={"top 10%": TOP, "bottom 10%": BOT}, title="Median dollars per FTE, FY2018-23 average").update_layout(height=430), use_container_width=True)
-    t = pd.DataFrame([{"category": k, "top 10%": v["top10_median_$"], "bottom 10%": v["bottom10_median_$"], "ratio": v["median_ratio"], "Mann-Whitney p": v["mann_whitney_p"]} for k, v in tab.items() if k in list(CORE.values()) + ["Core (4 categories)"]])
+    t = compare_table(top, bot) if tab is None else pd.DataFrame([{"category": k, "top 10%": v["top10_median_$"], "bottom 10%": v["bottom10_median_$"], "ratio": v["median_ratio"], "Mann-Whitney p": v["mann_whitney_p"]} for k, v in tab.items() if k in list(CORE.values()) + ["Core (4 categories)"]])
     b.dataframe(t.style.format({"top 10%": "${:,.0f}", "bottom 10%": "${:,.0f}", "ratio": "{:.2f}×", "Mann-Whitney p": "{:.3f}"}), hide_index=True, use_container_width=True)
     with st.expander("Timing variants: does the gap depend on which fiscal years or on inflation?"):
         var = pd.DataFrame({"FY2018-23 nominal (main)": {k: v["median_ratio"] for k, v in pf.items()}, "FY2018-19 only": {k: v["median_ratio"] for k, v in s7["per_fte_fy1819"].items()},
