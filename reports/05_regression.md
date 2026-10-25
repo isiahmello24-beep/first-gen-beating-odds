@@ -63,7 +63,7 @@ Reading the coefficients: the Pell coefficient is -0.317, so a school with a 40-
 
 ### Joint test of the 8 private × trait terms (Wald F with HC3 covariance)
 
-F(8, 1178) = 6.82, p = 8.66e-09. The slopes differ by sector: the interaction terms are jointly significant.
+F(8, 1178) = 6.82, p < 0.001. The slopes differ by sector: the interaction terms are jointly significant.
 
 
 Rule: the interaction model becomes the main ranking model if its overlap with BOTH sector-only rankings beats the pooled model's. Result: **interaction model adopted** → main model = A-int (interaction). The interaction model differs from two separate sector fits only in sharing the Carnegie dummies and the residual variance, so it should sit close to the sector rankings; the point of the test is whether it gets there without splitting the sample.

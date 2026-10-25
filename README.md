@@ -1,6 +1,8 @@
 # Which 4-year colleges graduate first-generation students above prediction, and how much of it is money?
 
-Portfolio project (UCSD MSBA application). Python · DuckDB · pandas · statsmodels · plotly · Streamlit.
+Some colleges graduate far more of their first-generation students than you would expect from who they enroll, and this project finds them and asks whether money is the reason. The answer: how much a college spends, and what it spends it on, explains only about 5 percent of why some schools beat the odds. The takeaway for a college that wants to do better is to learn from the peer schools that beat the odds with similar students, not to move money between budget lines.
+
+Portfolio project. Python · DuckDB · pandas · statsmodels · plotly · Streamlit.
 
 ## Question
 
@@ -15,7 +17,7 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 - **Model:** OLS of first-gen same-institution 6-year completion on Pell share, admission rate, log enrollment, part-time share, first-gen share, share aged 25+, share exclusively online, HBCU and Carnegie group, with private × every trait (**R² = 0.550**; pooled version 0.526), HC3 robust SEs. The interaction model is the ranking model because its top decile overlaps the sector-only rankings at 96% (public) and 96% (private). Spending is not in the model.
 - **Ranking:** residual = actual − predicted, shrunk toward zero for small cohorts (empirical Bayes; τ = 9.6 pts). Shrinkage removed 11 small-cohort schools from the top decile. Top decile (120 schools) beat prediction by **≥ 11.2 points**.
 - **Spending, by sector:** in a public-only model, over-performing publics spent more on all four core functions (instruction 1.25×, academic support 1.48×, student services 1.28×). In a private-only model the gap is instruction 1.44× and academic support 1.36× with no student-services difference. Pooled: instruction 1.38×, academic support 1.54× (p < 0.001), student services 0.96×.
-- **Slopes differ by sector:** joint Wald F test of the eight private × trait terms, F(8, 1178) = 6.82, p = 0.0e+00. A fractional-logit version of the model ranks schools identically in practice (Spearman 0.999, top-decile overlap 96%).
+- **Slopes differ by sector:** joint Wald F test of the eight private × trait terms, F(8, 1178) = 6.82, p < 0.001. A fractional-logit version of the model ranks schools identically in practice (Spearman 0.999, top-decile overlap 96%).
 - **Level vs mix:** regressing the shrunken residual on log core spending, instruction share and academic-support share (sector and Carnegie controls): shares remain significant with the level fixed (instruction share p = 0.047, academic support p = 0.004), but level explains more (R² 0.044 vs 0.018).
 - **Robustness:** a Benjamini-Hochberg correction across 100 spending tests keeps the instruction and academic-support gaps everywhere and the student-services gap nowhere; dropping 82 Cook's-flagged schools leaves them at 1.56× / 1.47×. Results hold with FY2018-19 spending only (1.46× / 1.49×), in constant FY2023 dollars (1.37× / 1.54×), and within each Carnegie group. A 1,000-resample bootstrap keeps top-decile schools in the top decile 90% of the time.
 

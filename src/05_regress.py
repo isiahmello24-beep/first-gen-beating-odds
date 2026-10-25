@@ -159,7 +159,7 @@ def main():
              f"| Interaction vs public-only model (publics) | {rc['spearman_int_vs_sector_public']:.3f} | {rc['overlap_int_vs_sector_public']:.0%} |\n"
              f"| Pooled vs private-only model (privates) | {rc['spearman_pool_vs_sector_private']:.3f} | {rc['overlap_pool_vs_sector_private']:.0%} |\n"
              f"| Interaction vs private-only model (privates) | {rc['spearman_int_vs_sector_private']:.3f} | {rc['overlap_int_vs_sector_private']:.0%} |\n",
-             f"\n### Joint test of the {joint_F['n_terms']} private × trait terms (Wald F with HC3 covariance)\n\nF({joint_F['df_num']}, {joint_F['df_denom']}) = {joint_F['F']:.2f}, p = {joint_F['p']:.2e}. "
+             f"\n### Joint test of the {joint_F['n_terms']} private × trait terms (Wald F with HC3 covariance)\n\nF({joint_F['df_num']}, {joint_F['df_denom']}) = {joint_F['F']:.2f}, p {'< 0.001' if joint_F['p'] < 0.001 else f"= {joint_F['p']:.3f}"}. "
              f"{'The slopes differ by sector: the interaction terms are jointly significant.' if joint_F['p'] < 0.05 else 'The interaction terms are not jointly significant.'}\n",
              f"\nRule: the interaction model becomes the main ranking model if its overlap with BOTH sector-only rankings beats the pooled model's. Result: **{'interaction model adopted' if use_int else 'pooled model kept'}** → main model = {main_name}. "
              "The interaction model differs from two separate sector fits only in sharing the Carnegie dummies and the residual variance, so it should sit close to the sector rankings; the point of the test is whether it gets there without splitting the sample.\n",
