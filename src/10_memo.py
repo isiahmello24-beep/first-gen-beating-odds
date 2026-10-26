@@ -41,13 +41,13 @@ memo = f"""# Memo: {headline}
 
 ## How much of over-performance is money?
 
-Not much. Among {s5['n']:,} four-year colleges, the top tenth graduated first-gen students at least {s6['top_decile_cut_pp']:.1f} points above what their student mix predicts. Spending level and mix together explain **{r2_pct:.1f}%** of the variation in that residual. With the budget size held fixed, one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share with {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per student is associated with about {pp_double:+.0f} points. All three are real (p = {pv(lm['p']['acad_share'])}, {pv(lm['p']['instr_share'])}, {pv(lm['p']['log_core_per_fte'])}) and small against an {s6['top_decile_cut_pp']:.1f}-point gap. Most over-performance sits outside budget data, so the recommendation is a list of schools to call, not a reallocation.
+Among {s5['n']:,} four-year colleges, the top tenth graduated first-gen students at least {s6['top_decile_cut_pp']:.1f} points above what their student mix predicts. Spending level and mix together explain **{r2_pct:.1f}%** of the variation in that residual. With the budget size held fixed, one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share with {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per student is associated with about {pp_double:+.0f} points. All three are real (p = {pv(lm['p']['acad_share'])}, {pv(lm['p']['instr_share'])}, {pv(lm['p']['log_core_per_fte'])}) and small against an {s6['top_decile_cut_pp']:.1f}-point gap. Most over-performance sits outside budget data, so the recommendation is a list of schools to call, not a reallocation.
 
 ## What the budget data do show
 
 Over-performers spent more per student; the pattern differs by sector. Publics, ranked against publics: more on everything (instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×). Privates: instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}×, student services flat ({prv['Student services']['median_ratio']:.2f}×). After correcting for {s7['bh']['n_tests']} comparisons, the instruction and academic-support gaps survive everywhere; the student-services gap nowhere.
 
-**Method.** Completion of first-gen students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts.
+**Method.** Completion of first-gen students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, adjusted for small cohorts.
 
 ## The recommendation: call these peers (500 or more first-gen students)
 
@@ -55,7 +55,7 @@ Over-performers spent more per student; the pattern differs by sector. Publics, 
 |---|---|---:|---:|---:|---:|---:|
 {peers(s6['top_large'])}
 
-Ask about advising, gateway courses and first-gen programming.
+Ask about advising, gateway courses and first-gen support.
 
 ## Limitations
 
