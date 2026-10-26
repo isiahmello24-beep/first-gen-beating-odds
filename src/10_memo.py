@@ -37,7 +37,7 @@ headline = f"Budgets explain {r2_pct:.1f}% of why some colleges beat the odds on
 
 memo = f"""# Memo: {headline}
 
-**To:** Director of Student Success · **From:** Isiah Mello · **Date:** {today}
+**To:** Director of Student Success · **From:** Isiah Luna · **Date:** {today}
 
 ## How much of over-performance is money?
 

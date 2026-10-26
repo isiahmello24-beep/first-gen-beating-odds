@@ -1,6 +1,6 @@
 # Memo: Budgets explain 5.1% of why some colleges beat the odds on first-generation completion. Look at the peers.
 
-**To:** Director of Student Success · **From:** Isiah Mello · **Date:** 2026-10-24
+**To:** Director of Student Success · **From:** Isiah Luna · **Date:** 2026-10-25
 
 ## How much of over-performance is money?
 
