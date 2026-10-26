@@ -4,8 +4,7 @@ and how much money explains the gap.
 Run from the project root:  streamlit run app/app.py
 Reads data/clean/analysis_scored.parquet, data/clean/bootstrap_ranks.csv and reports/results.json (from src/05-08).
 
-Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, a serif display face for
-headlines, monospace micro-labels, and ONE accent color reserved for the finding (schools above expected).
+Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, Times New Roman throughout, and ONE accent color reserved for the finding (schools above expected).
 Color meaning is fixed on every chart: accent = above expected / top 10%, graphite = below expected / bottom 10%.
 Asymmetric 12-column grid: 8/4, 4/8, 7/5. Plain-spoken labels; technical detail lives in the Methods tab.
 """
@@ -33,31 +32,30 @@ KIND = {"Doctoral": "Research university", "Master's": "Master's university", "B
 
 st.markdown(f"""
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-  html, body, [class*="css"], .stMarkdown, .stCaption, .stDataFrame, .stSelectbox, .stMultiSelect, .stRadio, .stButton {{ font-family: 'Space Grotesk', sans-serif; }}
+  html, body, .stApp, .stApp *, [data-testid="stDataFrame"] *, div[data-testid="stTabs"] button, .mono, .sec .t, .hero .n, .stat .n, .list .pt, .mast h1 {{ font-family: "Times New Roman", Times, serif !important; }}
   .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{ background: {PAPER}; color: {INK}; }}
   .stApp p, .stApp li, .stApp label, .stApp span {{ color: inherit; }}
   .block-container {{ padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1440px; }}
-  .mono {{ font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: {INK2}; }}
+  .mono {{ font-family: "Times New Roman", Times, serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: {INK2}; }}
   .mast {{ border-top: 3px solid {INK}; padding-top: .6rem; }}
-  .mast h1 {{ font-family: 'Fraunces', serif; font-weight: 500; font-size: 2.6rem; line-height: 1.12; letter-spacing: -.01em; color: {INK}; margin: .5rem 0 .6rem 0; max-width: 20ch; }}
+  .mast h1 {{ font-family: "Times New Roman", Times, serif; font-weight: 500; font-size: 2.6rem; line-height: 1.12; letter-spacing: -.01em; color: {INK}; margin: .5rem 0 .6rem 0; max-width: 20ch; }}
   .mast .by {{ font-size: .92rem; color: {INK2}; }}
   .mast .by b {{ color: {INK}; font-weight: 500; }}
   .rule {{ border-top: 1px solid {RULE}; margin: 1.1rem 0 .9rem 0; }}
   .rule-strong {{ border-top: 2px solid {INK}; margin: 1.4rem 0 .9rem 0; }}
   .sec {{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:.25rem 1rem; border-bottom: 1px solid {RULE}; padding-bottom:.35rem; margin: .2rem 0 .7rem 0; }}
   .sec .mono {{ margin-left:auto; }}
-  .sec .t {{ font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 500; color: {INK}; }}
-  .hero .n {{ font-family: 'Fraunces', serif; font-size: 72px; font-weight: 300; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.02em; }}
+  .sec .t {{ font-family: "Times New Roman", Times, serif; font-size: 1.25rem; font-weight: 500; color: {INK}; }}
+  .hero .n {{ font-family: "Times New Roman", Times, serif; font-size: 72px; font-weight: 300; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.02em; }}
   .hero .d {{ font-size: 1.02rem; color: {INK}; max-width: 56ch; line-height: 1.5; }}
   .stat {{ border-top: 1px solid {RULE}; padding: .55rem 0 .3rem 0; }}
-  .stat .n {{ font-family: 'Fraunces', serif; font-size: 30px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
+  .stat .n {{ font-family: "Times New Roman", Times, serif; font-size: 30px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
   .stat .n.acc {{ color: {ACCENT}; }}
   .stat .s {{ font-size: .8rem; color: {INK2}; }}
   .list .row {{ border-bottom: 1px solid {RULE}; padding: .6rem 0 .55rem 0; }}
   .list .row:first-child {{ border-top: 1px solid {RULE}; }}
   .list .nm {{ font-weight: 600; color: {INK}; font-size: .98rem; }}
-  .list .pt {{ font-family: 'Fraunces', serif; color: {ACCENT}; font-size: 1.35rem; font-weight: 500; float: right; margin-top: -.1rem; }}
+  .list .pt {{ font-family: "Times New Roman", Times, serif; color: {ACCENT}; font-size: 1.35rem; font-weight: 500; float: right; margin-top: -.1rem; }}
   .list .meta {{ font-size: .8rem; color: {INK2}; margin-top: .15rem; }}
   .list .meta b {{ color: {INK}; font-weight: 500; }}
   .surface {{ background: {SURFACE}; border: 1px solid {RULE}; padding: 1rem 1.1rem .4rem 1.1rem; }}
@@ -66,10 +64,16 @@ st.markdown(f"""
   .dl .r {{ display:flex; justify-content:space-between; border-bottom:1px solid {RULE}; padding:.4rem 0; font-size:.9rem; }}
   .dl .r span:first-child {{ color:{INK2}; }}
   .dl .r span:last-child {{ color:{INK}; font-weight:500; font-variant-numeric: tabular-nums; }}
-  div[data-testid="stTabs"] button {{ font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }}
+  @media (max-width: 900px) {{
+    .mast h1 {{ font-size: 1.45rem; line-height: 1.2; margin: .35rem 0 .4rem 0; }}
+    .hero .n {{ font-size: 52px; }}
+    .block-container {{ padding-top: .8rem; }}
+    .mono {{ font-size: 10px; }}
+  }}
+  div[data-testid="stTabs"] button {{ font-family: "Times New Roman", Times, serif; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }}
   div[data-testid="stDataFrame"] {{ border: 1px solid {RULE}; }}
   div[data-testid="stExpander"] {{ border: 1px solid {RULE}; border-radius: 0; }}
-  div[data-testid="stExpander"] details summary p {{ font-family: 'Space Grotesk', sans-serif; font-weight: 600; }}
+  div[data-testid="stExpander"] details summary p {{ font-family: "Times New Roman", Times, serif; font-weight: 600; }}
 </style>""", unsafe_allow_html=True)
 
 
@@ -90,10 +94,10 @@ def stat(col, label, value, sub, accent=False):
 
 
 def chart(fig, height=340, legend=True, ygrid=True):
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Space Grotesk, sans-serif", color=INK2, size=12), height=height,
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Times New Roman, Times, serif", color=INK2, size=12), height=height,
                       margin=dict(l=6, r=6, t=26, b=6), title=None, showlegend=legend,
                       legend=dict(orientation="h", y=-0.24, x=0, xanchor="left", font=dict(color=INK2, size=11), bgcolor="rgba(0,0,0,0)"),
-                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Space Grotesk, sans-serif"))
+                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Times New Roman, Times, serif"))
     fig.update_xaxes(showgrid=False, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     fig.update_yaxes(showgrid=ygrid, gridcolor="#E9E4D9", gridwidth=1, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     return fig
@@ -121,8 +125,8 @@ def compare_table(top, bot):
 def spend_bar(top, bot, height=340):
     cats = list(CORE.values())
     fig = go.Figure()
-    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="JetBrains Mono, monospace"))
-    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="JetBrains Mono, monospace"))
+    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="Times New Roman, Times, serif"))
+    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="Times New Roman, Times, serif"))
     fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.06, yaxis_title="Spending per student per year", yaxis=dict(tickprefix="$", separatethousands=True))
     return chart(fig, height)
 
@@ -194,7 +198,7 @@ with tab_over:
     L, R = st.columns([8, 4])
     with L:
         st.markdown(f'''<div class="hero"><div class="mono">Share of the gap explained by money</div><div class="n">{lm["r2"]*100:.0f}%</div>
-<div class="d">How much a college spends, and what it spends it on, explains about {lm["r2"]*100:.0f}% of why some schools beat the odds for first-gen students. The rest is in what they do. So the useful output is not a budget; it is the list of schools on the right, and the search box below.</div></div>''', unsafe_allow_html=True)
+<div class="d">How much a college spends, and what it spends it on, explains about {lm["r2"]*100:.0f}% of why some schools beat the odds for first-gen students. The rest is in what they do. So the useful output is not a budget; it is the school list, and the search box.</div></div>''', unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
         stat(c1, "Colleges compared", f"{s5['n']:,}", f"four-year public and private · {s5['n_excluded']} special cases set aside")
         stat(c2, "How much the model explains", f"{s5['r2_main']:.0%}", "of the difference in first-gen graduation between schools")
@@ -217,7 +221,7 @@ with tab_over:
         default = "San Diego State University (CA)"
         pick = st.selectbox("Look up any college", names, index=int(names[names == default].index[0]) if (names == default).any() else 0, label_visibility="collapsed")
         row = df.sort_values("instnm").iloc[names[names == pick].index[0]]
-        st.markdown(f'<div class="mono" style="margin-top:.6rem">Selected</div><div style="font-family:Fraunces,serif;font-size:1.35rem;font-weight:500;color:{INK};line-height:1.2;margin:.2rem 0 .4rem 0">{row.instnm}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="mono" style="margin-top:.6rem">Selected</div><div style="font-family:"Times New Roman",Times,serif;font-size:1.35rem;font-weight:500;color:{INK};line-height:1.2;margin:.2rem 0 .4rem 0">{row.instnm}</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="dl"><div class="r"><span>Points above expected</span><span style="color:{ACCENT if row.residual_eb >= 0 else GRAPHITE}">{row.residual_eb_pct_pts:+.1f}</span></div><div class="r"><span>Expected · actual</span><span>{row.predicted:.0%} · {row.firstgen_comp_orig_yr6_rt:.0%}</span></div><div class="r"><span>Rank</span><span>{int(row["rank"])} of {len(df):,}</span></div></div>', unsafe_allow_html=True)
         st.caption("Full detail for this school is further down the page.")
     with R:
@@ -240,7 +244,7 @@ with tab_over:
     with L:
         section("Where the top 10% spend more", "median $ per student per year · top vs bottom 10%")
         st.plotly_chart(spend_bar(df[df.group == "top 10%"], df[df.group == "bottom 10%"], 380), use_container_width=True, key="ov_spend")
-        meaning(f"Schools that beat expectations spend about {pf['Instruction']['median_ratio']:.1f}× more per student on teaching and {pf['Academic support']['median_ratio']:.1f}× more on academic support than schools that fall short, and about the same on student services. With the budget size held fixed, one standard deviation more academic-support share is worth {lm['pp_per_sd_acad_share']:+.1f} points and doubling the budget about {pp_double:+.0f}; against a top-10% bar of +{s6['top_decile_cut_pp']:.0f}, that is why money explains only {lm['r2']*100:.0f}%.")
+        meaning(f"Schools that beat expectations spend about {pf['Instruction']['median_ratio']:.1f}× more per student on teaching and {pf['Academic support']['median_ratio']:.1f}× more on academic support than schools that fall short, and about the same on student services. They also spend about {pf['Institutional support']['median_ratio']:.2f}× more on administration. With the budget size held fixed, one standard deviation more academic-support share is worth {lm['pp_per_sd_acad_share']:+.1f} points and doubling the budget about {pp_double:+.0f}; against a top-10% bar of +{s6['top_decile_cut_pp']:.0f}, that is why money explains only {lm['r2']*100:.0f}%.")
     with R:
         section("What predicts first-gen graduation", "points, going from 0% to 100%")
         terms = [k for k in PLAIN if k in s5["coef_A"]]
@@ -311,7 +315,7 @@ with tab_spend:
     R.dataframe(t.style.format({"Top 10%": "${:,.0f}", "Bottom 10%": "${:,.0f}", "Top ÷ bottom": "{:.2f}×", "p-value": "{:.3f}"}), hide_index=True, use_container_width=True)
     R.caption("p-value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     ti = t.set_index("Spending category")
-    meaning(f"In this group, schools that beat expectations spend {ti.loc['Teaching', 'Top ÷ bottom']:.1f}× as much on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.1f}× as much on academic support per student as schools that fall short, and {ti.loc['Student services', 'Top ÷ bottom']:.1f}× on student services. Orange is the top 10%, grey the bottom 10%.")
+    meaning(f"In this group, schools that beat expectations spend {ti.loc['Teaching', 'Top ÷ bottom']:.1f}× as much on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.1f}× as much on academic support per student as schools that fall short, and {ti.loc['Student services', 'Top ÷ bottom']:.1f}× on student services. They also spend about {ti.loc['Administration', 'Top ÷ bottom']:.2f}× more on administration. Orange is the top 10%, grey the bottom 10%.")
     st.markdown(f"**Public and private schools differ.** Among public colleges, the ones that beat expectations spend more on everything: teaching {pub['Instruction']['median_ratio']:.1f}×, academic support {pub['Academic support']['median_ratio']:.1f}×, student services {pub['Student services']['median_ratio']:.1f}×. "
                 f"Among private colleges the gap is teaching ({prv['Instruction']['median_ratio']:.1f}×) and academic support ({prv['Academic support']['median_ratio']:.1f}×), with student services about equal ({prv['Student services']['median_ratio']:.1f}×). "
                 f"The teaching and academic-support gaps hold up in every group we checked, including after a correction for running {s7['bh']['n_tests']} comparisons; the student-services gap does not.")
