@@ -4,7 +4,7 @@ and how much money explains the gap.
 Run from the project root:  streamlit run app/app.py
 Reads data/clean/analysis_scored.parquet, data/clean/bootstrap_ranks.csv and reports/results.json (from src/05-08).
 
-Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, Times New Roman throughout, and ONE accent color reserved for the finding (schools above expected).
+Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, Times New Roman for headlines and body, Helvetica/Arial for labels, numbers, tabs, tables and charts, and ONE accent color reserved for the finding (schools above expected).
 Color meaning is fixed on every chart: accent = above expected / top 10%, graphite = below expected / bottom 10%.
 Asymmetric 12-column grid: 8/4, 4/8, 7/5. Plain-spoken labels; technical detail lives in the Methods tab.
 """
@@ -32,11 +32,13 @@ KIND = {"Doctoral": "Research university", "Master's": "Master's university", "B
 
 st.markdown(f"""
 <style>
-  html, body, .stApp, .stApp *, [data-testid="stDataFrame"] *, div[data-testid="stTabs"] button, .mono, .sec .t, .hero .n, .stat .n, .list .pt, .mast h1 {{ font-family: "Times New Roman", Times, serif !important; }}
+  html, body, .stApp, .stApp p, .stApp li, .stMarkdown, .stCaption, .hero .d, .stat .s, .list .nm, .list .meta, .meaning, .dl .r span:first-child, .mast .by { font-family: "Times New Roman", Times, serif; }
+  .mono, div[data-testid="stTabs"] button, div[data-testid="stTabs"] button p, [data-testid="stDataFrame"], [data-testid="stDataFrame"] *, .hero .n, .stat .n, .list .pt, .dl .r span:last-child,
+  .stSelectbox *, .stMultiSelect *, .stRadio *, .stNumberInput *, .stSlider *, .stButton *, .stDownloadButton *, div[data-testid="stExpander"] summary * {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important; }}
   .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{ background: {PAPER}; color: {INK}; }}
   .stApp p, .stApp li, .stApp label, .stApp span {{ color: inherit; }}
   .block-container {{ padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1440px; }}
-  .mono {{ font-family: "Times New Roman", Times, serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: {INK2}; }}
+  .mono {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: {INK2}; }}
   .mast {{ border-top: 3px solid {INK}; padding-top: .6rem; }}
   .mast h1 {{ font-family: "Times New Roman", Times, serif; font-weight: 500; font-size: 2.6rem; line-height: 1.12; letter-spacing: -.01em; color: {INK}; margin: .5rem 0 .6rem 0; max-width: 20ch; }}
   .mast .by {{ font-size: .92rem; color: {INK2}; }}
@@ -46,16 +48,16 @@ st.markdown(f"""
   .sec {{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:.25rem 1rem; border-bottom: 1px solid {RULE}; padding-bottom:.35rem; margin: .2rem 0 .7rem 0; }}
   .sec .mono {{ margin-left:auto; }}
   .sec .t {{ font-family: "Times New Roman", Times, serif; font-size: 1.25rem; font-weight: 500; color: {INK}; }}
-  .hero .n {{ font-family: "Times New Roman", Times, serif; font-size: 72px; font-weight: 300; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.02em; }}
+  .hero .n {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 72px; font-weight: 300; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.02em; }}
   .hero .d {{ font-size: 1.02rem; color: {INK}; max-width: 56ch; line-height: 1.5; }}
   .stat {{ border-top: 1px solid {RULE}; padding: .55rem 0 .3rem 0; }}
-  .stat .n {{ font-family: "Times New Roman", Times, serif; font-size: 30px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
+  .stat .n {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
   .stat .n.acc {{ color: {ACCENT}; }}
   .stat .s {{ font-size: .8rem; color: {INK2}; }}
   .list .row {{ border-bottom: 1px solid {RULE}; padding: .6rem 0 .55rem 0; }}
   .list .row:first-child {{ border-top: 1px solid {RULE}; }}
   .list .nm {{ font-weight: 600; color: {INK}; font-size: .98rem; }}
-  .list .pt {{ font-family: "Times New Roman", Times, serif; color: {ACCENT}; font-size: 1.35rem; font-weight: 500; float: right; margin-top: -.1rem; }}
+  .list .pt {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: {ACCENT}; font-size: 1.35rem; font-weight: 500; float: right; margin-top: -.1rem; }}
   .list .meta {{ font-size: .8rem; color: {INK2}; margin-top: .15rem; }}
   .list .meta b {{ color: {INK}; font-weight: 500; }}
   .surface {{ background: {SURFACE}; border: 1px solid {RULE}; padding: 1rem 1.1rem .4rem 1.1rem; }}
@@ -70,7 +72,7 @@ st.markdown(f"""
     .block-container {{ padding-top: .8rem; }}
     .mono {{ font-size: 10px; }}
   }}
-  div[data-testid="stTabs"] button {{ font-family: "Times New Roman", Times, serif; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }}
+  div[data-testid="stTabs"] button {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }}
   div[data-testid="stDataFrame"] {{ border: 1px solid {RULE}; }}
   div[data-testid="stExpander"] {{ border: 1px solid {RULE}; border-radius: 0; }}
   div[data-testid="stExpander"] details summary p {{ font-family: "Times New Roman", Times, serif; font-weight: 600; }}
@@ -94,10 +96,10 @@ def stat(col, label, value, sub, accent=False):
 
 
 def chart(fig, height=340, legend=True, ygrid=True):
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Times New Roman, Times, serif", color=INK2, size=12), height=height,
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Helvetica Neue, Helvetica, Arial, sans-serif", color=INK2, size=12), height=height,
                       margin=dict(l=6, r=6, t=26, b=6), title=None, showlegend=legend,
                       legend=dict(orientation="h", y=-0.24, x=0, xanchor="left", font=dict(color=INK2, size=11), bgcolor="rgba(0,0,0,0)"),
-                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Times New Roman, Times, serif"))
+                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Helvetica Neue, Helvetica, Arial, sans-serif"))
     fig.update_xaxes(showgrid=False, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     fig.update_yaxes(showgrid=ygrid, gridcolor="#E9E4D9", gridwidth=1, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     return fig
@@ -125,8 +127,8 @@ def compare_table(top, bot):
 def spend_bar(top, bot, height=340):
     cats = list(CORE.values())
     fig = go.Figure()
-    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="Times New Roman, Times, serif"))
-    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="Times New Roman, Times, serif"))
+    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
+    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
     fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.06, yaxis_title="Spending per student per year", yaxis=dict(tickprefix="$", separatethousands=True))
     return chart(fig, height)
 
