@@ -62,6 +62,7 @@ def main():
 
     fmt = lambda d: d[SHOW].rename(columns=REN).round(3).to_markdown(index=False)  # noqa: E731
     top25, bot25, high_pell = df.head(25), df.tail(25), df[df.pctpell >= 0.5].head(15)
+    top_large = df[df.firstgen_yr6_n >= 500].head(6)          # the memo's peer table and the dashboard's "schools worth learning from"
     top_dec, bot_dec = df[df.group == "top 10%"], df[df.group == "bottom 10%"]
     shrink_by_size = df.assign(bucket=pd.cut(df.firstgen_yr6_n, [0, 100, 250, 500, 1000, 1e9], labels=["<100", "100-249", "250-499", "500-999", "1000+"])).groupby("bucket", observed=True).agg(schools=("unitid", "size"), mean_shrink=("shrink_factor", "mean"), in_raw_top=("unitid", lambda u: u.isin(raw_top).sum()), in_eb_top=("unitid", lambda u: u.isin(eb_top).sum())).round(3)
     rho_raw_eb = stats.spearmanr(df["residual"], df["residual_eb"]).statistic
@@ -109,7 +110,7 @@ def main():
                         "tau2": round(tau2, 6), "tau_pp": round(float(np.sqrt(tau2) * 100), 2), "shrink_median": round(float(df.shrink_factor.median()), 4), "shrink_min": round(float(df.shrink_factor.min()), 4),
                         "spearman_raw_vs_eb": round(float(rho_raw_eb), 4), "top_decile_left": len(left_top), "top_decile_left_under100": int((left_top.firstgen_yr6_n < 100).sum()), "top_decile_entered": len(entered_top),
                         "bottom_decile_left": len(left_bot), "bottom_decile_left_under100": int((left_bot.firstgen_yr6_n < 100).sum()),
-                        "top5": [rec(r) for r in df.head(5).itertuples()], "top5_high_pell": [rec(r) for r in high_pell.head(5).itertuples()], "bottom3": [rec(r) for r in df.tail(3).itertuples()],
+                        "top5": [rec(r) for r in df.head(5).itertuples()], "top5_high_pell": [rec(r) for r in high_pell.head(5).itertuples()], "top_large": [rec(r) for r in top_large.itertuples()], "bottom3": [rec(r) for r in df.tail(3).itertuples()],
                         "spearman_old_vs_new": round(float(rho_a0), 4), "spearman_vs_v2": round(float(rho_v2), 4), "top20_overlap_vs_v2": v2_top20_overlap, "top_decile_overlap_vs_v2": round(float(v2_topdec_overlap), 4),
                         "v2_top20_left": v2_left[["rank_v2", "instnm_v2", "excluded_reason", "rank"]].astype(object).where(v2_left[["rank_v2", "instnm_v2", "excluded_reason", "rank"]].notna(), None).to_dict("records"),
                         "csu": csu_tab.astype(object).where(csu_tab.notna(), None).round(3).to_dict("records"), "special_focus_in_old_top20": n_sf_in_old_top20, "spearman_vs_v1_mistimed": round(float(rho_v1), 4), "top20_overlap_vs_v1": v1_top20_overlap,

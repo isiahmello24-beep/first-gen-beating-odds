@@ -207,8 +207,8 @@ with tab_over:
         stat(c3, "Typical first-gen graduation", f"{s5['outcome_mean']:.0%}", "within six years, same school")
         stat(c4, "Top 10% beat expectations by", f"+{s6['top_decile_cut_pp']:.0f} pts", f"or more · {s6['top_decile_n']} schools", accent=True)
     with R:
-        section("Schools worth learning from", "largest cohorts · over 500 first-gen students")
-        big = df[df.firstgen_yr6_n > 500].sort_values("residual_eb", ascending=False).head(6)
+        section("Schools worth learning from", "largest cohorts · 500 or more first-gen students")
+        big = df[df.firstgen_yr6_n >= 500].sort_values("residual_eb", ascending=False).head(6)
         rows = "".join(f'<div class="row"><span class="pt">{r.residual_eb_pct_pts:+.0f}</span><div class="nm">{r.instnm}</div>'
                        f'<div class="meta">{r.stabbr} · {TYPE[r.control_label]} · {int(r.firstgen_yr6_n):,} first-gen students · expected <b>{r.predicted:.0%}</b>, graduated <b>{r.firstgen_comp_orig_yr6_rt:.0%}</b></div></div>' for r in big.itertuples())
         st.markdown(f'<div class="list">{rows}</div>', unsafe_allow_html=True)
@@ -246,7 +246,7 @@ with tab_over:
     with L:
         section("Where the top 10% spend more", "median $ per student per year · top vs bottom 10%")
         st.plotly_chart(spend_bar(df[df.group == "top 10%"], df[df.group == "bottom 10%"], 380), use_container_width=True, key="ov_spend")
-        meaning(f"Schools that beat expectations spend about {pf['Instruction']['median_ratio']:.1f}× more per student on teaching and {pf['Academic support']['median_ratio']:.1f}× more on academic support than schools that fall short, and about the same on student services. They also spend about {pf['Institutional support']['median_ratio']:.2f}× more on administration. With the budget size held fixed, one standard deviation more academic-support share is worth {lm['pp_per_sd_acad_share']:+.1f} points and doubling the budget about {pp_double:+.0f}; against a top-10% bar of +{s6['top_decile_cut_pp']:.0f}, that is why money explains only {lm['r2']*100:.0f}%.")
+        meaning(f"Schools that beat expectations spend about {pf['Instruction']['median_ratio']:.1f}× more per student on teaching and {pf['Academic support']['median_ratio']:.1f}× more on academic support than schools that fall short, and about the same on student services. They also spend about {pf['Institutional support']['median_ratio']:.2f}× more on administration. With the budget size held fixed, one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points and doubling the budget with about {pp_double:+.0f}; against a top-10% bar of +{s6['top_decile_cut_pp']:.0f}, that is why money explains only {lm['r2']*100:.0f}%.")
     with R:
         section("What predicts first-gen graduation", "points, going from 0% to 100%")
         terms = [k for k in PLAIN if k in s5["coef_A"]]

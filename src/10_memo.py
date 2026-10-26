@@ -41,25 +41,25 @@ memo = f"""# Memo: {headline}
 
 ## How much of over-performance is money?
 
-Not much. Among {s5['n']:,} four-year colleges, the top tenth graduated first-generation students at least {s6['top_decile_cut_pp']:.1f} points above what their 2017-18 student mix predicts. Spending level and mix together explain **{r2_pct:.1f}%** of the variation in that residual. With the budget size held fixed, one standard deviation more academic-support share is worth {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per student is worth about {pp_double:+.0f} points. All three are real (p = {pv(lm['p']['acad_share'])}, {pv(lm['p']['instr_share'])}, {pv(lm['p']['log_core_per_fte'])}) and all are small against an {s6['top_decile_cut_pp']:.1f}-point gap. Most over-performance sits outside budget data: advising, course design, culture. So the recommendation is a list of schools to call, not a reallocation.
+Not much. Among {s5['n']:,} four-year colleges, the top tenth graduated first-generation students at least {s6['top_decile_cut_pp']:.1f} points above what their 2017-18 student mix predicts. Spending level and mix together explain **{r2_pct:.1f}%** of the variation in that residual. With the budget size held fixed, one standard deviation more academic-support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points and one SD more instruction share with {lm['pp_per_sd_instr_share']:+.1f}; doubling core spending per student is associated with about {pp_double:+.0f} points. All three are real (p = {pv(lm['p']['acad_share'])}, {pv(lm['p']['instr_share'])}, {pv(lm['p']['log_core_per_fte'])}) and all are small against an {s6['top_decile_cut_pp']:.1f}-point gap. Most over-performance sits outside budget data, so the recommendation is a list of schools to call, not a reallocation.
 
 ## What the budget data do show
 
 Over-performers spent more per student, and the pattern differs by sector. Publics, ranked against publics: more on every core function (instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×). Privates: instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}×, student services flat ({prv['Student services']['median_ratio']:.2f}×). After correcting for {s7['bh']['n_tests']} comparisons, the instruction and academic-support gaps survive everywhere; the student-services gap survives nowhere.
 
-**Method.** Completion of first-gen federal-aid students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts; stable across 1,000 bootstrap resamples.
+**Method.** Completion of first-gen federal-aid students at the same school within 6 years, predicted from 2017-18 Pell share, admission rate, enrollment, part-time, first-gen, adult and online shares, HBCU and Carnegie type, with slopes that differ by sector (R² {s5['r2_main']:.2f}). Residual = actual − predicted, shrunk for small cohorts.
 
-## The recommendation: call these peers (Pell share ≥ 50%)
+## The recommendation: call these peers (500 or more first-gen students)
 
-| School | Type | Cohort | Pell | Actual | Predicted | Residual |
+| School | Kind | First-gen cohort | Pell | Actual | Expected | Points above |
 |---|---|---:|---:|---:|---:|---:|
-{peers(s6['top5_high_pell'])}
+{peers(s6['top_large'])}
 
-Ask about first-year advising, gateway courses and first-gen programming. Full ranking: `streamlit run app/app.py`.
+Ask about advising, gateway courses and first-gen programming.
 
 ## Limitations
 
-1. **School-level data.** We see institutions, not students; program mix or unmeasured preparation can produce a residual unrelated to practice. Special-focus, adult-dominant and online-dominant campuses are listed separately.
+1. **School-level data.** We see institutions, not students; program mix or unmeasured preparation can produce a residual unrelated to practice. Special-focus, adult and online campuses are listed separately.
 2. **Correlation only.** Nothing here shows that moving dollars would change completion.
 3. **Definition.** Transfer-out completers count as non-completers; privacy suppression removes the smallest schools.
 """
@@ -94,7 +94,7 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 
 ## What changed after review (see `decisions.md`)
 
-Five review passes found seventeen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, an unreported VIF, no joint test of the sector interactions, no check that spending *mix* matters with the level fixed, and no non-linear check on a 0-1 outcome. All are fixed. Only {s6['top20_overlap_vs_v1']} of the original top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
+Five review passes tested timing, sample composition, small school noise, sector differences, and multiple comparisons. Every change sits in `decisions.md`. Only {s6['top20_overlap_vs_v1']} of the original top-20 schools survive in the corrected ranking (Spearman {s6['spearman_vs_v1_mistimed']:.2f}); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
 
 ## Data
 

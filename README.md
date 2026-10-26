@@ -27,7 +27,7 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 
 ## What changed after review (see `decisions.md`)
 
-Five review passes found seventeen problems: spending measured after the cohort left, a stale Scorecard download, ambiguity about whether spending sat inside the model, nursing and health colleges dominating the ranking, a weak robustness check, no shrinkage for small cohorts, budget shares presented as separate findings, no control for adult or online student mix, one campus (San Jose State) with an implausible reported rate at the bottom of the list, a single pooled slope where public and private schools need different ones, no multiple-comparison correction, no influence check on the spending comparison, an unreported VIF, no joint test of the sector interactions, no check that spending *mix* matters with the level fixed, and no non-linear check on a 0-1 outcome. All are fixed. Only 3 of the original top-20 schools survive in the corrected ranking (Spearman 0.64); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
+Five review passes tested timing, sample composition, small school noise, sector differences, and multiple comparisons. Every change sits in `decisions.md`. Only 3 of the original top-20 schools survive in the corrected ranking (Spearman 0.64); the instruction and academic-support finding held through every change. The original ranking is archived in `reports/archive/`.
 
 ## Data
 

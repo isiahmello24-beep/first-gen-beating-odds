@@ -308,6 +308,86 @@
         "rank_raw": 12
       }
     ],
+    "top_large": [
+      {
+        "school": "Rutgers University-Camden",
+        "state": "NJ",
+        "carnegie": "Doctoral",
+        "ugds": 5360,
+        "cohort": 4066,
+        "pell": 0.43,
+        "actual": 0.744,
+        "predicted": 0.488,
+        "resid_pp": 25.6,
+        "resid_eb_pp": 25.4,
+        "rank_raw": 4
+      },
+      {
+        "school": "California State University-Channel Islands",
+        "state": "CA",
+        "carnegie": "Master's",
+        "ugds": 7047,
+        "cohort": 1105,
+        "pell": 0.51,
+        "actual": 0.709,
+        "predicted": 0.481,
+        "resid_pp": 22.8,
+        "resid_eb_pp": 22.2,
+        "rank_raw": 11
+      },
+      {
+        "school": "University of Houston-Clear Lake",
+        "state": "TX",
+        "carnegie": "Master's",
+        "ugds": 5781,
+        "cohort": 816,
+        "pell": 0.41,
+        "actual": 0.629,
+        "predicted": 0.399,
+        "resid_pp": 22.9,
+        "resid_eb_pp": 22.2,
+        "rank_raw": 10
+      },
+      {
+        "school": "Rutgers University-Newark",
+        "state": "NJ",
+        "carnegie": "Doctoral",
+        "ugds": 8122,
+        "cohort": 4066,
+        "pell": 0.5,
+        "actual": 0.744,
+        "predicted": 0.53,
+        "resid_pp": 21.4,
+        "resid_eb_pp": 21.3,
+        "rank_raw": 14
+      },
+      {
+        "school": "Aurora University",
+        "state": "IL",
+        "carnegie": "Doctoral",
+        "ugds": 3912,
+        "cohort": 635,
+        "pell": 0.42,
+        "actual": 0.68,
+        "predicted": 0.472,
+        "resid_pp": 20.8,
+        "resid_eb_pp": 20.0,
+        "rank_raw": 16
+      },
+      {
+        "school": "Bloomfield College of Montclair State University",
+        "state": "NJ",
+        "carnegie": "Baccalaureate",
+        "ugds": 1833,
+        "cohort": 2245,
+        "pell": 0.68,
+        "actual": 0.573,
+        "predicted": 0.386,
+        "resid_pp": 18.8,
+        "resid_eb_pp": 18.6,
+        "rank_raw": 28
+      }
+    ],
     "bottom3": [
       {
         "school": "University of West Alabama",
