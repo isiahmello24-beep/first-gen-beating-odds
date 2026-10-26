@@ -32,7 +32,7 @@ KIND = {"Doctoral": "Research university", "Master's": "Master's university", "B
 
 st.markdown(f"""
 <style>
-  html, body, .stApp, .stApp p, .stApp li, .stMarkdown, .stCaption, .hero .d, .stat .s, .list .nm, .list .meta, .meaning, .dl .r span:first-child, .mast .by { font-family: "Times New Roman", Times, serif; }
+  html, body, .stApp, .stApp p, .stApp li, .stMarkdown, .stCaption, .hero .d, .stat .s, .list .nm, .list .meta, .meaning, .dl .r span:first-child, .mast .by {{ font-family: "Times New Roman", Times, serif; }}
   .mono, div[data-testid="stTabs"] button, div[data-testid="stTabs"] button p, [data-testid="stDataFrame"], [data-testid="stDataFrame"] *, .hero .n, .stat .n, .list .pt, .dl .r span:last-child,
   .stSelectbox *, .stMultiSelect *, .stRadio *, .stNumberInput *, .stSlider *, .stButton *, .stDownloadButton *, div[data-testid="stExpander"] summary * {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important; }}
   .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{ background: {PAPER}; color: {INK}; }}
