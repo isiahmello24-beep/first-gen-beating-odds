@@ -83,6 +83,7 @@ Teach in step by step chains and explain the why behind each detail. Pause after
 
 ## Working conventions (added during the build)
 
+* Read `docs/ANTI_SLOP.md` first, before touching the dashboard, memo, README or analysis code. It defines the audit, the number trace (`src/check_numbers.py`), the causal word scan and the chart and type rules every change must pass.
 * Always activate the venv first: `source .venv/bin/activate`.
 * Pipeline scripts live in `src/` and are numbered in build order; run them with `python src/NN_name.py` from the project root.
 * `data/raw/` is gitignored. `python src/01_download.py` recreates it.
