@@ -1,15 +1,21 @@
 """Step 5: OLS regression of first-gen 6-year completion on school traits (cohort-aligned, Carnegie-controlled).
 
-Main sample = non-special-focus schools (Carnegie 2018 doctoral, master's, baccalaureate).
-Model A (main):  completion ~ Pell share + admission rate + log enrollment + part-time share + first-gen share
-                             + private + HBCU + distance-only + Carnegie group (baseline: Master's)
-                 All predictors are entry-year (2017-18) values. Spending is NOT in Model A, so Step 7 can ask
-                 "what do over-performers spend on?" without conditioning on spending.
-Model A-int: Model A plus private × every trait (Carnegie dummies shared). Chosen as the MAIN ranking model if its
-          shrunken ranking overlaps both sector-only rankings better than the pooled model does (rule recorded in results.json).
-Model A0 (original spec, for comparison): same traits, no Carnegie dummies, all schools incl. special focus.
-Model B:  Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of total FTE
-          (so a research university's graduate-heavy denominator does not masquerade as low undergraduate spending).   Model C: Model A + SAT, SAT reporters only.
+Main sample = in_main schools from Step 4 (Carnegie 2018 doctoral, master's, baccalaureate; not adult or online dominant; outcome
+plausible and campus specific).
+Model A (pooled): completion ~ Pell share + admission rate + log enrollment + part-time share + first-gen share + share aged 25+
+                  + share exclusively online + private + HBCU + Carnegie group (baseline Master's). All predictors are entry-year
+                  (2017-18) values. Spending is NOT in Model A, so Step 7 can ask "what do over-performers spend on?" without
+                  conditioning on spending. distance_only survives only in TRAITS_PREV for the comparison fit.
+Model A-int: Model A plus private × every trait (Carnegie dummies shared). It is the ranking model: the Wald test on the eight
+          interaction terms is the reason, and the overlap of its ranking with the two sector-only rankings is reported as a
+          description of what the choice does (the rule in code adopts it when that overlap beats the pooled model's).
+Model A0 (original spec, for comparison): same traits, no Carnegie dummies, all schools incl. excluded groups.
+Model B (money, level): ranking model + log core spending per FTE (FY2018-23 average) + undergraduate share of total FTE
+          (so a graduate-heavy denominator does not masquerade as low undergraduate spending).
+Model B-mix (money, level + mix): Model B + instruction share and academic-support share of core spending.
+          "Money explains X%" = partial R² of B-mix against the ranking model: the share of the ranking model's unexplained
+          variance that spending level and mix remove. The one coefficient per quantity comes from B-mix. results.json["step5"]["money"].
+Model C: ranking model + SAT, SAT reporters only.
 Special-focus schools are scored out-of-sample with Model A and reported separately (never ranked with the main sample).
 HC3 robust SEs. Diagnostics: residual plots, VIF, Breusch-Pagan, Jarque-Bera, Cook's distance.
 Outputs: data/clean/analysis_scored.parquet, reports/05_regression.md, reports/figures/05_*.png, reports/results.json["step5"].
@@ -81,7 +87,7 @@ def diagnostics_plot(res, df, path):
     for i in np.argsort(cooks)[-5:]: ax[1, 1].annotate(df["instnm"].iloc[i][:28], (lev[i], std_resid[i]), fontsize=7)
     ax[1, 2].stem(np.arange(len(cooks)), cooks, markerfmt=" ", basefmt=" "); ax[1, 2].axhline(4 / len(cooks), color="r", ls="--", lw=1, label="4/n"); ax[1, 2].legend()
     ax[1, 2].set(title="Cook's distance", xlabel="School index", ylabel="Cook's D")
-    fig.suptitle("Model A diagnostics: first-gen 6-year completion on entry-year school traits + Carnegie group", fontsize=13); fig.tight_layout(); fig.savefig(path, dpi=130); plt.close(fig)
+    fig.suptitle("Ranking model diagnostics: first-gen 6-year completion on entry-year school traits + Carnegie group", fontsize=13); fig.tight_layout(); fig.savefig(path, dpi=130); plt.close(fig)
 
 
 def main():
@@ -116,6 +122,18 @@ def main():
     MAIN = AI if use_int else A; MAIN_FORMULA = FORMULA_INT if use_int else FORMULA_A; main_name = "A-int (interaction)" if use_int else "A (pooled)"
     B = fit(df, MAIN_FORMULA + " + log_core_per_fte + ug_share_fte")
     B_noug = fit(df, MAIN_FORMULA + " + log_core_per_fte")
+    df["instr_share"] = df["exp_instruction_share_core"]; df["acad_share"] = df["exp_academic_support_share_core"]
+    FORMULA_BMIX = MAIN_FORMULA + " + log_core_per_fte + ug_share_fte + instr_share + acad_share"
+    Bm = fit(df, FORMULA_BMIX); B_mixonly = fit(df, MAIN_FORMULA + " + ug_share_fte + instr_share + acad_share")
+    partial = lambda m: (m.rsquared - MAIN.rsquared) / (1 - MAIN.rsquared)   # share of the ranking model's unexplained variance removed  # noqa: E731
+    sd_i, sd_a = float(df.instr_share.std()), float(df.acad_share.std())
+    money = {"formula": FORMULA_BMIX, "n": int(Bm.nobs), "r2": round(partial(Bm), 4), "r2_level_only": round(partial(B), 4), "r2_mix_only": round(partial(B_mixonly), 4),
+             "r2_full_model": round(Bm.rsquared, 4), "r2_ranking_model": round(MAIN.rsquared, 4), "shares_hold": bool(Bm.pvalues["instr_share"] < 0.05 or Bm.pvalues["acad_share"] < 0.05),
+             "coef": {k: round(float(v), 5) for k, v in Bm.params.items() if k in ("log_core_per_fte", "ug_share_fte", "instr_share", "acad_share")},
+             "p": {k: round(float(v), 5) for k, v in Bm.pvalues.items() if k in ("log_core_per_fte", "ug_share_fte", "instr_share", "acad_share")},
+             "pp_per_doubling": round(float(Bm.params["log_core_per_fte"] * np.log(2) * 100), 3), "pp_per_10pct_core": round(float(Bm.params["log_core_per_fte"] * np.log(1.1) * 100), 3),
+             "pp_per_sd_instr_share": round(float(Bm.params["instr_share"] * sd_i * 100), 3), "pp_per_sd_acad_share": round(float(Bm.params["acad_share"] * sd_a * 100), 3),
+             "sd_instr_share": round(sd_i, 4), "sd_acad_share": round(sd_a, 4)}
     dfC = df[df.sat_avg.notna()]; C_ = fit(dfC, MAIN_FORMULA + " + sat_avg"); C_base = fit(dfC, MAIN_FORMULA)
 
     df["predicted"], df["residual"] = MAIN.fittedvalues, MAIN.resid
@@ -161,13 +179,19 @@ def main():
              f"| Interaction vs private-only model (privates) | {rc['spearman_int_vs_sector_private']:.3f} | {rc['overlap_int_vs_sector_private']:.0%} |\n",
              f"\n### Joint test of the {joint_F['n_terms']} private × trait terms (Wald F with HC3 covariance)\n\nF({joint_F['df_num']}, {joint_F['df_denom']}) = {joint_F['F']:.2f}, p {'< 0.001' if joint_F['p'] < 0.001 else f"= {joint_F['p']:.3f}"}. "
              f"{'The slopes differ by sector: the interaction terms are jointly significant.' if joint_F['p'] < 0.05 else 'The interaction terms are not jointly significant.'}\n",
-             f"\nRule: the interaction model becomes the main ranking model if its overlap with BOTH sector-only rankings beats the pooled model's. Result: **{'interaction model adopted' if use_int else 'pooled model kept'}** → main model = {main_name}. "
-             "The interaction model differs from two separate sector fits only in sharing the Carnegie dummies and the residual variance, so it should sit close to the sector rankings; the point of the test is whether it gets there without splitting the sample.\n",
+             f"\nMain model = {main_name}. The Wald test above is the reason: the slopes differ by sector. The overlap rule in code (adopt the interaction model if its top decile overlaps BOTH sector-only rankings better than the pooled model's: {'met' if use_int else 'not met'}) "
+             "describes what the choice does rather than justifying it, because the interaction model nests the sector slopes and is bound to sit close to the sector rankings.\n",
              f"\n## Specification comparisons on the same {len(df):,} schools\n\n- Model A without Carnegie dummies: R² = {A_noc.rsquared:.3f}.\n- Previous spec (distance-only flag instead of the age-25+ and exclusively-online shares): R² = {A_prev.rsquared:.3f}.\n- Original spec (no Carnegie, distance-only flag) on all {len(full):,} schools including excluded groups: R² = {A0.rsquared:.3f}.\n",
              f"\n## Model B: Model A + log core spending per FTE (FY2018-23 average) + undergraduate share of FTE — n = {int(B.nobs):,}, R² = {B.rsquared:.3f} (Model A: {A.rsquared:.3f})\n", fmt(coef_table(B)),
              f"\n\nA 10% higher core budget per student is associated with {B.params['log_core_per_fte']*np.log(1.1)*100:+.2f} percentage points of first-gen completion, holding Model A traits and the undergraduate share fixed "
              f"(without the undergraduate-share control: {B_noug.params['log_core_per_fte']*np.log(1.1)*100:+.2f} points, R² {B_noug.rsquared:.3f}). Adding spending raises R² by {B.rsquared - A.rsquared:.3f}. "
              f"The undergraduate-share coefficient is {B.params['ug_share_fte']:+.3f} (p = {B.pvalues['ug_share_fte']:.3f}): per-FTE spending at graduate-heavy universities partly serves graduate students, and this term absorbs that.\n",
+             f"\n## Model B-mix: Model B + instruction share and academic-support share of core spending — n = {int(Bm.nobs):,}, R² = {Bm.rsquared:.3f}\n", fmt(coef_table(Bm)),
+             f"\n\n**How much of over-performance is money.** The ranking model leaves {1 - MAIN.rsquared:.1%} of the variance in first-gen completion unexplained. Spending level alone removes {money['r2_level_only']:.1%} of that remainder (partial R² of Model B), "
+             f"level plus mix removes {money['r2']:.1%} (Model B-mix), and mix without level {money['r2_mix_only']:.1%}. Doubling core spending per student is associated with {money['pp_per_doubling']:+.1f} points, "
+             f"one SD more academic-support share ({sd_a:.3f}) with {money['pp_per_sd_acad_share']:+.2f} points (p = {Bm.pvalues['acad_share']:.3f}) and one SD more instruction share ({sd_i:.3f}) with {money['pp_per_sd_instr_share']:+.2f} points (p = {Bm.pvalues['instr_share']:.3f}), all with the student mix, size, type and sector held fixed. "
+             f"This replaces the earlier regression of the shrunken residual on raw spending (kept in Step 7 as a sensitivity), which understated the coefficient because spending overlaps the traits already in the model. "
+             f"**Verdict: {'the mix matters with the level fixed' if money['shares_hold'] else 'the mix does NOT matter once the level is fixed'}.** The memo headline reads this block from results.json.\n",
              f"\n## Model C: Model A + SAT average, SAT-reporting schools only — n = {int(C_.nobs):,}, R² = {C_.rsquared:.3f} (Model A on same schools: {C_base.rsquared:.3f})\n", fmt(coef_table(C_)),
              "\n\n## Multicollinearity (VIF, Model A)\n", vif.round(2).to_markdown(index=False),
              "\n\n## Diagnostics (Model A)\n",
@@ -176,17 +200,18 @@ def main():
              f"- Influence: {n_cooks} schools exceed the 4/n Cook's distance rule of thumb. Step 8 bootstraps the ranking to show how much any single school matters.",
              "\nMost influential schools:\n", top_cooks.round(4).to_markdown(index=False),
              f"\n\n## Excluded schools ({len(sf)}), scored out-of-sample with Model A and NOT ranked with the main sample\n",
-             f"Two groups. (1) Carnegie special-focus / tribal (codes 24-33: faith, medical, health professions, engineering, technology, business, arts, law, other, tribal), scored at the Master's Carnegie baseline: {int((sf.excluded_reason == 'special focus / tribal').sum())} schools. "
+             f"Four groups. (1) Carnegie special-focus / tribal (codes 24-33: faith, medical, health professions, engineering, technology, business, arts, law, other, tribal), scored at the Master's Carnegie baseline: {int((sf.excluded_reason == 'special focus / tribal').sum())} schools. "
              f"(2) Campuses where more than 50% of Fall 2017 undergraduates were aged 25+ or exclusively online: {int((sf.excluded_reason == 'adult (25+) or online share > 50%').sum())} schools. "
              f"(3) Schools whose Scorecard completion rates are implausible against their IPEDS graduation rate (both first-gen and non-first-gen below 25% of C150_4): {int((sf.excluded_reason == 'outcome implausible vs IPEDS grad rate').sum())} schools. "
-             "Both serve populations and run programs the main model does not describe, so their residuals are shown for transparency only.\n", sf_tab.to_markdown(index=False),
+             f"(4) Campuses whose first-gen outcome is pooled with other campuses under one 6-digit OPEID and whose own undergraduates are under 90% of that group: {int((sf.excluded_reason == 'outcome pooled across campuses (shared OPEID)').sum())} schools. "
+             "The first two serve populations and run programs the main model does not describe; the last two carry outcomes that are not the campus's own. All residuals are shown for transparency only.\n", sf_tab.to_markdown(index=False),
              "\n\n![diagnostics](figures/05_diagnostics_model_a.png)\n", "![actual vs predicted](figures/05_actual_vs_predicted.png)\n"]
     (REP / "05_regression.md").write_text("\n".join(lines))
     results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
     results["step5"] = {"joint_F_interactions": {k: (round(v, 6) if isinstance(v, float) else v) for k, v in joint_F.items()}, "main_model": main_name, "main_formula": MAIN_FORMULA, "use_interaction": bool(use_int), "ranking_comparison": {k: round(float(v), 4) for k, v in rc.items()},
                         "r2_int": round(AI.rsquared, 4), "r2_main": round(MAIN.rsquared, 4), "coef_main": {k: round(float(v), 5) for k, v in MAIN.params.items()}, "p_main": {k: round(float(v), 5) for k, v in MAIN.pvalues.items()},
                         "vif": {r.term: round(float(r.VIF), 2) for r in vif.itertuples()}, "vif_over5": [r.term for r in vif.itertuples() if r.VIF > 5], "corr_pell_firstgen": round(float(corr_pf.loc["pctpell", "first_gen"]), 3),
-                        "n": int(A.nobs), "n_special_focus": int((sf.excluded_reason == "special focus / tribal").sum()), "n_nontraditional": int((sf.excluded_reason == "adult (25+) or online share > 50%").sum()), "n_anomaly": int((sf.excluded_reason == "outcome implausible vs IPEDS grad rate").sum()), "n_excluded": len(sf), "r2_A_prev_spec": round(A_prev.rsquared, 4), "r2_A": round(A.rsquared, 4), "adj_r2_A": round(A.rsquared_adj, 4), "resid_sd_A": round(float(np.sqrt(A.mse_resid)), 4),
+                        "n": int(A.nobs), "n_special_focus": int((sf.excluded_reason == "special focus / tribal").sum()), "n_nontraditional": int((sf.excluded_reason == "adult (25+) or online share > 50%").sum()), "n_anomaly": int((sf.excluded_reason == "outcome implausible vs IPEDS grad rate").sum()), "n_shared_opeid": int((sf.excluded_reason == "outcome pooled across campuses (shared OPEID)").sum()), "n_excluded": len(sf), "money": money, "cooks_rule_multiplier": 4, "r2_A_prev_spec": round(A_prev.rsquared, 4), "r2_A": round(A.rsquared, 4), "adj_r2_A": round(A.rsquared_adj, 4), "resid_sd_A": round(float(np.sqrt(A.mse_resid)), 4),
                         "r2_A_no_carnegie": round(A_noc.rsquared, 4), "r2_A0_original_spec_all_schools": round(A0.rsquared, 4), "n_A0": int(A0.nobs),
                         "coef_A": {k: round(float(v), 5) for k, v in A.params.items()}, "p_A": {k: round(float(v), 5) for k, v in A.pvalues.items()}, "se_A": {k: round(float(v), 5) for k, v in A.bse.items()},
                         "r2_B": round(B.rsquared, 4), "coef_B_log_core": round(float(B.params["log_core_per_fte"]), 5), "p_B_log_core": round(float(B.pvalues["log_core_per_fte"]), 5),

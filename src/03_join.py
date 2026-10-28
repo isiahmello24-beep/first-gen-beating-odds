@@ -9,6 +9,7 @@ Timing design (see reports/02 and decisions.md):
 Restricts to 4-year schools and reports how many schools drop at every stage and why.
 Output: data/clean/joined.parquet (+ .csv), data/clean/finance_by_year.parquet, reports/03_join_report.md.
 """
+import json
 from pathlib import Path
 import duckdb
 import columns as C
@@ -17,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 CLEAN = ROOT / "data" / "clean"
 REPORT = ROOT / "reports" / "03_join_report.md"
+RESULTS = ROOT / "reports" / "results.json"
 
 SC_CSV = RAW / "scorecard/Most-Recent-Cohorts-Institution_10152026/Most-Recent-Cohorts-Institution.csv"
 SC_ENTRY_CSV = RAW / "scorecard/College_Scorecard_Raw_Data_10152026/MERGED2017_18_PP.csv"
@@ -54,7 +56,8 @@ def main() -> None:
 
     def stage(name: str, sql: str, why: str) -> None:
         con.execute(f"CREATE OR REPLACE TABLE {name} AS {sql}")
-        n = con.execute(f"SELECT count(*) FROM {name}").fetchone()[0]
+        n, n_distinct = con.execute(f"SELECT count(*), count(DISTINCT unitid) FROM {name}").fetchone()
+        assert n == n_distinct, f"{name}: {n - n_distinct} duplicate UNITIDs"   # grain check at every stage, not only at the end
         funnel.append((name, n, why))
         print(f"{name:18s} {n:6,d}  {why}")
 
@@ -107,6 +110,16 @@ def main() -> None:
     dup = con.execute("SELECT count(*) - count(DISTINCT (fy, unitid)) FROM fin_raw").fetchone()[0]
     assert dup == 0, f"{dup} (fy, UNITID) pairs appear in both finance files"
     cats = list(C.SPENDING_CATEGORIES)
+    # row accounting for the school-year filter below: how many (school, fiscal year) rows each condition removes
+    fin_acct = con.execute("""
+        WITH e AS (SELECT fy, unitid, COALESCE(fteug,0)+COALESCE(ftegd,0)+COALESCE(ftedpp,0) AS fte_total FROM efia_raw),
+             x AS (SELECT f.fy, f.unitid, f.exp_total, f.exp_instruction, e.fte_total FROM fin_raw f LEFT JOIN e USING (fy, unitid))
+        SELECT count(*) AS finance_rows,
+               count(*) FILTER (WHERE fte_total IS NULL) AS no_fte_record,
+               count(*) FILTER (WHERE fte_total IS NOT NULL AND NOT fte_total > 0) AS fte_zero,
+               count(*) FILTER (WHERE fte_total > 0 AND NOT exp_total > 0) AS total_expense_missing_or_zero,
+               count(*) FILTER (WHERE fte_total > 0 AND exp_total > 0 AND NOT exp_instruction > 0) AS instruction_missing_or_zero,
+               count(*) FILTER (WHERE fte_total > 0 AND exp_total > 0 AND exp_instruction > 0) AS kept FROM x""").df().iloc[0].to_dict()
     per_fte = ", ".join(f"f.{k} / e.fte_total AS {k}_per_fte" for k in cats)
     con.execute(f"""CREATE OR REPLACE TABLE fin_year AS
         SELECT f.fy, f.unitid, f.finance_form, {', '.join('f.'+k for k in cats)},
@@ -154,6 +167,26 @@ def main() -> None:
           "LEFT join IPEDS EF2017A_DIST (share of undergraduates exclusively online, Fall 2017). No rows drop; unmatched get NULL.")
     n_dist_missing = con.execute("SELECT count(*) FROM j_dist WHERE pct_distance IS NULL").fetchone()[0]
 
+    # ----------------------------------- OPEID6 reporting groups (left): the Scorecard reports NSLDS outcomes per 6-digit OPEID
+    # Branch campuses that share an OPEID6 carry one pooled completion rate and cohort size. Each campus's share of the group's
+    # Fall 2017 undergraduates says how much of that pooled rate is its own; Step 4 sets aside campuses below OPEID_SHARE_CUT.
+    con.execute(f"""CREATE OR REPLACE TABLE opeid_grp AS
+        WITH m AS (SELECT UNITID::INTEGER AS unitid, lpad(OPEID6, 6, '0') AS opeid6,
+                          TRY_CAST(CASE WHEN UGDS IN {MISSING} OR UGDS IN {SUPPRESSED} THEN NULL ELSE UGDS END AS DOUBLE) AS ugds_now,
+                          CASE WHEN FIRSTGEN_COMP_ORIG_YR6_RT IN {MISSING} OR FIRSTGEN_COMP_ORIG_YR6_RT IN {SUPPRESSED} THEN NULL ELSE FIRSTGEN_COMP_ORIG_YR6_RT END AS rate
+                     FROM read_csv('{SC_CSV}', {SC_OPTS})),
+             e AS (SELECT UNITID::INTEGER AS unitid, TRY_CAST(CASE WHEN UGDS IN {MISSING} OR UGDS IN {SUPPRESSED} THEN NULL ELSE UGDS END AS DOUBLE) AS ugds17
+                     FROM read_csv('{SC_ENTRY_CSV}', {SC_OPTS})),
+             u AS (SELECT m.unitid, m.opeid6, m.rate, COALESCE(e.ugds17, m.ugds_now, 0) AS u FROM m LEFT JOIN e USING (unitid))
+        SELECT unitid, opeid6, rate, count(*) OVER (PARTITION BY opeid6) AS opeid6_members,
+               COALESCE(u / NULLIF(sum(u) OVER (PARTITION BY opeid6), 0), 1.0) AS opeid6_share FROM u""")
+    opeid_check = con.execute("""SELECT count(*) AS groups_with_2plus_rates, count(*) FILTER (WHERE n_rates = 1) AS groups_with_one_identical_rate
+                                 FROM (SELECT opeid6, count(DISTINCT rate) AS n_rates, count(rate) AS n_campuses FROM opeid_grp WHERE rate IS NOT NULL GROUP BY 1)
+                                 WHERE n_campuses > 1""").df().iloc[0].to_dict()
+    stage("j_opeid", "SELECT j.*, g.opeid6_members, g.opeid6_share FROM j_dist j LEFT JOIN opeid_grp g USING (unitid)",
+          "LEFT join OPEID6 reporting-group size and this campus's share of the group's Fall 2017 undergraduates (all Scorecard campuses). No rows drop.")
+    n_shared = con.execute("SELECT count(*) FROM j_opeid WHERE opeid6_members > 1").fetchone()[0]
+
     # ------------------------------------------------ Opportunity Insights (left)
     con.execute(f"""CREATE OR REPLACE TABLE oi AS
         WITH xw AS (SELECT DISTINCT TRY_CAST(super_opeid AS INTEGER) AS super_opeid, TRY_CAST(opeid AS INTEGER) AS opeid
@@ -166,7 +199,7 @@ def main() -> None:
     oi_dup = con.execute("SELECT count(*) - count(DISTINCT opeid) FROM oi").fetchone()[0]
     con.execute("CREATE OR REPLACE TABLE oi1 AS SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY opeid ORDER BY super_opeid) rn FROM oi) WHERE rn = 1")
     stage("joined", """SELECT j.*, o.* EXCLUDE (opeid, rn), (o.opeid IS NOT NULL) AS oi_matched
-                       FROM j_dist j LEFT JOIN oi1 o ON TRY_CAST(j.opeid6 AS INTEGER) = o.opeid""",
+                       FROM j_opeid j LEFT JOIN oi1 o ON TRY_CAST(j.opeid6 AS INTEGER) = o.opeid""",
           "LEFT join Opportunity Insights via OPEID6 → mrc_table11 → super_opeid. No rows drop; unmatched schools get NULL OI fields.")
     n_oi = con.execute("SELECT count(*) FILTER (WHERE oi_matched) FROM joined").fetchone()[0]
     n_total = funnel[-1][1]
@@ -198,6 +231,11 @@ def main() -> None:
               f"- IPEDS EF2017A_DIST (exclusively-online share, Fall 2017) matched: {n_total - n_dist_missing:,} of {n_total:,} ({n_dist_missing} missing).",
               f"- Opportunity Insights matched: {n_oi:,} of {n_total:,} ({n_oi/n_total:.1%}). OI covers 1980-82 birth cohorts at schools with enough students, so small and newer schools are absent.",
               f"- OPEIDs mapped to more than one super_opeid in mrc_table11 (first kept): {oi_dup}.",
+              f"\n## OPEID6 reporting groups\n\nThe Scorecard reports NSLDS-based outcomes per 6-digit OPEID. In the full file, {opeid_check['groups_with_2plus_rates']:,} OPEID6 groups have two or more campuses with a published first-gen completion rate, "
+              f"and {opeid_check['groups_with_one_identical_rate']:,} of them carry one identical rate across every campus. {n_shared:,} of the {n_total:,} joined schools sit in a multi-campus group; "
+              "Step 4 sets aside the ones whose own undergraduates are under 90% of the group, because their outcome is mostly another campus's.\n",
+              "\n## Finance school-year rows (FY2018-FY2023, before averaging)\n", "| Condition | School-years |", "|---|---:|",
+              *[f"| {k.replace('_', ' ')} | {int(v):,} |" for k, v in fin_acct.items()],
               "\n## CPI-U fiscal-year averages used to deflate spending to FY2023 dollars (BLS via FRED, series CPIAUCSL)\n", cpi_tab.round(3).to_markdown(index=False),
               "\n\n## Fiscal years of finance data per school (FY2018-FY2023)\n", years_hist.to_markdown(index=False),
               "\n\nStep 4 requires at least 3 of the 6 fiscal years.\n",
@@ -206,7 +244,15 @@ def main() -> None:
               lost_examples.to_markdown(index=False),
               f"\n## Output\n\n- `data/clean/joined.parquet`: {n_total:,} rows, {len(con.execute('DESCRIBE joined').fetchall())} columns, one row per UNITID.\n- `data/clean/finance_by_year.parquet`: one row per school × fiscal year.\n"]
     REPORT.write_text("\n".join(lines))
-    print(f"\nwrote {REPORT.relative_to(ROOT)} and data/clean/joined.parquet ({n_total:,} rows)")
+    raw_mb = sum(f.stat().st_size for f in RAW.rglob("*") if f.is_file() and "_stale" not in f.parts) / 1e6
+    results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
+    results["step1"] = {"raw_total_mb": round(raw_mb)}
+    results["step3"] = {"funnel": [{"stage": nm, "schools": n, "why": why} for nm, n, why in funnel], "n_joined": n_total,
+                        "finance_school_years": {k: int(v) for k, v in fin_acct.items()}, "n_fin_years": {int(r.n_fin_years): int(r.schools) for r in years_hist.itertuples()},
+                        "opeid6": {k: int(v) for k, v in opeid_check.items()} | {"joined_schools_in_multi_campus_groups": int(n_shared)},
+                        "left_joins": {"ic_missing": int(n_ic_missing), "efdist_missing": int(n_dist_missing), "oi_matched": int(n_oi), "oi_duplicate_opeids": int(oi_dup)}}
+    RESULTS.write_text(json.dumps(results, indent=2))
+    print(f"\nwrote {REPORT.relative_to(ROOT)} and data/clean/joined.parquet ({n_total:,} rows); {n_shared} schools in shared-OPEID groups; finance school-years {fin_acct}")
 
 
 if __name__ == "__main__":

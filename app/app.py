@@ -145,9 +145,9 @@ def load(_mtimes: tuple):
 full, boot, res = load(tuple(f.stat().st_mtime for f in FILES))
 df = full[full.in_main == 1].copy(); sf = full[full.in_main == 0].copy()
 s5, s6, s7, s8 = res["step5"], res["step6"], res["step7"], res["step8"]
-pf, bs, sec, lm = s7["per_fte"], s8["bootstrap"], s8["sector"], s7["level_vs_mix"]
-pp_double = lm["coef"]["log_core_per_fte"] * np.log(2) * 100
-pub, prv = sec["Public"]["spending"], sec["Private nonprofit"]["spending"]
+pf, bs, sec, lm = s7["per_fte"], s8["bootstrap"], s8["sector"], s5["money"]
+pp_double = lm["pp_per_doubling"]
+pub, prv = s7["within_control"]["Public"]["per_fte"], s7["within_control"]["Private nonprofit"]["per_fte"]
 
 # ------------------------------------------------------------------ masthead
 st.markdown(f'''<div class="mast"><div class="mono">First-generation completion · students who entered in 2017-18 · {s5["n"]:,} four-year colleges · data through 2024</div>

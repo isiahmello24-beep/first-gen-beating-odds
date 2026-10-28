@@ -75,3 +75,24 @@ One line per decision: what was chosen and why.
 - Fractional logit (binomial GLM, logit link) of the main model: Spearman 0.999 and 96% top-decile overlap with the OLS ranking, so the linear model is kept for interpretability with the logit reported as a check.
 - Memo cut to under 450 words: sector split first, peer table, three limitations; everything else lives in the reports and dashboard.
 - Public release: raw data confirmed absent from git, requirements.lock.txt pinned from the working environment (Python 3.14), Streamlit Community Cloud steps in the README (select Python 3.12/3.13 there and use requirements.txt).
+
+## Sixth review pass, anti slop (2026-10-27)
+
+Question to metric, one line per headline number, checked against the column names in code:
+
+- "How much of over performance is money?" = step5.money.r2: the share of the ranking model's unexplained variance in `firstgen_comp_orig_yr6_rt` that adding `log_core_per_fte`, `ug_share_fte`, `exp_instruction_share_core` and `exp_academic_support_share_core` removes (partial R² of Model B-mix against the ranking model). The coefficients quoted beside it come from that same model.
+- "The top 10% beat expectations by at least X points" = step6.top_decile_cut_pp: the smallest `residual_eb` (actual minus predicted, shrunk toward zero for small cohorts) in the top decile of the main sample, times 100.
+- "The top 10% spend X times as much on teaching" = step7.per_fte.Instruction.median_ratio: median `exp_instruction_per_fte` (IPEDS instruction expense over 12 month FTE, averaged FY2018 to FY2023) in the top decile divided by the same median in the bottom decile.
+
+Decisions:
+
+- Shared OPEID campuses set aside (56 schools): the Scorecard reports NSLDS completion per 6 digit OPEID, and in the raw file all 352 multi campus groups with a published rate carry one identical rate, so a branch campus's "residual" was mostly the system's rate against the branch's own student mix (Rutgers Camden held rank 2 on that basis). A campus stays only if it holds at least 90% of its group's Fall 2017 undergraduates. The 90% line is a judgment call. Aggregating campuses to the OPEID level was the alternative and would have hidden the campuses a reader looks up.
+- "Money explains X%" redefined as the partial R² of nested models (ranking model with and without spending level and mix): the earlier regression of the shrunken residual on raw spending understated the coefficient because spending overlaps the traits already in the model, and Step 5 already reported the unshrunk version, so the project carried two numbers for one quantity (+3 and +6 points per doubling). The old version stays in Step 7 as a sensitivity.
+- Within sector spending numbers in the memo now come from the Step 7 splits of the main ranking deciles, because those are the tests inside the Benjamini and Hochberg family. The Step 8 sector only models are reported as agreement, not quoted as the finding.
+- Bootstrap now redraws each school's rate from Binomial(cohort, observed rate) inside every resample, so the rank intervals carry the school's own sampling noise as well as the uncertainty in the prediction line. The earlier intervals carried only the second.
+- UNITID uniqueness is asserted after every join stage, not only at the end. School years dropped by the finance filter and blank expense lines filled with zero are counted into results.json.
+- Who is missing: the 243 privacy suppressed schools have a median of 222 undergraduates and are 94% private, against 2,790 and 60% in the main sample, so the ranking over represents public and larger schools and applies to colleges with at least 50 first gen federal aid students in the cohort. The Methods tab says so.
+- Every threshold typed into prose (50 student cohort, 500 student peer list, 25% anomaly ratio, 50% adult or online cut, 90% OPEID share, 4/n Cook's rule) is written to results.json by the script that owns it, so src/check_numbers.py can trace it.
+- src/check_numbers.py and src/check_headlines.py added: the first fails the build when a number in the memo, README or dashboard text has no match in results.json at the displayed precision, the second recomputes the three headlines from the cleaned data without importing project code.
+- The pre OPEID ranking is archived as reports/archive/v4_ranked_schools_pre_opeid_rule.csv and compared in Step 6 (15 of the top 20 unchanged, Spearman 0.996 on common schools).
+- Fonts (Stage 3 frontend): Newsreader for headlines and hero numbers because it was drawn for on screen news reading and its optical size axis gives large numbers a display cut; IBM Plex Sans for body, labels and tables because its figures are tabular by default and 1, l and I stay distinct at 11px. Both are OFL, subset to Latin and self hosted in app/static/fonts, so the page calls no outside font server.

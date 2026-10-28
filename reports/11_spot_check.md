@@ -39,3 +39,6 @@ All six values are identical, so the join and cleaning steps carried the outcome
 ## What this check does and does not prove
 
 It proves the data file is current, the UNITID key is right, and the pipeline does not alter the values it ranks on. It does not independently verify the Department of Education's own numbers, and it leaves a small, documented discrepancy in how the public site reports Pell share.
+
+
+Note added 2026-10-27: Rutgers University-Camden matched the Scorecard website because both show the pooled Rutgers system rate (the Scorecard reports NSLDS completion per 6-digit OPEID). A spot check cannot catch that, so Step 3 now measures each campus's share of its OPEID group and Step 4 sets Camden aside.

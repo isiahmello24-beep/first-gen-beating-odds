@@ -13,7 +13,7 @@ R = json.loads((ROOT / "reports/results.json").read_text())
 s5, s6, s7, s8 = R["step5"], R["step6"], R["step7"], R["step8"]
 pf, f1819, real, fy23 = s7["per_fte"], s7["per_fte_fy1819"], s7["per_fte_real"], s7["per_fte_fy23_only"]
 carn, bs, sec = s7["within_carnegie"], s8["bootstrap"], s8["sector"]
-pub, prv = sec["Public"]["spending"], sec["Private nonprofit"]["spending"]
+pub, prv = s7["within_control"]["Public"]["per_fte"], s7["within_control"]["Private nonprofit"]["per_fte"]   # the within-sector splits that sit in the BH family
 cA = s5["coef_A"]
 today = date.today().isoformat()
 
@@ -30,8 +30,8 @@ def peers(rows):
     return "\n".join(f"| {r['school']} ({r['state']}) | {r['carnegie']} | {r['cohort']:,} | {r['pell']:.0%} | {r['actual']:.0%} | {r['predicted']:.0%} | {r['resid_eb_pp']:+.0f} |" for r in rows)
 
 
-lm = s7["level_vs_mix"]
-pp_double = lm["coef"]["log_core_per_fte"] * np.log(2) * 100          # points per doubling of core spending per FTE
+lm = s5["money"]                                   # Model B-mix: partial R² against the ranking model, one coefficient per quantity
+pp_double = lm["pp_per_doubling"]
 r2_pct = lm["r2"] * 100
 headline = f"Budgets explain {r2_pct:.1f}% of why some colleges beat the odds on first-generation completion. Look at the peers."
 
@@ -87,7 +87,7 @@ Which US 4-year colleges graduated first-generation students at higher rates tha
 - **Ranking:** residual = actual − predicted, shrunk toward zero for small cohorts (empirical Bayes; τ = {s6['tau_pp']:.1f} pts). Shrinkage removed {s6['top_decile_left']} small-cohort schools from the top decile. Top decile ({s6['top_decile_n']} schools) beat prediction by **≥ {s6['top_decile_cut_pp']:.1f} points**.
 - **Spending, by sector:** in a public-only model, over-performing publics spent more on all four core functions (instruction {pub['Instruction']['median_ratio']:.2f}×, academic support {pub['Academic support']['median_ratio']:.2f}×, student services {pub['Student services']['median_ratio']:.2f}×). In a private-only model the gap is instruction {prv['Instruction']['median_ratio']:.2f}× and academic support {prv['Academic support']['median_ratio']:.2f}× with no student-services difference. Pooled: instruction {pf['Instruction']['median_ratio']:.2f}×, academic support {pf['Academic support']['median_ratio']:.2f}× (p < 0.001), student services {pf['Student services']['median_ratio']:.2f}×.
 - **Slopes differ by sector:** joint Wald F test of the eight private × trait terms, F({s5['joint_F_interactions']['df_num']}, {s5['joint_F_interactions']['df_denom']}) = {s5['joint_F_interactions']['F']:.2f}, p {'< 0.001' if s5['joint_F_interactions']['p'] < 0.001 else f"= {s5['joint_F_interactions']['p']:.3f}"}. A fractional-logit version of the model ranks schools identically in practice (Spearman {s8['fractional_logit']['spearman_vs_main']:.3f}, top-decile overlap {s8['fractional_logit']['top_decile_overlap_vs_main']:.0%}).
-- **Level vs mix:** regressing the shrunken residual on log core spending, instruction share and academic-support share (sector and Carnegie controls): {'shares remain significant with the level fixed' if s7['level_vs_mix']['shares_hold'] else 'shares are not significant once the level is fixed'} (instruction share p = {s7['level_vs_mix']['p']['instr_share']:.3f}, academic support p = {s7['level_vs_mix']['p']['acad_share']:.3f}), but level explains more (R² {s7['level_vs_mix']['r2_level_only']:.3f} vs {s7['level_vs_mix']['r2_mix_only']:.3f}).
+- **Level vs mix:** regressing the shrunken residual on log core spending, instruction share and academic-support share (sector and Carnegie controls): {'shares remain significant with the level fixed' if lm['shares_hold'] else 'shares are not significant once the level is fixed'} (instruction share p = {lm['p']['instr_share']:.3f}, academic support p = {lm['p']['acad_share']:.3f}), but level explains more (R² {lm['r2_level_only']:.3f} vs {lm['r2_mix_only']:.3f}).
 - **Robustness:** a Benjamini-Hochberg correction across {s7['bh']['n_tests']} spending tests keeps the instruction and academic-support gaps everywhere and the student-services gap nowhere; dropping {s7['n_cooks_dropped']} Cook's-flagged schools leaves them at {s7['per_fte_no_cooks']['Instruction']['median_ratio']:.2f}× / {s7['per_fte_no_cooks']['Academic support']['median_ratio']:.2f}×. Results hold with FY2018-19 spending only ({f1819['Instruction']['median_ratio']:.2f}× / {f1819['Academic support']['median_ratio']:.2f}×), in constant FY2023 dollars ({real['Instruction']['median_ratio']:.2f}× / {real['Academic support']['median_ratio']:.2f}×), and within each Carnegie group. A 1,000-resample bootstrap keeps top-decile schools in the top decile {bs['mean_p_top_among_point_top']:.0%} of the time.
 
 ![spending](reports/figures/07_spending_top_vs_bottom.png)
@@ -105,7 +105,7 @@ Five review passes tested timing, sample composition, small school noise, sector
 | BLS CPI-U via FRED | CPIAUCSL | fiscal-year deflators for the constant-dollar check |
 | Opportunity Insights | mrc_table2, mrc_table11 | mobility rate and parent income (context) |
 
-Join key: `UNITID`. Opportunity Insights is reached via OPEID → `super_opeid`. Raw files are gitignored; `src/01_download.py` recreates them (~600 MB, mostly the Scorecard raw archive).
+Join key: `UNITID`. Opportunity Insights is reached via OPEID → `super_opeid`. Raw files are gitignored; `src/01_download.py` recreates them (about {R['step1']['raw_total_mb']:,} MB, mostly the Scorecard raw archive).
 
 ## Reproduce
 
@@ -116,7 +116,7 @@ for s in src/0[1-8]_*.py src/10_memo.py; do python "$s"; done
 streamlit run app/app.py
 ```
 
-Raw data (~600 MB) is gitignored and re-downloaded by the first script. The cleaned outputs in `data/clean/` are committed, so the dashboard and all reports work without downloading anything.
+Raw data (about {R['step1']['raw_total_mb']:,} MB) is gitignored and re-downloaded by the first script. The cleaned outputs in `data/clean/` are committed, so the dashboard and all reports work without downloading anything.
 
 ## Deploy the dashboard (Streamlit Community Cloud)
 

@@ -1,7 +1,8 @@
-"""Step 7: compare the top 10% and bottom 10% of schools (by Model A residual) on spending categories.
+"""Step 7: compare the top 10% and bottom 10% of schools (deciles of the ranking model's shrunken residual, Step 6) on spending.
 
 Spending = IPEDS functional expenses per 12-month FTE, averaged over FY2018-FY2023 (the cohort's years).
-Tests: Welch t-test on log dollars per FTE, Mann-Whitney U. Deciles are of the shrunken residual (Step 6).
+Tests: Mann-Whitney U is the decision test (Benjamini-Hochberg runs on it); the Welch t-test on log dollars is reported beside it as a check.
+7b is a sensitivity only: the shrunken residual regressed on raw spending. The headline "money explains X%" lives in Step 5 (Model B-mix, partial R²).
 Variants: FY2018-19 only (first two years), all six years in FY2023 dollars (CPI-U), FY2023 only (the
 mistimed version). Repeated within control type and within each Carnegie group.
 Budget shares are reported as composition only: they sum to 100%, so a higher instruction share
@@ -79,7 +80,10 @@ def main():
     fam["reject_bh_05"], fam["p_bh"], _, _ = multipletests(fam["p_raw"], alpha=0.05, method="fdr_bh")
     bh_core = fam[fam.category.isin(core_lbl if False else ["Instruction", "Academic support", "Student services", "Institutional support", "Core (4 categories)"])].copy()
     bh_pivot = bh_core.assign(cell=lambda d: d.apply(lambda r: f"{r.median_ratio:.2f}× {'✔' if r.reject_bh_05 else '✘'} ({r.p_bh:.3f})", axis=1)).pivot(index="comparison", columns="category", values="cell")[["Instruction", "Academic support", "Student services", "Institutional support", "Core (4 categories)"]]
-    # ---- Step 7b: does the MIX matter once the LEVEL is fixed? shrunken residual ~ log core $/FTE + instruction share + academic-support share + controls
+    # ---- per-undergraduate-FTE check: does the graduate share of the FTE denominator create the instruction gap?
+    ug_ratio = (top.exp_instruction_per_fte * top.fte_total / top.fteug).median() / (bot.exp_instruction_per_fte * bot.fte_total / bot.fteug).median()
+    ug_share_med = {"top": float(top.ug_share_fte.median()), "bottom": float(bot.ug_share_fte.median())}
+    # ---- Step 7b (sensitivity): shrunken residual ~ log core $/FTE + instruction share + academic-support share + controls. The headline is Step 5's Model B-mix.
     reg = df.copy(); reg["instr_share"] = reg["exp_instruction_share_core"]; reg["acad_share"] = reg["exp_academic_support_share_core"]
     F7 = "residual_eb ~ log_core_per_fte + instr_share + acad_share + private + C(carnegie_group, Treatment(reference=\"Master's\"))"
     m7 = smf.ols(F7, data=reg).fit(cov_type="HC3")
@@ -95,12 +99,17 @@ def main():
     carn_mix = pd.crosstab(df.group, df.carnegie_group, normalize="index").loc[["top 10%", "bottom 10%"]].round(3)
 
     long = pd.DataFrame([{"group": g, "category": CATS[k], "median $ per FTE": d[f"{k}_per_fte"].median()} for g, d in [("top 10%", top), ("bottom 10%", bot)] for k in CORE])
-    px.bar(long, x="category", y="median $ per FTE", color="group", barmode="group", title="Median spending per FTE (FY2018-23 avg): top 10% vs bottom 10% residual schools",
-           color_discrete_map={"top 10%": "#2a9d8f", "bottom 10%": "#e76f51"}).write_html(FIG / "07_spending_top_vs_bottom.html", include_plotlyjs="cdn")
-    f, ax = plt.subplots(figsize=(9, 5.5)); x = np.arange(len(CORE)); w = 0.38
-    for i, (grp, color) in enumerate([("top 10%", "#2a9d8f"), ("bottom 10%", "#e76f51")]):
-        ax.bar(x + (i - .5) * w, long[long.group == grp]["median $ per FTE"], w, label=grp, color=color)
-    ax.set_xticks(x); ax.set_xticklabels(core_lbl); ax.set(title=f"Median $ per FTE by category, FY2018-23 average\ntop 10% (n={len(top)}) vs bottom 10% (n={len(bot)}) by first-gen completion residual", ylabel="$ per FTE"); ax.legend()
+    ACCENT, GRAPHITE, INK = "#C8401A", "#6B6B6B", "#161616"   # same meaning as the dashboard: accent = top 10%, graphite = bottom 10%
+    r_i, r_a = all_cmp.set_index("category").loc["Instruction", "median_ratio"], all_cmp.set_index("category").loc["Academic support", "median_ratio"]
+    fig_title = f"Top 10% schools spend {r_i:.1f} times as much per student on instruction and {r_a:.1f} times as much on academic support as the bottom 10% (n = {len(top)} vs {len(bot)}, FY2018 to FY2023 median)"
+    px.bar(long, x="category", y="median $ per FTE", color="group", barmode="group", title=fig_title, color_discrete_map={"top 10%": ACCENT, "bottom 10%": GRAPHITE}).write_html(FIG / "07_spending_top_vs_bottom.html", include_plotlyjs="cdn")
+    f, ax = plt.subplots(figsize=(10, 5.5)); x = np.arange(len(CORE)); w = 0.38
+    for i, (grp, color) in enumerate([("top 10%", ACCENT), ("bottom 10%", GRAPHITE)]):
+        vals = long[long.group == grp]["median $ per FTE"].values; bars = ax.bar(x + (i - .5) * w, vals, w, color=color)
+        for b_, v in zip(bars, vals): ax.text(b_.get_x() + b_.get_width() / 2, v + 150, f"${v:,.0f}", ha="center", va="bottom", fontsize=9, color=INK)
+        ax.text(x[0] + (i - .5) * w, vals[0] + 1100, grp.replace("top", "Top").replace("bottom", "Bottom"), ha="center", fontsize=9, color=color, fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels(core_lbl); ax.set_title(fig_title, fontsize=10, loc="left", wrap=True); ax.set_ylabel("$ per FTE per year")
+    for sp in ("top", "right"): ax.spines[sp].set_visible(False)
     f.tight_layout(); f.savefig(FIG / "07_spending_top_vs_bottom.png", dpi=130); plt.close(f)
 
     lines = ["# Spending comparison: top 10% vs bottom 10% (Step 7)\n", "Generated by `src/07_spending.py`. Groups = top and bottom deciles of the Model A residual (main sample, special focus excluded). "
@@ -110,10 +119,11 @@ def main():
              "\n## Dollars per FTE (FY2018-23 average), all schools\n", fmt_money(all_cmp),
              "\n\n## Timing variants: median ratio top/bottom (Mann-Whitney p)\n", var_tab.to_markdown(),
              "\n\nFY2018-19 covers the cohort's first two years, when most attrition happens. Constant dollars use BLS CPI-U fiscal-year averages (see Step 3 report); because every school faces the same price years, deflating changes levels, not the cross-school comparison.\n",
-             f"\n## 7b. Level vs mix: shrunken residual regressed on spending (n = {int(m7.nobs):,}, HC3)\n\n`{F7}`\n\n", tab7.to_markdown(index=False),
+             f"\n## Instruction per undergraduate FTE (denominator check)\n\nMedian undergraduate share of FTE: top decile {ug_share_med['top']:.2f}, bottom {ug_share_med['bottom']:.2f}. Instruction dollars per undergraduate FTE, top over bottom median: {ug_ratio:.2f}× (per total FTE: {all_cmp.set_index('category').loc['Instruction', 'median_ratio']:.2f}×). The graduate share of the denominator does not create the gap.\n",
+             f"\n## 7b (sensitivity). Shrunken residual regressed on raw spending (n = {int(m7.nobs):,}, HC3)\n\nThe headline \"money explains X%\" is Step 5's Model B-mix (partial R² against the ranking model). This older version regresses the residual on raw spending and understates the coefficient, because spending overlaps the traits already in the model; it is kept to show the difference.\n\n`{F7}`\n\n", tab7.to_markdown(index=False),
              f"\n\nR² = {m7.rsquared:.3f} (level only {m7_level.rsquared:.3f}; mix only {m7_mix.rsquared:.3f}). Holding total core spending per student fixed, one standard deviation more instruction share ({sd_i:.3f}) is associated with {m7.params['instr_share']*sd_i*100:+.2f} points of residual (p = {m7.pvalues['instr_share']:.3f}); "
              f"one SD more academic-support share ({sd_a:.3f}) with {m7.params['acad_share']*sd_a*100:+.2f} points (p = {m7.pvalues['acad_share']:.3f}). A 10% higher core budget is associated with {m7.params['log_core_per_fte']*np.log(1.1)*100:+.2f} points (p = {m7.pvalues['log_core_per_fte']:.3f}). "
-             f"**Verdict: {'the mix matters with the level fixed' if shares_hold else 'the mix does NOT matter once the level is fixed; the decile gaps in instruction and academic-support dollars reflect schools that spend more overall'}.** The memo headline is generated from this verdict.\n",
+             f"Verdict in this sensitivity: {'the mix matters with the level fixed' if shares_hold else 'the mix does NOT matter once the level is fixed'}. The memo reads Step 5.\n",
              f"\n## Excluding the {n_cooks_dropped} schools flagged by Cook's distance in Step 5 (top n={len(top_nc)}, bottom n={len(bot_nc)})\n", fmt_money(cooks_cmp[cooks_cmp.category.isin(core_lbl + ['Core (4 categories)'])]),
              f"\n\n## Benjamini-Hochberg correction across all {len(fam)} Mann-Whitney p-values in this step (✔ = survives at FDR 0.05; BH-adjusted p in parentheses)\n", bh_pivot.to_markdown(),
              "\n\nBH controls the false-discovery rate: with this many comparisons, about 5% of the ✔ cells would be expected to be false if every true gap were zero. Raw p-values are in the tables above.\n",
@@ -125,13 +135,14 @@ def main():
         lines += [f"\n\n## Within Carnegie {g} schools only (top n={nt}, bottom n={nb})\n", fmt_money(cmp_[cmp_.category.isin(core_lbl + ["Core (4 categories)"])])]
     lines += ["\n\n![spending](figures/07_spending_top_vs_bottom.png)\n",
               "\nInterpretation guide: `welch_p_log` tests whether mean log-dollars differ (robust to the long right tail); `mann_whitney_p` tests whether one group's values tend to be larger. "
-              "Dollar differences are the finding. Shares describe how the same dollars are split and cannot be read as separate evidence.\n"]
+              "Dollar differences are the finding. Shares describe how the same dollars are split and cannot be read as separate evidence. Mann-Whitney is the decision test; Welch is shown beside it.\n"]
     (REP / "07_spending_comparison.md").write_text("\n".join(lines))
     results = json.loads((REP / "results.json").read_text())
     rec = lambda d: {r["category"]: {kk: (None if pd.isna(v) else round(float(v), 4)) for kk, v in r.items() if kk != "category"} for r in d.to_dict("records")}  # noqa: E731
     results["step7"] = {"n_top": len(top), "n_bottom": len(bot), "profile_medians": {k: {kk: float(vv) for kk, vv in v.items()} for k, v in profile.to_dict().items()},
                         "per_fte": rec(all_cmp), "per_fte_fy23_only": rec(fy23_cmp), "per_fte_fy1819": rec(variants["FY2018-19 only"]), "per_fte_real": rec(variants["FY2018-23 in FY2023 dollars"]), "share_core": rec(all_sh),
-                        "level_vs_mix": {"formula": F7, "n": int(m7.nobs), "r2": round(m7.rsquared, 4), "r2_level_only": round(m7_level.rsquared, 4), "r2_mix_only": round(m7_mix.rsquared, 4), "shares_hold": shares_hold,
+                        "ug_fte_check": {"instruction_ratio_per_ug_fte": round(float(ug_ratio), 4), "median_ug_share_fte": {k: round(v, 3) for k, v in ug_share_med.items()}},
+                        "residual_on_raw_spending": {"formula": F7, "n": int(m7.nobs), "r2": round(m7.rsquared, 4), "r2_level_only": round(m7_level.rsquared, 4), "r2_mix_only": round(m7_mix.rsquared, 4), "shares_hold": shares_hold,
                                          "coef": {k: round(float(v), 5) for k, v in m7.params.items() if not k.startswith("C(")}, "p": {k: round(float(v), 5) for k, v in m7.pvalues.items() if not k.startswith("C(")},
                                          "pp_per_sd_instr_share": round(float(m7.params["instr_share"] * sd_i * 100), 3), "pp_per_sd_acad_share": round(float(m7.params["acad_share"] * sd_a * 100), 3),
                                          "pp_per_10pct_core": round(float(m7.params["log_core_per_fte"] * np.log(1.1) * 100), 3), "sd_instr_share": round(float(sd_i), 4), "sd_acad_share": round(float(sd_a), 4)},

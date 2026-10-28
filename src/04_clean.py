@@ -14,8 +14,12 @@ Rules (each one counted in the report):
   4. Entry-year Pell share, enrollment, part-time share, first-gen share must be present.
   5. At least MIN_FIN_YEARS of the 6 fiscal years with positive FTE and positive total/instruction spending.
 Nothing is imputed except rule 3, and that fill is flagged in `adm_rate_filled`.
-Special-focus Carnegie schools are KEPT in the file with special_focus = 1; Step 5 models them separately.
+Four groups are kept in the file but scored out of sample (in_main = 0): special-focus / tribal Carnegie types, campuses with more
+than 50% of undergraduates aged 25+ or exclusively online, schools whose Scorecard rates are implausible against their IPEDS graduation
+rate, and campuses whose first-gen outcome is pooled with other campuses under one 6-digit OPEID (share of the group's undergraduates
+below OPEID_SHARE_CUT). Every threshold, every count and the suppressed-vs-kept comparison are written to results.json["step4"].
 """
+import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -24,7 +28,9 @@ import columns as C
 ROOT = Path(__file__).resolve().parents[1]
 CLEAN = ROOT / "data" / "clean"
 REPORT = ROOT / "reports" / "04_data_quality.md"
+RESULTS = ROOT / "reports" / "results.json"
 MIN_COHORT = 50
+OPEID_SHARE_CUT = 0.90   # a campus keeps its own pooled rate only if it holds at least 90% of its OPEID6 group's Fall 2017 undergraduates
 MIN_FIN_YEARS = 3
 
 CORE = ["exp_instruction", "exp_academic_support", "exp_student_services", "exp_institutional_support"]
@@ -72,6 +78,7 @@ def main() -> None:
     apply("7. Share of undergraduates exclusively online (Fall 2017) missing", df["pct_distance"].notna())
 
     # ---------------------------------------------------------------- derived
+    blank_filled = {k: int(df[f"{k}_per_fte"].isna().sum()) for k in C.SPENDING_CATEGORIES}   # row accounting for the $0 fill (window average)
     for k in C.SPENDING_CATEGORIES:
         for suffix in ["", "_fy23", "_fy1819", "_real"]:
             df[f"{k}_per_fte{suffix}"] = df[f"{k}_per_fte{suffix}"].fillna(0.0)   # blank functional line on a filed form = $0
@@ -91,8 +98,10 @@ def main() -> None:
     df["special_focus"] = (df["carnegie_group"] == "Special focus / tribal").astype(int)
     df["nontraditional"] = ((df["ug25abv"] > NONTRAD_CUT) | (df["pct_distance"] > NONTRAD_CUT)).astype(int)
     df["outcome_anomaly"] = ((df["firstgen_comp_orig_yr6_rt"] < ANOMALY_RATIO * df["c150_4"]) & (df["not1stgen_comp_orig_yr6_rt"] < ANOMALY_RATIO * df["c150_4"])).fillna(False).astype(int)
-    df["excluded_reason"] = np.select([df["outcome_anomaly"] == 1, df["special_focus"] == 1, df["nontraditional"] == 1],
-                                      ["outcome implausible vs IPEDS grad rate", "special focus / tribal", "adult (25+) or online share > 50%"], "")
+    df["opeid6_share"] = df["opeid6_share"].fillna(1.0); df["opeid6_members"] = df["opeid6_members"].fillna(1)
+    df["shared_opeid"] = ((df["opeid6_members"] > 1) & (df["opeid6_share"] < OPEID_SHARE_CUT)).astype(int)
+    df["excluded_reason"] = np.select([df["outcome_anomaly"] == 1, df["special_focus"] == 1, df["nontraditional"] == 1, df["shared_opeid"] == 1],
+                                      ["outcome implausible vs IPEDS grad rate", "special focus / tribal", "adult (25+) or online share > 50%", "outcome pooled across campuses (shared OPEID)"], "")
     df["in_main"] = (df["excluded_reason"] == "").astype(int)
     assert (df["carnegie_group"] != "Other").all(), df.loc[df.carnegie_group == "Other", "hd_c18basic"].unique()
 
@@ -110,11 +119,23 @@ def main() -> None:
     lo = df.nsmallest(6, "exp_core_per_fte")[["instnm", "stabbr", "ugds", "fte_total", "exp_core_per_fte"]]
     carn = df.groupby(["carnegie_group", "control_label"]).size().unstack(fill_value=0)
 
+    # ---------------------------------------------------------------- missingness: who is suppressed or dropped, compared with who is kept
+    j = pd.read_parquet(CLEAN / "joined.parquet")
+    status = np.select([j.outcome_null.fillna(False).astype(bool), j.outcome_suppressed.fillna(False).astype(bool)], ["outcome not available", "privacy suppressed"], "reported")
+    grp = np.select([j.unitid.isin(df[df.in_main == 1].unitid), j.unitid.isin(df[df.in_main == 0].unitid), status == "privacy suppressed", status == "outcome not available"],
+                    ["main sample", "scored, not ranked", "privacy suppressed", "outcome not available"], "dropped by rules 2 to 7")
+    miss = (j.assign(group=grp, private=(j.hd_control == 2).astype(float))
+             .groupby("group").agg(schools=("unitid", "size"), median_undergrads=("e_ugds", "median"), median_pell_share=("e_pctpell", "median"),
+                                   private_share=("private", "mean"), median_firstgen_cohort=("firstgen_yr6_n", "median"))
+             .reindex(["main sample", "scored, not ranked", "dropped by rules 2 to 7", "privacy suppressed", "outcome not available"]).round(3))
+    shared = df[df.shared_opeid == 1][["instnm", "stabbr", "opeid6_members", "opeid6_share", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt"]].sort_values("opeid6_share")
+
     df.to_parquet(CLEAN / "analysis.parquet", index=False); df.to_csv(CLEAN / "analysis.csv", index=False)
     desc = df[["firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "fg_gap", "firstgen_yr6_n", "first_gen", "pctpell", "adm_rate", "ugds", "pptug_ef", "ug25abv", "pct_distance", "fte_total",
                "exp_core_per_fte", "exp_instruction_per_fte", "exp_academic_support_per_fte", "exp_student_services_per_fte", "exp_institutional_support_per_fte"]].describe(percentiles=[.05, .25, .5, .75, .95]).T.round(3)
-    main_n, sf_n = int((df.in_main == 1).sum()), int((df.special_focus == 1).sum())
+    main_n, sf_n = int((df.in_main == 1).sum()), int((df.excluded_reason == "special focus / tribal").sum())
     nt_n = int((df.excluded_reason == "adult (25+) or online share > 50%").sum()); an_n = int((df.excluded_reason == "outcome implausible vs IPEDS grad rate").sum())
+    op_n = int((df.excluded_reason == "outcome pooled across campuses (shared OPEID)").sum())
     anomalies = df[df.outcome_anomaly == 1][["instnm", "stabbr", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "not1stgen_comp_orig_yr6_rt", "c150_4"]].round(3)
     excl = df[df.in_main == 0].groupby("excluded_reason").size()
     lines = ["# Data quality report (Step 4)\n", "Generated by `src/04_clean.py`.\n",
@@ -125,8 +146,12 @@ def main() -> None:
              "\n## Cleaning rules applied in order\n", "| Rule | Dropped | Remaining |", "|---|---:|---:|", *[f"| {r} | {d:,} | {n:,} |" for r, d, n in log],
              f"\n- Rule 3 filled `adm_rate` = 1.0 for **{n_filled}** open-admission schools (flag `adm_rate_filled`). Open admission means every applicant is accepted, so 100% is the true value, not an imputation.",
              "- Blank functional expense lines on a filed finance form were set to $0.",
-             f"\n## Final file: {len(df):,} schools = {main_n:,} in the main sample + {sf_n:,} special-focus / tribal (Carnegie 2018 codes 24-33) + {nt_n:,} adult- or online-dominant campuses (>50% of undergraduates aged 25+ or exclusively online in Fall 2017), + {an_n} schools whose Scorecard completion rates are implausible against their IPEDS graduation rate; all excluded groups are scored separately\n",
+             f"\n## Final file: {len(df):,} schools = {main_n:,} in the main sample + {sf_n:,} special-focus / tribal (Carnegie 2018 codes 24-33) + {nt_n:,} adult- or online-dominant campuses (>50% of undergraduates aged 25+ or exclusively online in Fall 2017) + {an_n} schools whose Scorecard completion rates are implausible against their IPEDS graduation rate + {op_n} campuses whose outcome is pooled with other campuses under one OPEID (own share of the group's undergraduates below {OPEID_SHARE_CUT:.0%}); all excluded groups are scored separately\n",
              excl.to_frame("schools").to_markdown(),
+             f"\n\nShared-OPEID campuses set aside ({op_n}). The Scorecard reports NSLDS completion per 6-digit OPEID, so these campuses carry a rate and cohort that belong mostly to a larger sibling campus:\n", shared.round(3).to_markdown(index=False),
+             "\n\n## Who is missing: suppressed and dropped schools compared with the main sample (entry-year values)\n", miss.to_markdown(),
+             "\n\nPrivacy suppression hits small private colleges: the suppressed group is far smaller and almost all private. The main sample therefore over-represents public and larger schools, and the ranking describes schools with at least 50 first-gen federal-aid students in the cohort.\n",
+             f"\nBlank functional expense lines filled with $0 (window average), by category: " + ", ".join(f"{k.replace('exp_', '')} {v}" for k, v in blank_filled.items()) + ".\n",
              f"\n\nOutcome-anomaly screen: both the first-gen and the non-first-gen 6-year completion rates below {ANOMALY_RATIO:.0%} of the school's IPEDS 150%-time graduation rate (C150_4). The two measures differ in definition but not by a factor of four; these look like NSLDS reporting problems, so they are listed, not ranked:\n", anomalies.to_markdown(index=False), "\n\nCarnegie group by control (all schools in file):\n", carn.to_markdown(),
              "\n\n## Timing: entry-year vs today's predictor values (medians and correlations)\n", drift.to_markdown(),
              "\n\nPell share and enrollment are stable school traits (high correlation), but the 2024 values describe students who entered seven years after the cohort, so the model uses the 2017-18 values.\n",
@@ -137,7 +162,17 @@ def main() -> None:
              "\n## Outliers kept (the model uses log spending)\n", "Highest core spending per FTE:\n", hi.round(0).to_markdown(index=False), "\n\nLowest:\n", lo.round(0).to_markdown(index=False),
              f"\n\n## Range checks\n\nAll rate columns within [0, 1]: {out_of_range}. UNITID unique: True.\n"]
     REPORT.write_text("\n".join(lines))
-    print(f"\nfinal {len(df):,} (main {main_n:,}, special focus {sf_n:,}, adult/online {nt_n:,}, anomalies {an_n}); INEXPFTE corr {corr:.3f}; wrote {REPORT.relative_to(ROOT)}")
+    results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
+    results["step4"] = {"n_start": int(n0), "funnel": [{"rule": r, "dropped": int(d), "remaining": int(n)} for r, d, n in log], "n_adm_rate_filled_open_admission": n_filled,
+                        "thresholds": {"min_cohort": MIN_COHORT, "min_fin_years": MIN_FIN_YEARS, "nontraditional_cut": NONTRAD_CUT, "anomaly_ratio": ANOMALY_RATIO, "opeid_share_cut": OPEID_SHARE_CUT, "n_fiscal_years": 6},
+                        "blank_expense_lines_filled": blank_filled, "n_final": int(len(df)), "n_main": main_n, "excluded": {str(k): int(v) for k, v in excl.items()},
+                        "anomalies": [{"school": r.instnm, "state": r.stabbr, "cohort": int(r.firstgen_yr6_n), "firstgen_rate": round(float(r.firstgen_comp_orig_yr6_rt), 4),
+                                       "not_firstgen_rate": round(float(r.not1stgen_comp_orig_yr6_rt), 4), "ipeds_grad_rate_c150_4": round(float(r.c150_4), 4)} for r in anomalies.itertuples()],
+                        "missingness": {g: {k: (None if pd.isna(v) else round(float(v), 3)) for k, v in row.items()} for g, row in miss.to_dict("index").items()},
+                        "shared_opeid_set_aside": [{"school": r.instnm, "state": r.stabbr, "members": int(r.opeid6_members), "share": round(float(r.opeid6_share), 3)} for r in shared.itertuples()],
+                        "inexpfte_crosscheck": {"pearson": round(float(corr), 4), "n": int(len(xchk)), "ratio_median": round(float(ratio["50%"]), 3)}}
+    RESULTS.write_text(json.dumps(results, indent=2))
+    print(f"\nfinal {len(df):,} (main {main_n:,}, special focus {sf_n:,}, adult/online {nt_n:,}, anomalies {an_n}, shared OPEID {op_n}); INEXPFTE corr {corr:.3f}; wrote {REPORT.relative_to(ROOT)}"); print(miss.to_string())
     print(drift.to_string()); print(spend_drift.to_string()); print(carn.to_string())
 
 
