@@ -4,7 +4,13 @@ primaryColor = "#C8401A"
 backgroundColor = "#F6F3EC"
 secondaryBackgroundColor = "#FFFFFF"
 textColor = "#161616"
-font = "serif"
+font = "IBM Plex Sans, system-ui, sans-serif"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
 
 [server]
 headless = true

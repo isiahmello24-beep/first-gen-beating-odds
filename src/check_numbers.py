@@ -55,7 +55,7 @@ def app_strings():
             out.append((node.lineno, text))
         elif isinstance(node, ast.Constant) and isinstance(node.value, str) and id(node) not in inner:
             out.append((node.lineno, node.value))
-    return [(ln, s) for ln, s in out if "<style>" not in s]
+    return [(ln, s) for ln, s in out if "<style>" not in s and "@font-face" not in s and re.search(r"[A-Za-z]{3}", s)]   # CSS blocks and bare numeric tokens (font weight ranges) are not claims
 
 
 def clean_app_string(s):
