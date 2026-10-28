@@ -24,8 +24,8 @@ PAPER, SURFACE, RULE, INK, INK2, MUTE = "#F6F3EC", "#FFFFFF", "#D9D4C7", "#16161
 ACCENT, GRAPHITE, MID = "#C8401A", "#6B6B6B", "#C4BEB0"          # above expected / below expected / middle
 CORE = {"exp_instruction": "Teaching", "exp_academic_support": "Academic support", "exp_student_services": "Student services", "exp_institutional_support": "Administration"}
 CARN = "C(carnegie_group, Treatment(reference=\"Master's\"))"
-PLAIN = {"pctpell": "Share of students on Pell Grants", "adm_rate": "Share of applicants admitted", "log_ugds": "Size (log of enrollment)", "pptug_ef": "Share studying part-time",
-         "first_gen": "Share who are first-gen", "ug25abv": "Share aged 25 or older", "pct_distance": "Share fully online", "private": "Private college (vs public)", "hbcu_flag": "Historically Black college",
+PLAIN = {"pctpell": "Share of students on Pell Grants", "adm_rate": "Share of applicants admitted", "log_ugds": "Size (per doubling of enrollment)", "pptug_ef": "Share studying part time",
+         "first_gen": "Share who are first gen", "ug25abv": "Share aged 25 or older", "pct_distance": "Share fully online", "private": "Private college (vs public)", "hbcu_flag": "Historically Black college",
          f"{CARN}[T.Doctoral]": "Research university (vs master's)", f"{CARN}[T.Baccalaureate]": "Bachelor's-focused college (vs master's)"}
 TYPE = {"Public": "Public", "Private nonprofit": "Private"}
 KIND = {"Doctoral": "Research university", "Master's": "Master's university", "Baccalaureate": "Bachelor's college"}
@@ -95,14 +95,43 @@ def stat(col, label, value, sub, accent=False):
     col.markdown(f'<div class="stat"><div class="mono">{label}</div><div class="n{" acc" if accent else ""}">{value}</div><div class="s">{sub}</div></div>', unsafe_allow_html=True)
 
 
+SANS = "Helvetica Neue, Helvetica, Arial, sans-serif"
+NOBAR = {"displayModeBar": False}           # passed as config= to every st.plotly_chart
+HOVER_USD = "%{customdata}: $%{y:,.0f} per student per year<extra>%{fullData.name}</extra>"   # bars carry the category name in customdata
+
+
 def chart(fig, height=340, legend=True, ygrid=True):
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Helvetica Neue, Helvetica, Arial, sans-serif", color=INK2, size=12), height=height,
+    """House style for every plotly figure: transparent paper, 12px minimum text, no legend unless asked (direct labels are preferred)."""
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family=SANS, color=INK2, size=12), height=height,
                       margin=dict(l=6, r=6, t=26, b=6), title=None, showlegend=legend,
-                      legend=dict(orientation="h", y=-0.24, x=0, xanchor="left", font=dict(color=INK2, size=11), bgcolor="rgba(0,0,0,0)"),
-                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Helvetica Neue, Helvetica, Arial, sans-serif"))
-    fig.update_xaxes(showgrid=False, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
-    fig.update_yaxes(showgrid=ygrid, gridcolor="#E9E4D9", gridwidth=1, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
+                      legend=dict(orientation="h", y=-0.24, x=0, xanchor="left", font=dict(color=INK2, size=12), bgcolor="rgba(0,0,0,0)"),
+                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family=SANS, font_size=12))
+    fig.update_xaxes(showgrid=False, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=12), title_font=dict(color=INK2, size=12))
+    fig.update_yaxes(showgrid=ygrid, gridcolor="#E9E4D9", gridwidth=1, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=12), title_font=dict(color=INK2, size=12))
     return fig
+
+
+def note(fig, x, y, text, color, xanchor="left", yanchor="bottom", xref="x", yref="y", **kw):
+    """Direct label: a plain annotation in place of a legend entry."""
+    fig.add_annotation(x=x, y=y, xref=xref, yref=yref, text=text, showarrow=False, xanchor=xanchor, yanchor=yanchor, align="left" if xanchor == "left" else "right",
+                       font=dict(color=color, size=12, family=SANS), **kw)
+
+
+def fmt_p(p):
+    return "<0.001" if p < 0.0005 else f"{p:.3f}"
+
+
+def rank_range(b):
+    """'A to B': the span of a school's rank across the middle ninety-five percent of bootstrap re runs."""
+    return f"{b.boot_rank_p2_5:.0f} to {b.boot_rank_p97_5:.0f}"
+
+
+def with_boot(d):
+    return d.merge(boot[["unitid", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5"]], on="unitid", how="left")
+
+
+def short_name(nm, limit=28):
+    return nm if len(nm) <= limit else nm[: limit - 1].rstrip() + "…"
 
 
 def shrink(resid, pred, n):
@@ -117,6 +146,7 @@ def decile_groups(d, resid_col):
 
 
 def compare_table(top, bot):
+    """Medians, ratio and Mann Whitney p for the SAME two groups the chart draws, so chart and table never disagree."""
     rows = []
     for k, lbl in list(CORE.items()) + [("exp_core", "All four together")]:
         a, b = top[f"{k}_per_fte"], bot[f"{k}_per_fte"]
@@ -125,12 +155,19 @@ def compare_table(top, bot):
 
 
 def spend_bar(top, bot, height=340):
-    cats = list(CORE.values())
+    """Grouped medians, top 10% in ACCENT and bottom 10% in GRAPHITE. The two groups are named once, above the first pair, instead of in a legend."""
+    cats = list(CORE.values()); xs = list(range(len(cats)))
+    t = [top[f"{k}_per_fte"].median() for k in CORE]; b = [bot[f"{k}_per_fte"].median() for k in CORE]
     fig = go.Figure()
-    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
-    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
-    fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.06, yaxis_title="Spending per student per year", yaxis=dict(tickprefix="$", separatethousands=True))
-    return chart(fig, height)
+    fig.add_bar(name=f"Top 10% (n = {len(top)})", x=xs, y=t, marker_color=ACCENT, marker_line_width=0, text=[f"${v:,.0f}" for v in t], textposition="outside", textfont=dict(color=INK, size=12, family=SANS), cliponaxis=False, hovertemplate=HOVER_USD, customdata=cats)
+    fig.add_bar(name=f"Bottom 10% (n = {len(bot)})", x=xs, y=b, marker_color=GRAPHITE, marker_line_width=0, text=[f"${v:,.0f}" for v in b], textposition="outside", textfont=dict(color=INK2, size=12, family=SANS), cliponaxis=False, hovertemplate=HOVER_USD, customdata=cats)
+    top_y = max(t + b)
+    y0 = max(t[0], b[0])                       # two stacked lines, left-aligned on the first pair, clear of the $ labels
+    note(fig, -0.3, y0, f"Top 10% · n = {len(top)}", ACCENT, yshift=40)
+    note(fig, -0.3, y0, f"Bottom 10% · n = {len(bot)}", GRAPHITE, yshift=22)
+    fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.06, yaxis_title="$ per student per year", yaxis=dict(tickprefix="$", separatethousands=True, range=[0, top_y * 1.32]),
+                      xaxis=dict(tickvals=xs, ticktext=[c.replace(" ", "<br>") for c in cats], tickangle=0, range=[-0.5, len(cats) - 0.25]))
+    return chart(fig, height, legend=False)
 
 
 FILES = [ROOT / "data/clean/analysis_scored.parquet", ROOT / "data/clean/bootstrap_ranks.csv", ROOT / "reports/results.json"]
@@ -163,34 +200,44 @@ def school_block(row):
     up = row.residual_eb >= 0
     left, right = st.columns([4, 8])
     with left:
-        st.markdown(f'<div class="hero"><div class="mono">Points above expected</div><div class="n" style="font-size:56px;color:{ACCENT if up else GRAPHITE}">{row.residual_eb_pct_pts:+.1f}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="hero"><div class="mono">Points above expected</div><div class="n" style="font-size:56px;color:{ACCENT if up else GRAPHITE}">{row.residual_eb_pct_pts:+.0f}</div></div>', unsafe_allow_html=True)
         st.markdown(f'''<div class="dl">
 <div class="r"><span>Expected to graduate</span><span>{row.predicted:.0%}</span></div>
 <div class="r"><span>Actually graduated</span><span>{row.firstgen_comp_orig_yr6_rt:.0%}</span></div>
 <div class="r"><span>First-gen students in this cohort</span><span>{int(row.firstgen_yr6_n):,}</span></div>
-<div class="r"><span>Rank among {len(df):,} colleges</span><span>{int(row['rank'])}</span></div>
-<div class="r"><span>Stays in top 10% when re-run</span><span>{b_row.p_top_decile:.0%}</span></div>
+<div class="r"><span>Rank among {len(df):,} colleges</span><span>{int(row['rank'])} · likely {rank_range(b_row)} on re runs</span></div>
+<div class="r"><span>In the top 10% on re runs</span><span>{b_row.p_top_decile:.0%} of re runs</span></div>
 <div class="r"><span>Type</span><span>{TYPE[row.control_label]} · {KIND[row.carnegie_group]}</span></div>
 <div class="r"><span>Undergrads (2017)</span><span>{int(row.ugds):,}</span></div>
-<div class="r"><span>On Pell Grants · admitted · first-gen</span><span>{row.pctpell:.0%} · {row.adm_rate:.0%} · {row.first_gen:.0%}</span></div>
-<div class="r"><span>Non-first-gen students graduated</span><span>{row.not1stgen_comp_orig_yr6_rt:.0%}</span></div>
+<div class="r"><span>On Pell Grants · admitted · first gen</span><span>{row.pctpell:.0%} · {row.adm_rate:.0%} · {row.first_gen:.0%}</span></div>
+<div class="r"><span>Not first gen students graduated</span><span>{row.not1stgen_comp_orig_yr6_rt:.0%}</span></div>
 </div>''', unsafe_allow_html=True)
     with right:
-        section("Where this school's money goes, compared with peers", "$ per student per year · 2018-23 average")
-        peers = df[df.control_label == row.control_label]
-        cats = list(CORE.values())
+        peers = df[df.control_label == row.control_label]; tops = peers[peers.group == "top 10%"]; kind = TYPE[row.control_label].lower()
+        t_med = tops["exp_instruction_per_fte"].median()
+        section(f"{row.instnm} spends ${row.exp_instruction_per_fte:,.0f} per student on teaching. Top 10% {kind} peers spend ${t_med:,.0f}",
+                f"$ per student per year · 2018 to 2023 average · n = {len(peers)} {kind} schools, {len(tops)} in the top 10%")
+        cats = list(CORE.values()); xs = list(range(len(cats)))
+        series = [("This school", [row[f"{k}_per_fte"] for k in CORE], dict(marker_color="rgba(0,0,0,0)", marker_line=dict(color=INK, width=1.5)), INK),
+                  (f"Typical {kind} school (n = {len(peers)})", [peers[f"{k}_per_fte"].median() for k in CORE], dict(marker_color=MID, marker_line_width=0), INK2),
+                  (f"Top 10% {kind} peers (n = {len(tops)})", [tops[f"{k}_per_fte"].median() for k in CORE], dict(marker_color=ACCENT, marker_line_width=0), ACCENT)]
         fig = go.Figure()
-        fig.add_bar(name="This school", x=cats, y=[row[f"{k}_per_fte"] for k in CORE], marker_color=INK, marker_line_width=0)
-        fig.add_bar(name=f"Typical {TYPE[row.control_label].lower()} school", x=cats, y=[peers[f"{k}_per_fte"].median() for k in CORE], marker_color=MID, marker_line_width=0)
-        fig.add_bar(name=f"Typical top-10% {TYPE[row.control_label].lower()} school", x=cats, y=[peers[peers.group == "top 10%"][f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0)
-        fig.update_layout(barmode="group", bargap=0.4, yaxis=dict(tickprefix="$", separatethousands=True))
-        st.plotly_chart(chart(fig, 330), use_container_width=True, key="card_spend")
-        t_med = peers[peers.group == "top 10%"]["exp_instruction_per_fte"].median()
+        for nm, ys, style, tc in series:
+            fig.add_bar(name=nm, x=xs, y=ys, customdata=cats, text=[f"${v / 1000:.1f}k" for v in ys], textposition="outside", textfont=dict(color=tc, size=12, family=SANS), cliponaxis=False, hovertemplate=HOVER_USD, **style)
+        key = (f'<span style="color:{INK}">▢ This school</span>   <span style="color:{INK2}">■ Typical {kind} school · n = {len(peers)}</span><br>'
+               f'<span style="color:{ACCENT}">■ Top 10% {kind} peers · n = {len(tops)}</span>')
+        note(fig, 0, 1.0, key, INK2, xref="paper", yref="paper", yanchor="bottom", yshift=2)
+        fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.05, yaxis=dict(tickprefix="$", separatethousands=True, range=[0, max(v for _, ys, _, _ in series for v in ys) * 1.18]),
+                          xaxis=dict(tickvals=xs, ticktext=[c.replace(" ", "<br>") for c in cats], tickangle=0, range=[-0.5, len(cats) - 0.25]))
+        fig = chart(fig, 340, legend=False); fig.update_layout(margin=dict(t=44))
+        st.plotly_chart(fig, use_container_width=True, key="card_spend", config=NOBAR)
         meaning(f"{row.instnm} spends ${row.exp_instruction_per_fte:,.0f} per student on teaching. The typical top 10% {TYPE[row.control_label].lower()} school spends ${t_med:,.0f}.")
-    section("Similar schools that do better", "expected within ±3 points")
-    near = df[(df.predicted - row.predicted).abs() < 0.03].sort_values("residual_eb", ascending=False).head(8)
-    st.dataframe(near[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "predicted", "firstgen_comp_orig_yr6_rt", "residual_eb_pct_pts"]].assign(control_label=lambda d: d.control_label.map(TYPE), carnegie_group=lambda d: d.carnegie_group.map(KIND)).rename(columns={"rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads", "pctpell": "On Pell", "predicted": "Expected", "firstgen_comp_orig_yr6_rt": "Actually graduated", "residual_eb_pct_pts": "Points above expected"})
-                 .style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Expected": "{:.0%}", "Actually graduated": "{:.0%}", "Points above expected": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True, height=320)
+    pool = df[(df.predicted - row.predicted).abs() < 0.03]
+    near = with_boot(pool.sort_values("residual_eb", ascending=False).head(8))
+    section("Similar schools that do better", f"top {len(near)} of {len(pool)} schools expected within 3 points")
+    near["rank_range"] = near.apply(rank_range, axis=1)
+    st.dataframe(near[["rank", "rank_range", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "predicted", "firstgen_comp_orig_yr6_rt", "residual_eb_pct_pts"]].assign(control_label=lambda d: d.control_label.map(TYPE), carnegie_group=lambda d: d.carnegie_group.map(KIND)).rename(columns={"rank": "Rank", "rank_range": "Likely rank on re runs", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads", "pctpell": "On Pell", "predicted": "Expected", "firstgen_comp_orig_yr6_rt": "Actually graduated", "residual_eb_pct_pts": "Points above expected"})
+                 .style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Expected": "{:.0%}", "Actually graduated": "{:.0%}", "Points above expected": "{:+.0f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True, height=320)
     meaning(f"Each was expected to graduate about {row.predicted:.0%} of its first gen students, like {row.instnm}, and beat that by the most. Call them.")
 
 
@@ -201,16 +248,15 @@ with tab_over:
     with L:
         st.markdown(f'''<div class="hero"><div class="mono">Share of the gap explained by money</div><div class="n">{lm["r2"]*100:.0f}%</div>
 <div class="d">How much a college spends, and what it spends it on, explains about {lm["r2"]*100:.0f}% of why some schools beat the odds for first gen students. The other {100 - lm["r2"]*100:.0f}% sits outside the budget data. The useful output is the school list beside this and the search box below.</div></div>''', unsafe_allow_html=True)
-        c1, c2, c3, c4 = st.columns(4)
-        stat(c1, "Colleges compared", f"{s5['n']:,}", f"four-year public and private · {s5['n_excluded']} special cases set aside")
-        stat(c2, "How much the model explains", f"{s5['r2_main']:.0%}", "of the difference in first-gen graduation between schools")
-        stat(c3, "Typical first-gen graduation", f"{s5['outcome_mean']:.0%}", "within six years, same school")
-        stat(c4, "Top 10% beat expectations by", f"+{s6['top_decile_cut_pp']:.0f} pts", f"or more · {s6['top_decile_n']} schools", accent=True)
+        c1, c2 = st.columns(2)   # hero + two tiles = the three headline numbers; R² and the outcome mean live in Methods
+        stat(c1, "Top 10% beat expectations by", f"+{s6['top_decile_cut_pp']:.0f} pts", f"or more · {s6['top_decile_n']} schools", accent=True)
+        stat(c2, "Colleges compared", f"{s5['n']:,}", f"four year public and private · {s5['n_excluded']} set aside")
     with R:
-        section("Large schools that beat expectations", "500 or more first gen students in the cohort")
-        big = df[df.firstgen_yr6_n >= 500].sort_values("residual_eb", ascending=False).head(6)
+        section("Large schools that beat expectations", f"{s6['large_cohort_min']} or more first gen students in the cohort")
+        big = with_boot(df[df.firstgen_yr6_n >= s6["large_cohort_min"]].sort_values("residual_eb", ascending=False).head(6))
         rows = "".join(f'<div class="row"><span class="pt">{r.residual_eb_pct_pts:+.0f}</span><div class="nm">{r.instnm}</div>'
-                       f'<div class="meta">{r.stabbr} · {TYPE[r.control_label]} · {int(r.firstgen_yr6_n):,} first-gen students · expected <b>{r.predicted:.0%}</b>, graduated <b>{r.firstgen_comp_orig_yr6_rt:.0%}</b></div></div>' for r in big.itertuples())
+                       f'<div class="meta">{r.stabbr} · {TYPE[r.control_label]} · {int(r.firstgen_yr6_n):,} first gen students · expected <b>{r.predicted:.0%}</b>, graduated <b>{r.firstgen_comp_orig_yr6_rt:.0%}</b> · '
+                       f'rank <b>{int(r.rank)}</b>, likely {rank_range(r)} on re runs</div></div>' for r in big.itertuples())
         st.markdown(f'<div class="list">{rows}</div>', unsafe_allow_html=True)
         meaning(f"Expected is what a school with the same mix of students, size and type usually achieves. These six beat it by {big.residual_eb_pct_pts.min():.0f} to {big.residual_eb_pct_pts.max():.0f} points on cohorts of {big.firstgen_yr6_n.min():,.0f} or more, so small numbers cannot explain it.")
 
@@ -221,40 +267,58 @@ with tab_over:
         section("Look up any college")
         names = (df.sort_values("instnm")["instnm"] + " (" + df.sort_values("instnm")["stabbr"] + ")").reset_index(drop=True)
         default = "San Diego State University (CA)"
-        pick = st.selectbox("Look up any college", names, index=int(names[names == default].index[0]) if (names == default).any() else 0, label_visibility="collapsed")
+        idx = int(names[names == default].index[0]) if (names == default).any() else 0
+        q = st.query_params.get("school")           # ?school=Channel%20Islands preselects the first case-insensitive substring match
+        if q:
+            hit = names[names.str.contains(q, case=False, regex=False)]
+            if len(hit): idx = int(hit.index[0])
+        pick = st.selectbox("Look up any college", names, index=idx, label_visibility="collapsed")
         row = df.sort_values("instnm").iloc[names[names == pick].index[0]]
+        b_pick = boot[boot.unitid == row.unitid].iloc[0]
         st.markdown(f'<div class="mono" style="margin-top:.6rem">Selected</div><div style="font-family:"Times New Roman",Times,serif;font-size:1.35rem;font-weight:500;color:{INK};line-height:1.2;margin:.2rem 0 .4rem 0">{row.instnm}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="dl"><div class="r"><span>Points above expected</span><span style="color:{ACCENT if row.residual_eb >= 0 else GRAPHITE}">{row.residual_eb_pct_pts:+.1f}</span></div><div class="r"><span>Expected · actual</span><span>{row.predicted:.0%} · {row.firstgen_comp_orig_yr6_rt:.0%}</span></div><div class="r"><span>Rank</span><span>{int(row["rank"])} of {len(df):,}</span></div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="dl"><div class="r"><span>Points above expected</span><span style="color:{ACCENT if row.residual_eb >= 0 else GRAPHITE}">{row.residual_eb_pct_pts:+.0f}</span></div><div class="r"><span>Expected · actual</span><span>{row.predicted:.0%} · {row.firstgen_comp_orig_yr6_rt:.0%}</span></div><div class="r"><span>Rank</span><span>{int(row["rank"])} of {len(df):,} · likely {rank_range(b_pick)}</span></div><div class="r"><span>In the top 10% on re runs</span><span>{b_pick.p_top_decile:.0%} of re runs</span></div></div>', unsafe_allow_html=True)
         st.caption("Full detail for this school is further down the page.")
     with R:
-        section("Expected vs actual first-gen graduation", "one dot per college")
+        n_top, n_bot, n_mid = (df.group == "top 10%").sum(), (df.group == "bottom 10%").sum(), (df.group == "middle").sum()
+        section(f"{n_top} of {len(df):,} colleges graduate first gen students {s6['top_decile_cut_pp']:.0f} or more points above expected", f"one dot per college · n = {len(df):,}")
         fig = go.Figure()
-        for g, c, nm, op, sz in [("middle", MID, "Middle 80% of schools", .9, 5), ("bottom 10%", GRAPHITE, "Bottom 10%: below expected", .9, 6), ("top 10%", ACCENT, "Top 10%: above expected", .95, 6)]:
+        for g, c, nm, op, sz in [("middle", MID, f"Middle 80% (n = {n_mid})", .9, 5), ("bottom 10%", GRAPHITE, f"Bottom 10%: below expected (n = {n_bot})", .9, 6), ("top 10%", ACCENT, f"Top 10%: above expected (n = {n_top})", .95, 6)]:
             d = df[df.group == g]
             fig.add_scatter(x=d.predicted, y=d.firstgen_comp_orig_yr6_rt, mode="markers", name=nm, marker=dict(color=c, size=sz, opacity=op, line=dict(width=0)),
                             customdata=np.stack([d.instnm, d.stabbr, d.control_label.map(TYPE), d.ugds, d.pctpell], axis=1),
-                            hovertemplate="<b>%{customdata[0]}</b> (%{customdata[1]})<br>%{customdata[2]} · %{customdata[3]:,} undergrads · %{customdata[4]:.0%} on Pell<br>expected %{x:.0%} · actual %{y:.0%}<extra></extra>")
-        fig.add_scatter(x=[row.predicted], y=[row.firstgen_comp_orig_yr6_rt], mode="markers+text", name=row.instnm, marker=dict(color=INK, size=11, symbol="circle-open", line=dict(width=2, color=INK)), text=[row.instnm.split("-")[0]], textposition="top left", textfont=dict(color=INK, size=11), hoverinfo="skip")
+                            hovertemplate="<b>%{customdata[0]}</b> (%{customdata[1]})<br>%{customdata[2]} · %{customdata[3]:,} undergrads · %{customdata[4]:.0%} on Pell<br>expected %{x:.0%} · actual %{y:.0%}<extra>%{fullData.name}</extra>")
+        fig.add_scatter(x=[row.predicted], y=[row.firstgen_comp_orig_yr6_rt], mode="markers+text", name=row.instnm, marker=dict(color=INK, size=11, symbol="circle-open", line=dict(width=2, color=INK)), text=[short_name(row.instnm)], textposition="top right" if row.predicted < 0.3 else ("top left" if row.predicted > 0.7 else "top center"), textfont=dict(color=INK, size=12, family=SANS), hoverinfo="skip")
         fig.add_scatter(x=[0, 1], y=[0, 1], mode="lines", line=dict(color=INK, dash="dot", width=1), name="Actual = expected", hoverinfo="skip")
-        fig.update_layout(xaxis_title="Expected graduation rate", yaxis_title="Actual graduation rate", xaxis=dict(range=[0.05, 1], tickformat=".0%"), yaxis=dict(range=[0, 1], tickformat=".0%"))
-        st.plotly_chart(chart(fig, 420), use_container_width=True, key="ov_scatter")
+        note(fig, 0.03, 0.97, f"Top 10%: above expected<br>n = {n_top}", ACCENT, yanchor="top")
+        note(fig, 0.97, 0.03, f"Bottom 10%: below expected<br>n = {n_bot}", GRAPHITE, xanchor="right")
+        fig.add_annotation(x=0.12, y=0.12, ax=30, ay=24, text="actual = expected", showarrow=True, arrowhead=0, arrowwidth=1, arrowcolor=INK2, font=dict(color=INK2, size=12, family=SANS), xanchor="left")
+        fig.update_layout(xaxis_title="Expected graduation rate", yaxis_title="Actual graduation rate", xaxis=dict(range=[0, 1], tickformat=".0%"), yaxis=dict(range=[0, 1], tickformat=".0%"))
+        st.plotly_chart(chart(fig, 420, legend=False), use_container_width=True, key="ov_scatter", config=NOBAR)
         meaning(f"One dot per college, {len(df):,} in all. Above the dotted line a college graduated more first gen students than expected, below it fewer. The open circle is {row.instnm}.")
 
     st.markdown('<div class="rule"></div>', unsafe_allow_html=True)
     # Row 3 (7/5): spending bars beside the compact predictor list
     L, R = st.columns([7, 5])
     with L:
-        section("Where the top 10% spend more", "median $ per student per year · top vs bottom 10%")
-        st.plotly_chart(spend_bar(df[df.group == "top 10%"], df[df.group == "bottom 10%"], 380), use_container_width=True, key="ov_spend")
+        section(f"Top 10% schools spend {pf['Instruction']['median_ratio']:.1f} times as much on teaching and {pf['Academic support']['median_ratio']:.1f} times as much on academic support",
+                f"median $ per student per year · n = {s7['n_top']} vs {s7['n_bottom']}")
+        st.plotly_chart(spend_bar(df[df.group == "top 10%"], df[df.group == "bottom 10%"], 380), use_container_width=True, key="ov_spend", config=NOBAR)
         meaning(f"Schools that beat expectations spend {pf['Instruction']['median_ratio']:.1f} times as much per student on teaching and {pf['Academic support']['median_ratio']:.1f} times as much on academic support as schools that fall short, {pf['Student services']['median_ratio']:.2f} times on student services and {pf['Institutional support']['median_ratio']:.2f} times on administration. With the budget size held fixed, one standard deviation more academic support share is associated with {lm['pp_per_sd_acad_share']:+.1f} points, and doubling the budget with {pp_double:+.1f}. Set against a top 10% bar of +{s6['top_decile_cut_pp']:.0f}, both are small. That is the {lm['r2']*100:.0f}%.")
     with R:
-        section("What predicts first-gen graduation", "points, going from 0% to 100%")
         terms = [k for k in PLAIN if k in s5["coef_A"]]
-        co = pd.DataFrame({"term": [PLAIN[k] for k in terms], "coef": [s5["coef_A"][k] * 100 for k in terms], "se": [s5["se_A"][k] * 100 for k in terms]})
-        fig = go.Figure(go.Bar(x=co.coef, y=co.term, orientation="h", marker_color=[ACCENT if v > 0 else GRAPHITE for v in co.coef], marker_line_width=0,
-                               error_x=dict(type="data", array=1.96 * co.se, color=INK2, thickness=1), hovertemplate="%{y}: %{x:+.1f} points<extra></extra>"))
-        fig.update_layout(yaxis=dict(autorange="reversed"), bargap=0.45, xaxis=dict(ticksuffix=" pts"))
-        st.plotly_chart(chart(fig, 380, legend=False, ygrid=False), use_container_width=True, key="ov_coef")
+        scale = {k: (np.log(2) if k == "log_ugds" else 1.0) * 100 for k in terms}     # log enrollment is rescaled to "per doubling" (x ln 2); shares and yes/no terms stay 0 to 1
+        co = pd.DataFrame({"term": [PLAIN[k] for k in terms], "coef": [s5["coef_A"][k] * scale[k] for k in terms], "se": [s5["se_A"][k] * scale[k] for k in terms]})
+        big_k = max(terms, key=lambda k: abs(s5["coef_A"][k] * scale[k])); big_v = s5["coef_A"][big_k] * scale[big_k]
+        section(f"{PLAIN[big_k]} predicts the most: {big_v:+.0f} points going from none to all", f"n = {s5['n']:,} · shares none to all · types yes vs no · size per doubling")
+        fig = go.Figure(go.Bar(x=co.coef, y=co.term, orientation="h", marker_color=GRAPHITE, marker_line_width=0,
+                               error_x=dict(type="data", array=1.96 * co.se, color=INK2, thickness=1), hovertemplate="%{y}: %{x:+.1f} points (95% interval shown)<extra></extra>"))
+        for t, v, e in zip(co.term, co.coef, co.se):                       # value labels sit just outside the 95% interval so they never cross the bar or its whisker
+            note(fig, v + np.sign(v) * (1.96 * e + 0.8), t, f"{v:+.0f}", INK, xanchor="left" if v > 0 else "right", yanchor="middle")
+        pad = (co.coef.abs() + 1.96 * co.se).max() * 1.35
+        fig.update_layout(yaxis=dict(autorange="reversed"), bargap=0.45, xaxis=dict(range=[-pad, pad], title="Change in expected<br>first gen graduation (points)"))
+        fig = chart(fig, 380, legend=False, ygrid=False)
+        fig.update_xaxes(zeroline=True, zerolinecolor=INK, zerolinewidth=1, automargin=True, title_standoff=6)
+        st.plotly_chart(fig, use_container_width=True, key="ov_coef", config=NOBAR)
         meaning(f"A school where every student is on a Pell Grant is expected to graduate about {abs(s5['coef_A']['pctpell'])*100:.0f} points fewer first gen students than one where none are. Expected rates come from slopes like these, fitted with separate slopes for public and private schools.")
 
     st.markdown('<div class="rule-strong"></div>', unsafe_allow_html=True)
@@ -276,57 +340,61 @@ with tab_rank:
     if carn: d = d[d["carnegie_group"].isin(carn)]
     d = d[(d["ugds"] >= min_ugds) & (d["pctpell"].between(*pell_rng))].sort_values("residual_eb", ascending=False)
     d = d.merge(boot[["unitid", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5"]], on="unitid", how="left")
-    d["rank_range"] = d.boot_rank_p2_5.map(lambda v: f"{v:.0f}") + "–" + d.boot_rank_p97_5.map(lambda v: f"{v:.0f}")
+    d["rank_range"] = d.apply(rank_range, axis=1)
     mono(f"{len(d):,} colleges match · rank is among all {len(df):,} · points above expected are shrunk toward zero for small cohorts, so a lucky year at a small school counts for less")
     show = d[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_eb_pct_pts", "residual_pct_pts", "p_top_decile", "rank_range", "exp_core_per_fte"]].assign(control_label=lambda x: x.control_label.map(TYPE), carnegie_group=lambda x: x.carnegie_group.map(KIND)).rename(columns={
         "rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads (2017)", "pctpell": "On Pell", "firstgen_yr6_n": "First-gen students", "firstgen_comp_orig_yr6_rt": "Actually graduated",
-        "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small-school adjustment", "p_top_decile": "Stays in top 10% (share of re-runs)", "rank_range": "Likely rank range", "exp_core_per_fte": "Core spending per student"})
-    st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.1f}", "Before small-school adjustment": "{:+.1f}", "Stays in top 10% (share of re-runs)": "{:.0%}",
-                                   "Core spending per student": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First-gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
-    st.download_button("Download this list (CSV)", show.to_csv(index=False).encode(), "colleges_ranked.csv", "text/csv")
+        "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small school adjustment", "p_top_decile": "Stays in top 10% (share of re runs)", "rank_range": "Likely rank on re runs", "exp_core_per_fte": "Core spending per student per year (2018 to 2023 avg)"})
+    st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.0f}", "Before small school adjustment": "{:+.0f}", "Stays in top 10% (share of re runs)": "{:.0%}",
+                                   "Core spending per student per year (2018 to 2023 avg)": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First-gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
+    st.download_button("Download this list (CSV)", show.round({"Points above expected": 1, "Before small school adjustment": 1}).to_csv(index=False).encode(), "colleges_ranked.csv", "text/csv")
     meaning(f"A college at {s6['top_decile_cut_pp']:+.0f} graduates first gen students {s6['top_decile_cut_pp']:.0f} points more often than schools with the same kind of students usually do. 'Stays in top 10%' is how often it keeps that place across {bs['B']:,} re runs that redraw both the set of schools and each school's own graduation count. Top 10% schools keep their place {bs['mean_p_top_among_point_top']:.0%} of the time on average, and a typical top 10% school's likely rank range spans {bs['median_rank_ci_width_top_decile']:.0f} positions.")
     with st.expander(f"{len(sf)} special cases, scored but not ranked"):
         st.write(f"Four groups the comparison does not fit. {s5['n_special_focus']} colleges built around one program (nursing, faith, arts). {s5['n_nontraditional']} campuses where more than half of students are aged 25 or older or fully online. "
                  f"{s5['n_anomaly']} schools whose reported graduation numbers cannot be right (San Jose State's {res['step4']['anomalies'][0]['firstgen_rate']:.1%} against a {res['step4']['anomalies'][0]['ipeds_grad_rate_c150_4']:.0%} overall graduation rate). "
                  f"{s5['n_shared_opeid']} campuses whose first gen graduation rate is pooled with other campuses under one OPEID, because the Scorecard reports completion per OPEID rather than per campus. A campus stays in the ranking only if it holds at least {res['step4']['thresholds']['opeid_share_cut']:.0%} of its group's undergraduates. Shown so nothing is hidden.")
         st.dataframe(sf.sort_values(["excluded_reason", "residual"], ascending=[True, False])[["excluded_reason", "instnm", "stabbr", "control_label", "ugds", "ug25abv", "pct_distance", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]].assign(control_label=lambda x: x.control_label.map(TYPE)).rename(columns={
-            "excluded_reason": "Why set aside", "instnm": "School", "stabbr": "State", "control_label": "Type", "ugds": "Undergrads", "ug25abv": "Aged 25+", "pct_distance": "Fully online", "pctpell": "On Pell", "firstgen_comp_orig_yr6_rt": "Actually graduated", "predicted": "Expected", "residual_pct_pts": "Points above expected"})
-                     .style.format({"On Pell": "{:.0%}", "Aged 25+": "{:.0%}", "Fully online": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
+            "excluded_reason": "Why set aside", "instnm": "School", "stabbr": "State", "control_label": "Type", "ugds": "Undergrads", "ug25abv": "Aged 25+", "pct_distance": "Fully online", "pctpell": "On Pell", "firstgen_comp_orig_yr6_rt": "Actually graduated", "predicted": "Expected", "residual_pct_pts": "Points above expected (before small school adjustment)"})
+                     .style.format({"On Pell": "{:.0%}", "Aged 25+": "{:.0%}", "Fully online": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected (before small school adjustment)": "{:+.0f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
 
 # ------------------------------------------------------------------ Where the money goes
 with tab_spend:
-    section("Where the money goes", "top 10% of schools compared with the bottom 10% · $ per student per year, 2018-23 average")
     scopes = {"All schools": "main", "All schools, simpler model": "pooled", "Public colleges only": "Public", "Private colleges only": "Private nonprofit", "Research universities": "Doctoral", "Master's universities": "Master's", "Bachelor's colleges": "Baccalaureate"}
     scope = scopes[st.radio("Compare within", list(scopes), horizontal=True, label_visibility="collapsed")]
     if scope == "main":
-        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; note = "The top and bottom 10% from the main ranking, the same one shown on the other tabs."
+        top, bot = df[df.group == "top 10%"], df[df.group == "bottom 10%"]; tab = pf; scope_note = "The top and bottom 10% from the main ranking, the same one shown on the other tabs."
     elif scope == "pooled":
         dp = df.assign(resid_pooled_eb=shrink(df["residual_pooled"], df["predicted_pooled"], df["firstgen_yr6_n"]))
         top, bot = decile_groups(dp, "resid_pooled_eb"); tab = None
-        note = "A simpler version of the model that treats public and private schools the same way. Shown to check that the answer does not depend on that choice."
+        scope_note = "A simpler version of the model that treats public and private schools the same way. Shown to check that the answer does not depend on that choice."
     elif scope in ("Public", "Private nonprofit"):
-        dd = df[df.control_label == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = sec[scope]["spending"]
-        note = f"Table: {TYPE[scope].lower()} schools ranked only against other {TYPE[scope].lower()} schools. Chart: the main ranking's top and bottom 10% restricted to {TYPE[scope].lower()} schools (top {len(top)}, bottom {len(bot)})."
+        dd = df[df.control_label == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = None   # chart and table come from these same two groups
+        scope_note = f"Main ranking groups restricted to {TYPE[scope].lower()} schools (top {len(top)}, bottom {len(bot)}). The chart and the table use the same two groups."
     else:
         dd = df[df.carnegie_group == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = s7["within_carnegie"][scope]["per_fte"]
-        note = f"Main ranking groups restricted to {KIND[scope].lower()}s (top {len(top)}, bottom {len(bot)})."
-    mono(note)
-    L, R = st.columns([7, 5])
-    L.plotly_chart(spend_bar(top, bot, 400), use_container_width=True, key="spend_tab_main")
+        scope_note = f"Main ranking groups restricted to {KIND[scope].lower()}s (top {len(top)}, bottom {len(bot)})."
+    mono(scope_note)
     rename = {"Instruction": "Teaching", "Academic support": "Academic support", "Student services": "Student services", "Institutional support": "Administration", "Core (4 categories)": "All four together"}
     t = compare_table(top, bot) if tab is None else pd.DataFrame([{"Spending category": rename[k], "Top 10%": v["top10_median_$"], "Bottom 10%": v["bottom10_median_$"], "Top ÷ bottom": v["median_ratio"], "p-value": v["mann_whitney_p"]} for k, v in tab.items() if k in rename])
-    R.dataframe(t.style.format({"Top 10%": "${:,.0f}", "Bottom 10%": "${:,.0f}", "Top ÷ bottom": "{:.2f}×", "p-value": "{:.3f}"}), hide_index=True, use_container_width=True)
-    R.caption("p-value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     ti = t.set_index("Spending category")
+    section(f"Top 10% schools spend {ti.loc['Teaching', 'Top ÷ bottom']:.1f} times as much on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.1f} times as much on academic support",
+            f"median $ per student per year, 2018 to 2023 average · n = {len(top)} vs {len(bot)}")
+    L, R = st.columns([7, 5])
+    L.plotly_chart(spend_bar(top, bot, 400), use_container_width=True, key="spend_tab_main", config=NOBAR)
+    col_top, col_bot = f"Top 10% (n={len(top)})", f"Bottom 10% (n={len(bot)})"
+    R.dataframe(t.rename(columns={"Spending category": "Category", "Top 10%": col_top, "Bottom 10%": col_bot, "Top ÷ bottom": "Top ÷ bottom", "p-value": "p"}).style.format({col_top: "${:,.0f}", col_bot: "${:,.0f}", "Top ÷ bottom": "{:.1f}×", "p": fmt_p}), hide_index=True, use_container_width=True)
+    R.caption("p value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     meaning(f"In this group, schools that beat expectations spend {ti.loc['Teaching', 'Top ÷ bottom']:.2f} times as much per student on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.2f} times as much on academic support as schools that fall short, {ti.loc['Student services', 'Top ÷ bottom']:.2f} times on student services and {ti.loc['Administration', 'Top ÷ bottom']:.2f} times on administration.")
     st.markdown(f"Among public colleges, the ones that beat expectations spend more on everything: teaching {pub['Instruction']['median_ratio']:.2f} times as much as the publics that fall short, academic support {pub['Academic support']['median_ratio']:.2f} times, student services {pub['Student services']['median_ratio']:.2f} times. "
                 f"Among private colleges the gap is teaching ({prv['Instruction']['median_ratio']:.2f} times) and academic support ({prv['Academic support']['median_ratio']:.2f} times), with student services about equal ({prv['Student services']['median_ratio']:.2f} times). "
                 f"The teaching and academic support gaps hold in every group I checked, including after a Benjamini and Hochberg correction for running {s7['bh']['n_tests']} comparisons. The student services gap does not.")
-    with st.expander("Does the answer change if we look at different years, or adjust for inflation?"):
-        var = pd.DataFrame({"2018-23, the main figure": {rename[k]: v["median_ratio"] for k, v in pf.items() if k in rename}, "2018-19 only (first two years)": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_fy1819"].items() if k in rename},
-                            "2018-23 in 2023 dollars": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_real"].items() if k in rename}, "2023 only (after students left)": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_fy23_only"].items() if k in rename}})
-        st.dataframe(var.style.format("{:.2f}×"), use_container_width=True)
-        meaning(f"No. Teaching stays between {var.loc['Teaching'].min():.2f} and {var.loc['Teaching'].max():.2f} times and academic support between {var.loc['Academic support'].min():.2f} and {var.loc['Academic support'].max():.2f} times, whichever years are used and with or without the inflation adjustment.")
+    with st.expander("Does the answer change if I use different years, or adjust for inflation?"):
+        cell = lambda v: f"{v['median_ratio']:.1f}× · p {fmt_p(v['mann_whitney_p'])}"
+        var = pd.DataFrame({"2018 to 2023, the main figure": {rename[k]: cell(v) for k, v in pf.items() if k in rename}, "2018 and 2019 only (first two years)": {rename[k]: cell(v) for k, v in s7["per_fte_fy1819"].items() if k in rename},
+                            "2018 to 2023 in 2023 dollars": {rename[k]: cell(v) for k, v in s7["per_fte_real"].items() if k in rename}, "2023 only (after students left)": {rename[k]: cell(v) for k, v in s7["per_fte_fy23_only"].items() if k in rename}})
+        st.dataframe(var, use_container_width=True)
+        st.caption(f"Top 10% median as a multiple of the bottom 10% median, with the Mann Whitney p · n = {s7['n_top']} vs {s7['n_bottom']} in every column.")
+        meaning("No. The teaching and academic support gaps are about the same size whichever years are used and whether or not dollars are adjusted for inflation.")
 
 # ------------------------------------------------------------------ Methods (all technical detail lives here)
 with tab_method:
