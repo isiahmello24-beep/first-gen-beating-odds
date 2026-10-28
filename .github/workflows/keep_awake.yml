@@ -1,0 +1,22 @@
+name: Keep the dashboard awake
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"   # every 6 hours (UTC); Community Cloud sleeps apps after several days without a visit
+  workflow_dispatch:
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Playwright and Chromium
+        run: |
+          pip install playwright==1.49.1
+          python -m playwright install --with-deps chromium
+      - name: Open the app in a browser and click the wake button if it shows
+        run: python .github/scripts/keep_awake.py
