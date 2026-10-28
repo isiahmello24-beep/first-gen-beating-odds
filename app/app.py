@@ -340,25 +340,24 @@ with tab_rank:
     if carn: d = d[d["carnegie_group"].isin(carn)]
     d = d[(d["ugds"] >= min_ugds) & (d["pctpell"].between(*pell_rng))].sort_values("residual_eb", ascending=False)
     d = d.merge(boot[["unitid", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5"]], on="unitid", how="left")
-    d["rank_range"] = d.boot_rank_p2_5.map(lambda v: f"{v:.0f}") + "–" + d.boot_rank_p97_5.map(lambda v: f"{v:.0f}")
+    d["rank_range"] = d.apply(rank_range, axis=1)
     mono(f"{len(d):,} colleges match · rank is among all {len(df):,} · 'points above expected' is adjusted so small schools are not over-credited for lucky years")
     show = d[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_eb_pct_pts", "residual_pct_pts", "p_top_decile", "rank_range", "exp_core_per_fte"]].assign(control_label=lambda x: x.control_label.map(TYPE), carnegie_group=lambda x: x.carnegie_group.map(KIND)).rename(columns={
         "rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads (2017)", "pctpell": "On Pell", "firstgen_yr6_n": "First-gen students", "firstgen_comp_orig_yr6_rt": "Actually graduated",
-        "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small-school adjustment", "p_top_decile": "Stays in top 10% (share of re-runs)", "rank_range": "Likely rank range", "exp_core_per_fte": "Core spending per student"})
-    st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.1f}", "Before small-school adjustment": "{:+.1f}", "Stays in top 10% (share of re-runs)": "{:.0%}",
-                                   "Core spending per student": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First-gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
-    st.download_button("Download this list (CSV)", show.to_csv(index=False).encode(), "colleges_ranked.csv", "text/csv")
+        "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small-school adjustment", "p_top_decile": "Stays in top 10% (share of re-runs)", "rank_range": "Likely rank on re-runs", "exp_core_per_fte": "Core spending per student per year (2018 to 2023 avg)"})
+    st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.0f}", "Before small-school adjustment": "{:+.0f}", "Stays in top 10% (share of re-runs)": "{:.0%}",
+                                   "Core spending per student per year (2018 to 2023 avg)": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First-gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
+    st.download_button("Download this list (CSV)", show.round({"Points above expected": 1, "Before small-school adjustment": 1}).to_csv(index=False).encode(), "colleges_ranked.csv", "text/csv")
     meaning("A college at +15 graduates first-gen students 15 points more often than schools with the same kind of students usually do. 'Stays in top 10%' says how often it keeps that place when the analysis is re-run on random re-draws of the schools; near 100% means a solid result.")
     with st.expander(f"{len(sf)} special cases, scored but not ranked"):
         st.write("Three groups the comparison does not fit: colleges built around one program (nursing, faith, arts); campuses where more than half of students are 25+ or fully online; "
                  "and schools whose reported graduation numbers cannot be right (for example San Jose State's 3.8%, against a 68% overall graduation rate). Shown so nothing is hidden.")
         st.dataframe(sf.sort_values(["excluded_reason", "residual"], ascending=[True, False])[["excluded_reason", "instnm", "stabbr", "control_label", "ugds", "ug25abv", "pct_distance", "pctpell", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts"]].assign(control_label=lambda x: x.control_label.map(TYPE)).rename(columns={
-            "excluded_reason": "Why set aside", "instnm": "School", "stabbr": "State", "control_label": "Type", "ugds": "Undergrads", "ug25abv": "Aged 25+", "pct_distance": "Fully online", "pctpell": "On Pell", "firstgen_comp_orig_yr6_rt": "Actually graduated", "predicted": "Expected", "residual_pct_pts": "Points above expected"})
-                     .style.format({"On Pell": "{:.0%}", "Aged 25+": "{:.0%}", "Fully online": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.1f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
+            "excluded_reason": "Why set aside", "instnm": "School", "stabbr": "State", "control_label": "Type", "ugds": "Undergrads", "ug25abv": "Aged 25+", "pct_distance": "Fully online", "pctpell": "On Pell", "firstgen_comp_orig_yr6_rt": "Actually graduated", "predicted": "Expected", "residual_pct_pts": "Points above expected (before small school adjustment)"})
+                     .style.format({"On Pell": "{:.0%}", "Aged 25+": "{:.0%}", "Fully online": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected (before small school adjustment)": "{:+.0f}", "Undergrads": "{:,.0f}"}), hide_index=True, use_container_width=True)
 
 # ------------------------------------------------------------------ Where the money goes
 with tab_spend:
-    section("Where the money goes", "top 10% of schools compared with the bottom 10% · $ per student per year, 2018-23 average")
     scopes = {"All schools": "main", "All schools, simpler model": "pooled", "Public colleges only": "Public", "Private colleges only": "Private nonprofit", "Research universities": "Doctoral", "Master's universities": "Master's", "Bachelor's colleges": "Baccalaureate"}
     scope = scopes[st.radio("Compare within", list(scopes), horizontal=True, label_visibility="collapsed")]
     if scope == "main":
@@ -368,27 +367,32 @@ with tab_spend:
         top, bot = decile_groups(dp, "resid_pooled_eb"); tab = None
         scope_note = "A simpler version of the model that treats public and private schools the same way. Shown to check that the answer does not depend on that choice."
     elif scope in ("Public", "Private nonprofit"):
-        dd = df[df.control_label == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = sec[scope]["spending"]
-        scope_note = f"{TYPE[scope]} schools ranked only against other {TYPE[scope].lower()} schools (table); the chart shows the main-ranking groups restricted to {TYPE[scope].lower()} schools."
+        dd = df[df.control_label == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = None   # chart and table come from these same two groups
+        scope_note = f"Main-ranking groups restricted to {TYPE[scope].lower()} schools (top {len(top)}, bottom {len(bot)}); the chart and the table use the same two groups."
     else:
         dd = df[df.carnegie_group == scope]; top, bot = dd[dd.group == "top 10%"], dd[dd.group == "bottom 10%"]; tab = s7["within_carnegie"][scope]["per_fte"]
         scope_note = f"Main-ranking groups restricted to {KIND[scope].lower()}s (top {len(top)}, bottom {len(bot)})."
     mono(scope_note)
-    L, R = st.columns([7, 5])
-    L.plotly_chart(spend_bar(top, bot, 400), use_container_width=True, key="spend_tab_main")
     rename = {"Instruction": "Teaching", "Academic support": "Academic support", "Student services": "Student services", "Institutional support": "Administration", "Core (4 categories)": "All four together"}
     t = compare_table(top, bot) if tab is None else pd.DataFrame([{"Spending category": rename[k], "Top 10%": v["top10_median_$"], "Bottom 10%": v["bottom10_median_$"], "Top ÷ bottom": v["median_ratio"], "p-value": v["mann_whitney_p"]} for k, v in tab.items() if k in rename])
-    R.dataframe(t.style.format({"Top 10%": "${:,.0f}", "Bottom 10%": "${:,.0f}", "Top ÷ bottom": "{:.2f}×", "p-value": "{:.3f}"}), hide_index=True, use_container_width=True)
-    R.caption("p-value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     ti = t.set_index("Spending category")
+    section(f"Top 10% schools spend {ti.loc['Teaching', 'Top ÷ bottom']:.1f} times as much on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.1f} times as much on academic support",
+            f"median $ per student per year, 2018-23 average · n = {len(top)} vs {len(bot)}")
+    L, R = st.columns([7, 5])
+    L.plotly_chart(spend_bar(top, bot, 400), use_container_width=True, key="spend_tab_main", config=NOBAR)
+    col_top, col_bot = f"Top 10% (n={len(top)})", f"Bottom 10% (n={len(bot)})"
+    R.dataframe(t.rename(columns={"Spending category": "Category", "Top 10%": col_top, "Bottom 10%": col_bot, "Top ÷ bottom": "Top ÷ bottom", "p-value": "p"}).style.format({col_top: "${:,.0f}", col_bot: "${:,.0f}", "Top ÷ bottom": "{:.1f}×", "p": fmt_p}), hide_index=True, use_container_width=True)
+    R.caption("p-value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     meaning(f"In this group, schools that beat expectations spend {ti.loc['Teaching', 'Top ÷ bottom']:.1f}× as much on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.1f}× as much on academic support per student as schools that fall short, and {ti.loc['Student services', 'Top ÷ bottom']:.1f}× on student services. They also spend about {ti.loc['Administration', 'Top ÷ bottom']:.2f}× more on administration. Orange is the top 10%, grey the bottom 10%.")
     st.markdown(f"**Public and private schools differ.** Among public colleges, the ones that beat expectations spend more on everything: teaching {pub['Instruction']['median_ratio']:.1f}×, academic support {pub['Academic support']['median_ratio']:.1f}×, student services {pub['Student services']['median_ratio']:.1f}×. "
                 f"Among private colleges the gap is teaching ({prv['Instruction']['median_ratio']:.1f}×) and academic support ({prv['Academic support']['median_ratio']:.1f}×), with student services about equal ({prv['Student services']['median_ratio']:.1f}×). "
                 f"The teaching and academic-support gaps hold up in every group we checked, including after a correction for running {s7['bh']['n_tests']} comparisons; the student-services gap does not.")
     with st.expander("Does the answer change if we look at different years, or adjust for inflation?"):
-        var = pd.DataFrame({"2018-23, the main figure": {rename[k]: v["median_ratio"] for k, v in pf.items() if k in rename}, "2018-19 only (first two years)": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_fy1819"].items() if k in rename},
-                            "2018-23 in 2023 dollars": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_real"].items() if k in rename}, "2023 only (after students left)": {rename[k]: v["median_ratio"] for k, v in s7["per_fte_fy23_only"].items() if k in rename}})
-        st.dataframe(var.style.format("{:.2f}×"), use_container_width=True)
+        cell = lambda v: f"{v['median_ratio']:.1f}× · p {fmt_p(v['mann_whitney_p'])}"
+        var = pd.DataFrame({"2018-23, the main figure": {rename[k]: cell(v) for k, v in pf.items() if k in rename}, "2018-19 only (first two years)": {rename[k]: cell(v) for k, v in s7["per_fte_fy1819"].items() if k in rename},
+                            "2018-23 in 2023 dollars": {rename[k]: cell(v) for k, v in s7["per_fte_real"].items() if k in rename}, "2023 only (after students left)": {rename[k]: cell(v) for k, v in s7["per_fte_fy23_only"].items() if k in rename}})
+        st.dataframe(var, use_container_width=True)
+        st.caption(f"Top 10% median as a multiple of the bottom 10% median, with the Mann-Whitney p · n = {s7['n_top']} vs {s7['n_bottom']} in every column.")
         meaning("No. The teaching and academic-support gaps are about the same size whichever years are used and whether or not dollars are adjusted for inflation.")
 
 # ------------------------------------------------------------------ Methods (all technical detail lives here)
