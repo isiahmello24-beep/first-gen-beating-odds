@@ -26,7 +26,7 @@ CORE = {"exp_instruction": "Teaching", "exp_academic_support": "Academic support
 CARN = "C(carnegie_group, Treatment(reference=\"Master's\"))"
 PLAIN = {"pctpell": "Share of students on Pell Grants", "adm_rate": "Share of applicants admitted", "log_ugds": "Size (per doubling of enrollment)", "pptug_ef": "Share studying part time",
          "first_gen": "Share who are first gen", "ug25abv": "Share aged 25 or older", "pct_distance": "Share fully online", "private": "Private college (vs public)", "hbcu_flag": "Historically Black college",
-         f"{CARN}[T.Doctoral]": "Research university (vs master's)", f"{CARN}[T.Baccalaureate]": "Bachelor's-focused college (vs master's)"}
+         f"{CARN}[T.Doctoral]": "Research university (vs master's)", f"{CARN}[T.Baccalaureate]": "Bachelor's focused college (vs master's)"}
 TYPE = {"Public": "Public", "Private nonprofit": "Private"}
 KIND = {"Doctoral": "Research university", "Master's": "Master's university", "Baccalaureate": "Bachelor's college"}
 
@@ -122,7 +122,7 @@ def fmt_p(p):
 
 
 def rank_range(b):
-    """'A to B': the span of a school's rank across the middle ninety-five percent of bootstrap re runs."""
+    """'A to B': the span of a school's rank across the middle ninety five percent of bootstrap re runs."""
     return f"{b.boot_rank_p2_5:.0f} to {b.boot_rank_p97_5:.0f}"
 
 
@@ -343,10 +343,10 @@ with tab_rank:
     d["rank_range"] = d.apply(rank_range, axis=1)
     mono(f"{len(d):,} colleges match · rank is among all {len(df):,} · points above expected are shrunk toward zero for small cohorts, so a lucky year at a small school counts for less")
     show = d[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_eb_pct_pts", "residual_pct_pts", "p_top_decile", "rank_range", "exp_core_per_fte"]].assign(control_label=lambda x: x.control_label.map(TYPE), carnegie_group=lambda x: x.carnegie_group.map(KIND)).rename(columns={
-        "rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads (2017)", "pctpell": "On Pell", "firstgen_yr6_n": "First-gen students", "firstgen_comp_orig_yr6_rt": "Actually graduated",
+        "rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads (2017)", "pctpell": "On Pell", "firstgen_yr6_n": "First gen students", "firstgen_comp_orig_yr6_rt": "Actually graduated",
         "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small school adjustment", "p_top_decile": "Stays in top 10% (share of re runs)", "rank_range": "Likely rank on re runs", "exp_core_per_fte": "Core spending per student per year (2018 to 2023 avg)"})
     st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.0f}", "Before small school adjustment": "{:+.0f}", "Stays in top 10% (share of re runs)": "{:.0%}",
-                                   "Core spending per student per year (2018 to 2023 avg)": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First-gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
+                                   "Core spending per student per year (2018 to 2023 avg)": "${:,.0f}", "Undergrads (2017)": "{:,.0f}", "First gen students": "{:,.0f}"}), use_container_width=True, height=560, hide_index=True)
     st.download_button("Download this list (CSV)", show.round({"Points above expected": 1, "Before small school adjustment": 1}).to_csv(index=False).encode(), "colleges_ranked.csv", "text/csv")
     meaning(f"A college at {s6['top_decile_cut_pp']:+.0f} graduates first gen students {s6['top_decile_cut_pp']:.0f} points more often than schools with the same kind of students usually do. 'Stays in top 10%' is how often it keeps that place across {bs['B']:,} re runs that redraw both the set of schools and each school's own graduation count. Top 10% schools keep their place {bs['mean_p_top_among_point_top']:.0%} of the time on average, and a typical top 10% school's likely rank range spans {bs['median_rank_ci_width_top_decile']:.0f} positions.")
     with st.expander(f"{len(sf)} special cases, scored but not ranked"):
