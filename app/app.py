@@ -137,7 +137,7 @@ FILES = [ROOT / "data/clean/analysis_scored.parquet", ROOT / "data/clean/bootstr
 
 
 @st.cache_data
-def load(_mtimes: tuple):
+def load(mtimes: tuple):   # the mtimes ARE the cache key (an underscore prefix would exclude them and serve stale data after a pipeline rerun)
     full = pd.read_parquet(FILES[0]); boot = pd.read_csv(FILES[1]); res = json.loads(FILES[2].read_text())
     return full, boot, res
 
