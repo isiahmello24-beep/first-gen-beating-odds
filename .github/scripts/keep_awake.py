@@ -29,7 +29,9 @@ def main() -> int:
             print("no wake button: app was already up")
         try:
             page.wait_for_function("() => document.title && !/^streamlit$/i.test(document.title.trim())", timeout=240_000)
-            page.get_by_text(HERO_TEXT, exact=False).first.wait_for(state="visible", timeout=240_000)
+            # Community Cloud renders the app inside an iframe at <host>/~/+/ ; the hero text lives there, not in the outer page
+            app = page.frame_locator("iframe[src*='/~/+/']") if page.locator("iframe[src*='/~/+/']").count() else page
+            app.get_by_text(HERO_TEXT, exact=False).first.wait_for(state="visible", timeout=240_000)
         except PWTimeout:
             print(f"FAILURE: app did not render within {time.time() - t0:.0f}s, title: {page.title()!r}")
             browser.close()
