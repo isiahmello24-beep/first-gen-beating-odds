@@ -4,10 +4,11 @@ and how much money explains the gap.
 Run from the project root:  streamlit run app/app.py
 Reads data/clean/analysis_scored.parquet, data/clean/bootstrap_ranks.csv and reports/results.json (from src/05-08).
 
-Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, Times New Roman for headlines and body, Helvetica/Arial for labels, numbers, tabs, tables and charts, and ONE accent color reserved for the finding (schools above expected).
-Color meaning is fixed on every chart: accent = above expected / top 10%, graphite = below expected / bottom 10%.
-Asymmetric 12-column grid: 8/4, 4/8, 7/5. Plain-spoken labels; technical detail lives in the Methods tab.
+Design direction: Editorial Modern. Warm paper base, hairline rules instead of shadows, Newsreader (self hosted, OFL) for the headline, section titles, hero and stat numbers, IBM Plex Sans (self hosted, OFL, tabular figures) for body, labels, tabs, tables, widgets and charts, and ONE accent color reserved for the finding (schools above expected).
+Color meaning is fixed on every chart: accent = above expected / top 10%, graphite = below expected / bottom 10%. Streamlit chrome is hidden; widgets are square with a single hairline.
+Asymmetric 12-column grid: 8/4, 4/8, 7/5. Plain-spoken labels; technical detail lives in the Methods tab, capped at 72ch.
 """
+import base64
 import json
 from pathlib import Path
 import numpy as np
@@ -30,52 +31,112 @@ PLAIN = {"pctpell": "Share of students on Pell Grants", "adm_rate": "Share of ap
 TYPE = {"Public": "Public", "Private nonprofit": "Private"}
 KIND = {"Doctoral": "Research university", "Master's": "Master's university", "Baccalaureate": "Bachelor's college"}
 
+SERIF = '"Newsreader", Georgia, "Times New Roman", serif'
+SANS = '"IBM Plex Sans", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif'
+
+
+@st.cache_resource
+def font_faces():
+    """@font-face rules for the self-hosted fonts in app/static/fonts (OFL), inlined as base64 so the page calls no outside font server."""
+    faces = [("Newsreader", "newsreader.woff2", "normal", "200 800"), ("Newsreader", "newsreader-italic.woff2", "italic", "200 800"),
+             ("IBM Plex Sans", "plexsans.woff2", "normal", "100 700"), ("IBM Plex Sans", "plexsans-italic.woff2", "italic", "100 700")]
+    rules = []
+    for family, name, style, weight in faces:
+        path = ROOT / "app" / "static" / "fonts" / name
+        if path.exists():
+            data = base64.b64encode(path.read_bytes()).decode("ascii")
+            rules.append(f'@font-face {{ font-family: "{family}"; src: url(data:font/woff2;base64,{data}) format("woff2"); font-weight: {weight}; font-style: {style}; font-display: swap; }}')
+    return "\n".join(rules)
+
+
 st.markdown(f"""
 <style>
-  html, body, .stApp, .stApp p, .stApp li, .stMarkdown, .stCaption, .hero .d, .stat .s, .list .nm, .list .meta, .meaning, .dl .r span:first-child, .mast .by {{ font-family: "Times New Roman", Times, serif; }}
-  .mono, div[data-testid="stTabs"] button, div[data-testid="stTabs"] button p, [data-testid="stDataFrame"], [data-testid="stDataFrame"] *, .hero .n, .stat .n, .list .pt, .dl .r span:last-child,
-  .stSelectbox *, .stMultiSelect *, .stRadio *, .stNumberInput *, .stSlider *, .stButton *, .stDownloadButton *, div[data-testid="stExpander"] summary * {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important; }}
-  .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{ background: {PAPER}; color: {INK}; }}
+  {font_faces()}
+  /* ---- type: Newsreader for headlines and display numbers, IBM Plex Sans for everything else (tabular figures by default) */
+  html, body, .stApp, .stApp p, .stApp li, .stApp label, .stApp span, .stApp input, .stApp button, .stMarkdown, .stCaption, [data-testid="stMarkdownContainer"], .mono,
+  [data-testid="stDataFrame"], [data-testid="stDataFrame"] *, [data-baseweb="select"] *, [data-baseweb="popover"] *, [data-baseweb="menu"] *, [data-baseweb="tab"] *,
+  .stRadio *, .stNumberInput *, .stButton *, .stDownloadButton *, .stTextInput * {{ font-family: {SANS} !important; }}
+  .mast h1, .sec .t, .hero .n, .stat .n, .list .pt, .sel-name, div[data-testid="stExpander"] summary p {{ font-family: {SERIF} !important; font-optical-sizing: auto; }}
+  .stApp [data-testid="stIconMaterial"] {{ font-family: "Material Symbols Rounded" !important; }}
+  .hero .n, .stat .n, .list .pt, .dl .r, [data-testid="stDataFrame"], [data-testid="stDataFrame"] * {{ font-variant-numeric: tabular-nums; }}
+  /* ---- Streamlit chrome off: header, toolbar, menu, decoration strip, footer, element toolbars, plotly modebar */
+  header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"], #MainMenu, footer,
+  [data-testid="stElementToolbar"], .modebar {{ display: none !important; }}
+  .stApp, [data-testid="stAppViewContainer"] {{ background: {PAPER}; color: {INK}; }}
   .stApp p, .stApp li, .stApp label, .stApp span {{ color: inherit; }}
   .block-container {{ padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1440px; }}
-  .mono {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: {INK2}; }}
+  .mono {{ font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: {INK2}; }}
   .mast {{ border-top: 3px solid {INK}; padding-top: .6rem; }}
-  .mast h1 {{ font-family: "Times New Roman", Times, serif; font-weight: 500; font-size: 2.6rem; line-height: 1.12; letter-spacing: -.01em; color: {INK}; margin: .5rem 0 .6rem 0; max-width: 20ch; }}
+  .mast h1 {{ font-weight: 500; font-size: 2.6rem; line-height: 1.1; letter-spacing: -.005em; color: {INK}; margin: .5rem 0 .6rem 0; max-width: 34ch; }}
+  .mast h1 a, .mast h1 [data-testid="stHeaderActionElements"] {{ display: none !important; }}
   .mast .by {{ font-size: .92rem; color: {INK2}; }}
   .mast .by b {{ color: {INK}; font-weight: 500; }}
   .rule {{ border-top: 1px solid {RULE}; margin: 1.1rem 0 .9rem 0; }}
   .rule-strong {{ border-top: 2px solid {INK}; margin: 1.4rem 0 .9rem 0; }}
   .sec {{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:.25rem 1rem; border-bottom: 1px solid {RULE}; padding-bottom:.35rem; margin: .2rem 0 .7rem 0; }}
   .sec .mono {{ margin-left:auto; }}
-  .sec .t {{ font-family: "Times New Roman", Times, serif; font-size: 1.25rem; font-weight: 500; color: {INK}; }}
-  .hero .n {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 72px; font-weight: 300; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.02em; }}
-  .hero .d {{ font-size: 1.02rem; color: {INK}; max-width: 56ch; line-height: 1.5; }}
+  .sec .t {{ font-size: 1.3rem; font-weight: 500; color: {INK}; }}
+  .hero .n {{ font-size: 76px; font-weight: 400; line-height: .95; color: {ACCENT}; margin: .35rem 0 .2rem 0; letter-spacing: -.01em; }}
+  .hero .d {{ font-size: 1rem; color: {INK}; max-width: 56ch; line-height: 1.5; }}
   .stat {{ border-top: 1px solid {RULE}; padding: .55rem 0 .3rem 0; }}
-  .stat .n {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
+  .stat .n {{ font-size: 32px; font-weight: 500; color: {INK}; line-height: 1.05; margin: .25rem 0 .15rem 0; }}
   .stat .n.acc {{ color: {ACCENT}; }}
   .stat .s {{ font-size: .8rem; color: {INK2}; }}
   .list .row {{ border-bottom: 1px solid {RULE}; padding: .6rem 0 .55rem 0; }}
   .list .row:first-child {{ border-top: 1px solid {RULE}; }}
-  .list .nm {{ font-weight: 600; color: {INK}; font-size: .98rem; }}
-  .list .pt {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: {ACCENT}; font-size: 1.35rem; font-weight: 500; float: right; margin-top: -.1rem; }}
+  .list .nm {{ font-weight: 600; color: {INK}; font-size: .95rem; }}
+  .list .pt {{ color: {ACCENT}; font-size: 1.5rem; font-weight: 500; float: right; margin-top: -.15rem; }}
   .list .meta {{ font-size: .8rem; color: {INK2}; margin-top: .15rem; }}
   .list .meta b {{ color: {INK}; font-weight: 500; }}
+  .sel-name {{ font-size: 1.35rem; font-weight: 500; color: {INK}; line-height: 1.2; margin: .2rem 0 .4rem 0; }}
   .surface {{ background: {SURFACE}; border: 1px solid {RULE}; padding: 1rem 1.1rem .4rem 1.1rem; }}
   .meaning {{ font-size: .9rem; color: {INK}; border-left: 2px solid {INK}; padding: .15rem 0 .15rem .75rem; margin: .1rem 0 .6rem 0; max-width: 72ch; }}
   .meaning b {{ font-weight: 600; }}
-  .dl .r {{ display:flex; justify-content:space-between; border-bottom:1px solid {RULE}; padding:.4rem 0; font-size:.9rem; }}
+  .dl .r {{ display:flex; justify-content:space-between; gap: 1rem; border-bottom:1px solid {RULE}; padding:.4rem 0; font-size:.9rem; }}
   .dl .r span:first-child {{ color:{INK2}; }}
-  .dl .r span:last-child {{ color:{INK}; font-weight:500; font-variant-numeric: tabular-nums; }}
+  .dl .r span:last-child {{ color:{INK}; font-weight:500; text-align: right; }}
+  .st-key-methods [data-testid="stMarkdown"] {{ max-width: 72ch; }}
+  /* ---- tabs: sans caps, ink underline on the active tab (no accent), wraps instead of clipping on narrow screens */
+  [data-testid="stTabs"] [role="tablist"] {{ gap: 0 1.4rem; flex-wrap: wrap; overflow: visible; border-bottom: 1px solid {RULE}; }}
+  [data-testid="stTab"], [data-baseweb="tab"] {{ padding: .55rem 0 .45rem 0 !important; margin: 0 !important; background: transparent !important; border-bottom: 2px solid transparent; margin-bottom: -1px !important; }}
+  [data-testid="stTab"][aria-selected="true"], [data-baseweb="tab"][aria-selected="true"] {{ border-bottom-color: {INK}; }}
+  [data-testid="stTab"] p, [data-baseweb="tab"] p {{ font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: {INK2}; }}
+  [data-testid="stTab"][aria-selected="true"] p, [data-testid="stTab"]:hover p, [data-baseweb="tab"][aria-selected="true"] p {{ color: {INK}; }}
+  [data-testid="stTabs"] .react-aria-SelectionIndicator, [data-baseweb="tab-highlight"] {{ display: none !important; }}
+  [data-baseweb="tab-border"] {{ background-color: {RULE}; }}
+  /* ---- widgets: square corners, one hairline in the rule color, no double frames */
+  [data-baseweb="select"] > div, [data-testid="stSelectbox"] [role="group"], [data-testid="stMultiSelect"] [role="group"], .react-aria-Popover, .react-aria-Popover > div, [role="listbox"], [role="listbox"] > div,
+  [data-testid="stNumberInputContainer"], [data-baseweb="base-input"], [data-baseweb="input"], [data-baseweb="popover"] > div, [data-baseweb="menu"], [data-baseweb="tag"], [data-testid="stMultiSelectTagsContainer"] > div > span, [data-testid="stMultiSelectTagsContainer"] > div > div,
+  .stNumberInput button, [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] [data-testid="stDataFrameResizable"], [data-testid="stDataFrame"] .dvn-scroller, [data-testid="stDataFrame"] .gdg-wmyidgi,
+  div[data-testid="stExpander"] details, div[data-testid="stExpander"] summary, .stDownloadButton button {{ border-radius: 0 !important; }}
+  [data-baseweb="select"] > div, [data-testid="stSelectbox"] [role="group"], [data-testid="stMultiSelect"] [role="group"], [data-testid="stNumberInputContainer"] {{ border: 1px solid {RULE} !important; background: {SURFACE} !important; }}
+  [data-baseweb="select"] > div:focus-within, [data-testid="stSelectbox"] [role="group"]:focus-within, [data-testid="stMultiSelect"] [role="group"]:focus-within, [data-testid="stNumberInputContainer"]:focus-within {{ border-color: {INK} !important; box-shadow: none !important; outline: none !important; }}
+  .react-aria-Popover, [data-testid="stMultiSelectDropdown"], [data-testid="stSelectboxDropdown"], [data-testid="stSelectboxVirtualDropdown"] {{ border: 1px solid {RULE} !important; border-radius: 0 !important; box-shadow: none !important; background: {SURFACE} !important; }}
+  [data-testid="stMultiSelectDropdown"] [role="listbox"], [data-testid="stSelectboxDropdown"] [role="listbox"], [data-testid="stSelectboxVirtualDropdown"] [role="listbox"] {{ border: none !important; }}
+  [role="option"], [role="option"] > div {{ border-radius: 0 !important; }}
+  [data-baseweb="base-input"], [data-baseweb="input"] {{ border: none !important; background: transparent !important; }}
+  .stNumberInput button {{ border-left: 1px solid {RULE} !important; background: transparent !important; }}
+  [data-baseweb="tag"] {{ background: {PAPER} !important; border: 1px solid {RULE} !important; color: {INK} !important; }}
+  [data-baseweb="tag"] span, [data-baseweb="tag"] svg {{ color: {INK} !important; }}
+  [data-testid="stDataFrame"] > div, [data-testid="stDataFrame"] [data-testid="stDataFrameResizable"] {{ border: 1px solid {RULE} !important; }}
+  [data-testid="stDataFrame"] .dvn-scroller, [data-testid="stDataFrame"] .gdg-wmyidgi {{ border: none !important; }}
+  [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {{ background-color: {INK} !important; border-color: {INK} !important; }}
+  [data-testid="stRadioOption"] > div > div:first-child {{ border-color: {INK2} !important; }}
+  div[data-testid="stExpander"] {{ border: none; }}
+  div[data-testid="stExpander"] details {{ border: 1px solid {RULE} !important; background: transparent; }}
+  div[data-testid="stExpander"] summary p {{ font-size: 1.05rem; font-weight: 500; }}
+  div[data-testid="stExpander"] summary:hover, div[data-testid="stExpander"] summary:hover p {{ color: {INK} !important; }}
+  .stDownloadButton button {{ border: 1px solid {INK} !important; background: transparent !important; color: {INK} !important; min-height: 0 !important; padding: .4rem .9rem !important; line-height: 1.3; }}
+  .stDownloadButton button p {{ font-size: 13px !important; }}
+  .stDownloadButton button:hover {{ background: {INK} !important; color: {PAPER} !important; }}
+  .stDownloadButton button:hover p {{ color: {PAPER} !important; }}
   @media (max-width: 900px) {{
-    .mast h1 {{ font-size: 1.45rem; line-height: 1.2; margin: .35rem 0 .4rem 0; }}
-    .hero .n {{ font-size: 52px; }}
+    .mast h1 {{ font-size: 1.5rem; line-height: 1.2; margin: .35rem 0 .4rem 0; max-width: none; }}
+    .hero .n {{ font-size: 56px; }}
     .block-container {{ padding-top: .8rem; }}
-    .mono {{ font-size: 10px; }}
+    [data-testid="stTabs"] [role="tablist"], [data-baseweb="tab-list"] {{ gap: 0 .9rem; }}
+    [data-testid="stTab"] p, [data-baseweb="tab"] p {{ letter-spacing: .06em; }}
   }}
-  div[data-testid="stTabs"] button {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }}
-  div[data-testid="stDataFrame"] {{ border: 1px solid {RULE}; }}
-  div[data-testid="stExpander"] {{ border: 1px solid {RULE}; border-radius: 0; }}
-  div[data-testid="stExpander"] details summary p {{ font-family: "Times New Roman", Times, serif; font-weight: 600; }}
 </style>""", unsafe_allow_html=True)
 
 
@@ -96,10 +157,10 @@ def stat(col, label, value, sub, accent=False):
 
 
 def chart(fig, height=340, legend=True, ygrid=True):
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Helvetica Neue, Helvetica, Arial, sans-serif", color=INK2, size=12), height=height,
+    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="IBM Plex Sans, system-ui, sans-serif", color=INK2, size=12), height=height,
                       margin=dict(l=6, r=6, t=26, b=6), title=None, showlegend=legend,
                       legend=dict(orientation="h", y=-0.24, x=0, xanchor="left", font=dict(color=INK2, size=11), bgcolor="rgba(0,0,0,0)"),
-                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="Helvetica Neue, Helvetica, Arial, sans-serif"))
+                      hoverlabel=dict(bgcolor=INK, font_color=PAPER, bordercolor=INK, font_family="IBM Plex Sans, system-ui, sans-serif"))
     fig.update_xaxes(showgrid=False, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     fig.update_yaxes(showgrid=ygrid, gridcolor="#E9E4D9", gridwidth=1, zeroline=False, linecolor=RULE, tickfont=dict(color=INK2, size=11), title_font=dict(color=INK2, size=11))
     return fig
@@ -127,8 +188,8 @@ def compare_table(top, bot):
 def spend_bar(top, bot, height=340):
     cats = list(CORE.values())
     fig = go.Figure()
-    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
-    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="Helvetica Neue, Helvetica, Arial, sans-serif"))
+    fig.add_bar(name="Top 10% of schools", x=cats, y=[top[f"{k}_per_fte"].median() for k in CORE], marker_color=ACCENT, marker_line_width=0, text=[f"${top[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK, size=11, family="IBM Plex Sans, system-ui, sans-serif"))
+    fig.add_bar(name="Bottom 10% of schools", x=cats, y=[bot[f"{k}_per_fte"].median() for k in CORE], marker_color=GRAPHITE, marker_line_width=0, text=[f"${bot[f'{k}_per_fte'].median():,.0f}" for k in CORE], textposition="outside", textfont=dict(color=INK2, size=11, family="IBM Plex Sans, system-ui, sans-serif"))
     fig.update_layout(barmode="group", bargap=0.4, bargroupgap=0.06, yaxis_title="Spending per student per year", yaxis=dict(tickprefix="$", separatethousands=True))
     return chart(fig, height)
 
@@ -223,7 +284,7 @@ with tab_over:
         default = "San Diego State University (CA)"
         pick = st.selectbox("Look up any college", names, index=int(names[names == default].index[0]) if (names == default).any() else 0, label_visibility="collapsed")
         row = df.sort_values("instnm").iloc[names[names == pick].index[0]]
-        st.markdown(f'<div class="mono" style="margin-top:.6rem">Selected</div><div style="font-family:"Times New Roman",Times,serif;font-size:1.35rem;font-weight:500;color:{INK};line-height:1.2;margin:.2rem 0 .4rem 0">{row.instnm}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="mono" style="margin-top:.6rem">Selected</div><div class="sel-name">{row.instnm}</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="dl"><div class="r"><span>Points above expected</span><span style="color:{ACCENT if row.residual_eb >= 0 else GRAPHITE}">{row.residual_eb_pct_pts:+.1f}</span></div><div class="r"><span>Expected · actual</span><span>{row.predicted:.0%} · {row.firstgen_comp_orig_yr6_rt:.0%}</span></div><div class="r"><span>Rank</span><span>{int(row["rank"])} of {len(df):,}</span></div></div>', unsafe_allow_html=True)
         st.caption("Full detail for this school is further down the page.")
     with R:
@@ -264,12 +325,14 @@ with tab_over:
 # ------------------------------------------------------------------ All schools
 with tab_rank:
     section(f"All {len(df):,} colleges, ranked by points above expected", "filters apply to the table and the download")
-    f1, f2, f3, f4, f5 = st.columns([2, 2, 2, 3, 3])
+    f1, f2, f3, f4, f5, f6 = st.columns([2, 2, 2, 3, 2, 2])
     states = f1.multiselect("State", sorted(df["stabbr"].unique()))
     ctrl = f2.multiselect("Public or private", ["Public", "Private nonprofit"], format_func=lambda v: TYPE[v])
     carn = f3.multiselect("Kind of school", sorted(df["carnegie_group"].unique()), format_func=lambda v: KIND[v])
     min_ugds = f4.number_input("At least this many undergrads (2017)", 0, int(df["ugds"].max()), 0, step=500)
-    pell_rng = f5.slider("Share of students on Pell Grants", 0.0, 1.0, (0.0, 1.0), 0.05)
+    pell_lo = f5.number_input("On Pell Grants, at least (%)", 0, 100, 0, step=5)
+    pell_hi = f6.number_input("On Pell Grants, at most (%)", 0, 100, 100, step=5)
+    pell_rng = (pell_lo / 100, pell_hi / 100)
     d = df.copy()
     if states: d = d[d["stabbr"].isin(states)]
     if ctrl: d = d[d["control_label"].isin(ctrl)]
@@ -330,7 +393,8 @@ with tab_spend:
 # ------------------------------------------------------------------ Methods (all technical detail lives here)
 with tab_method:
     section("Methods & limitations", "the technical version")
-    st.markdown(f"""
+    with st.container(key="methods"):   # .st-key-methods caps the prose at 72ch (CSS block)
+        st.markdown(f"""
 **Plain-English labels used on the other tabs map to these terms.** "Expected" = fitted value of the ranking model. "Points above expected" = empirical-Bayes-shrunken residual (actual − predicted, ×100). "How much the model explains" = R² of the ranking model. "Top 10% of schools" = top decile of the shrunken residual. "Stays in top 10% when we re-run" = share of 1,000 bootstrap resamples in which the school lands in the top decile. "Before small-school adjustment" = raw residual. "Share of the gap explained by money" = R² of the shrunken residual regressed on log core spending per FTE plus instruction and academic-support shares (sector and Carnegie controls).
 
 **Timing.** The outcome is the NSLDS AY2017-18 entry cohort measured in AY2023-24 (Scorecard data dictionary cohort map). Predictors come from the 2017-18 Scorecard file; spending is the FY2018-FY2023 average per 12-month FTE from IPEDS; Carnegie is the 2018 classification. Control, level and Title IV status come from 2023 IPEDS and are assumed stable.
