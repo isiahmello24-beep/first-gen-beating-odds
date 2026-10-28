@@ -66,6 +66,8 @@ readme = f"""# Which four year colleges graduate first gen students above predic
 
 **Live dashboard:** https://first-gen-beating-odds.streamlit.app
 
+[![Overview of the dashboard: the share of the gap explained by money beside the large schools that beat expectations](assets/linkedin/01_overview_hero_1200x627.png)](https://first-gen-beating-odds.streamlit.app)
+
 Some colleges graduate far more of their first gen students than you would expect from who they enroll. This project finds them and asks how much of the gap lines up with spending. The answer: how much a college spends, and what it spends it on, explains about {r2_pct:.0f} percent of why some schools beat the odds. A college that wants to do better can learn more from the peers that beat the odds with similar students than from moving money between budget lines.
 
 Portfolio project by Isiah Luna, a first gen transfer student at SDSU. Python, DuckDB, pandas, statsmodels, plotly, Streamlit.
