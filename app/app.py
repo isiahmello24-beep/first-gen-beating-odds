@@ -137,6 +137,10 @@ st.markdown(f"""
     [data-testid="stTabs"] [role="tablist"], [data-baseweb="tab-list"] {{ gap: 0 .9rem; }}
     [data-testid="stTab"] p, [data-baseweb="tab"] p {{ letter-spacing: .06em; }}
   }}
+  table.cmp {{ width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; margin-top: .2rem; }}
+  table.cmp th {{ text-align: right; font-weight: 500; color: {INK2}; border-bottom: 1px solid {INK}; padding: .3rem .25rem; font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; }}
+  table.cmp td {{ text-align: right; border-bottom: 1px solid {RULE}; padding: .38rem .25rem; color: {INK}; }}
+  table.cmp th:first-child, table.cmp td:first-child {{ text-align: left; }}
 </style>""", unsafe_allow_html=True)
 
 
@@ -404,7 +408,7 @@ with tab_rank:
     d = d.merge(boot[["unitid", "p_top_decile", "boot_rank_p2_5", "boot_rank_p97_5"]], on="unitid", how="left")
     d["rank_range"] = d.apply(rank_range, axis=1)
     mono(f"{len(d):,} colleges match · rank is among all {len(df):,} · points above expected are shrunk toward zero for small cohorts, so a lucky year at a small school counts for less")
-    show = d[["rank", "instnm", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_eb_pct_pts", "residual_pct_pts", "p_top_decile", "rank_range", "exp_core_per_fte"]].assign(control_label=lambda x: x.control_label.map(TYPE), carnegie_group=lambda x: x.carnegie_group.map(KIND)).rename(columns={
+    show = d[["rank", "instnm", "residual_eb_pct_pts", "rank_range", "p_top_decile", "stabbr", "control_label", "carnegie_group", "ugds", "pctpell", "firstgen_yr6_n", "firstgen_comp_orig_yr6_rt", "predicted", "residual_pct_pts", "exp_core_per_fte"]].assign(control_label=lambda x: x.control_label.map(TYPE), carnegie_group=lambda x: x.carnegie_group.map(KIND)).rename(columns={
         "rank": "Rank", "instnm": "School", "stabbr": "State", "control_label": "Type", "carnegie_group": "Kind", "ugds": "Undergrads (2017)", "pctpell": "On Pell", "firstgen_yr6_n": "First gen students", "firstgen_comp_orig_yr6_rt": "Actually graduated",
         "predicted": "Expected", "residual_eb_pct_pts": "Points above expected", "residual_pct_pts": "Before small school adjustment", "p_top_decile": "Stays in top 10% (share of re runs)", "rank_range": "Likely rank on re runs", "exp_core_per_fte": "Core spending per student per year (2018 to 2023 avg)"})
     st.dataframe(show.style.format({"Rank": "{:.0f}", "On Pell": "{:.0%}", "Actually graduated": "{:.0%}", "Expected": "{:.0%}", "Points above expected": "{:+.0f}", "Before small school adjustment": "{:+.0f}", "Stays in top 10% (share of re runs)": "{:.0%}",
@@ -443,8 +447,9 @@ with tab_spend:
             f"median $ per student per year, 2018 to 2023 average · n = {len(top)} vs {len(bot)}")
     L, R = st.columns([7, 5])
     L.plotly_chart(spend_bar(top, bot, 400), use_container_width=True, key="spend_tab_main", config=NOBAR)
-    col_top, col_bot = f"Top 10% (n={len(top)})", f"Bottom 10% (n={len(bot)})"
-    R.dataframe(t.rename(columns={"Spending category": "Category", "Top 10%": col_top, "Bottom 10%": col_bot, "Top ÷ bottom": "Top ÷ bottom", "p-value": "p"}).style.format({col_top: "${:,.0f}", col_bot: "${:,.0f}", "Top ÷ bottom": "{:.1f}×", "p": fmt_p}), hide_index=True, use_container_width=True)
+    col_top, col_bot = f"Top 10% (n = {len(top)})", f"Bottom 10% (n = {len(bot)})"
+    rows_html = "".join(f"<tr><td>{r['Spending category']}</td><td>${r['Top 10%']:,.0f}</td><td>${r['Bottom 10%']:,.0f}</td><td><b>{r['Top ÷ bottom']:.1f}×</b></td><td>{fmt_p(r['p-value'])}</td></tr>" for r in t.to_dict("records"))
+    R.markdown(f'<table class="cmp"><thead><tr><th>Category</th><th>{col_top}</th><th>{col_bot}</th><th>Top ÷ bottom</th><th>p</th></tr></thead><tbody>{rows_html}</tbody></table>', unsafe_allow_html=True)
     R.caption("p value: the chance of seeing a gap this big if there were really no difference. Below 0.05 is the usual bar.")
     meaning(f"In this group, schools that beat expectations spend {ti.loc['Teaching', 'Top ÷ bottom']:.2f} times as much per student on teaching and {ti.loc['Academic support', 'Top ÷ bottom']:.2f} times as much on academic support as schools that fall short, {ti.loc['Student services', 'Top ÷ bottom']:.2f} times on student services and {ti.loc['Administration', 'Top ÷ bottom']:.2f} times on administration.")
     st.markdown(f"Among public colleges, the ones that beat expectations spend more on everything: teaching {pub['Instruction']['median_ratio']:.2f} times as much as the publics that fall short, academic support {pub['Academic support']['median_ratio']:.2f} times, student services {pub['Student services']['median_ratio']:.2f} times. "

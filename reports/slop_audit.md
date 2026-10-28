@@ -125,3 +125,18 @@ Both fixes were run in a scratch copy of the pipeline (nothing in the repo chang
 | San Diego State University | rank 116, +11.2, top decile (p_top 0.52) | rank 144, +9.4, second decile | unchanged | as OPEID rule |
 
 The "1.4×" headline survives every variant at displayed precision. The 5.1% and 11.2 do not.
+
+## Outcome after Stages 2 to 5 (2026-10-27)
+
+Both headline fixes were applied (Isiah chose "both fixes"): the shared OPEID rule set aside 56 campuses (main sample 1,142), and "money explains X%" is now the partial R² of nested models (10.0%, +6.5 points per doubling of core spending). The top decile cut is +10.4 points and the teaching ratio 1.4 times. The bootstrap now redraws each school's rate, so 74% of top decile schools keep their place across re runs, down from the 90% the old bootstrap reported.
+
+Fixed: all 12 severity 3 items. All severity 2 items except these: the Public and Private sector scopes now draw chart and table from one group (fixed), and the special cases table label (fixed). Severity 1 items left on purpose: the "Compare within" radio wraps to two rows at 1280 and four at 375; the tab strip wraps to two rows at 375 because "Methods & limitations" is long; the chart title lives in the section header, not inside the figure, so a Plotly PNG export would lose it (export is disabled); two medians are printed to one decimal (2,790.5 undergraduates, 218.1 rank positions) because the number trace matches whole numbers only to integer valued results; semicolons remain inside the README's bash block and hyphens inside official institution names, file paths and URLs.
+
+Checks: src/check_numbers.py 217 numbers, 0 untraced (memo, README, LinkedIn post, dashboard text). src/check_headlines.py reproduces 9.97%, 10.4 and 1.351 from the cleaned data without project code. Causal word scan across every tracked text file: zero hits in user facing text (the one match is "guesses lead to" inside the original brief saved in CLAUDE.md). Dashboard checked at 375px and 1280px on all four tabs: hero number top at 434px on a 375 by 812 screen, no horizontal scroll, no text under 12px, Newsreader and IBM Plex Sans rendering from app/static/fonts with no outside font request.
+
+Self critique:
+1. Strongest decision on the page: setting aside the 56 shared OPEID campuses and defining the hero number as the nested partial R², because both change what the page claims rather than how it looks.
+2. Weakest remaining element: the All schools table at 375px, which still shows only two or three columns and traps the scroll inside the grid.
+3. Numbers not traced: none in the memo, README, post or dashboard text. The static figure in reports/figures carries its own numbers from Step 7 and is not scanned.
+4. Causal words left: none in user facing text. CLAUDE.md keeps the original brief verbatim, including "lead to".
+5. Caption I would cut: the opening Methods paragraph that maps plain labels to technical terms runs seven sentences and could become a two column list.

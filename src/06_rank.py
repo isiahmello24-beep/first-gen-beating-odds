@@ -63,7 +63,7 @@ def main():
 
     fmt = lambda d: d[SHOW].rename(columns=REN).round(3).to_markdown(index=False)  # noqa: E731
     top25, bot25, high_pell = df.head(25), df.tail(25), df[df.pctpell >= 0.5].head(15)
-    top_large = df[df.firstgen_yr6_n >= LARGE_COHORT].head(6)          # the memo's peer table and the dashboard's "schools worth learning from"
+    top_large = df[df.firstgen_yr6_n >= LARGE_COHORT].head(6)          # the memo's peer table and the dashboard's large schools list
     top_dec, bot_dec = df[df.group == "top 10%"], df[df.group == "bottom 10%"]
     shrink_by_size = df.assign(bucket=pd.cut(df.firstgen_yr6_n, [0, 100, 250, 500, 1000, 1e9], labels=["<100", "100-249", "250-499", "500-999", "1000+"])).groupby("bucket", observed=True).agg(schools=("unitid", "size"), mean_shrink=("shrink_factor", "mean"), in_raw_top=("unitid", lambda u: u.isin(raw_top).sum()), in_eb_top=("unitid", lambda u: u.isin(eb_top).sum())).round(3)
     rho_raw_eb = stats.spearmanr(df["residual"], df["residual_eb"]).statistic
