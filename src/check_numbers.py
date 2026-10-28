@@ -1,4 +1,4 @@
-"""Number trace: every number in memo/memo.md, README.md and the dashboard's hand-written text must exist in reports/results.json
+"""Number trace: every number in memo/memo.md, README.md, assets/linkedin/post.md and the dashboard's hand-written text must exist in reports/results.json
 at the displayed precision (a value v matches a displayed x with d decimals if round(v, d) == x or round(100 v, d) == x).
 
 Skipped on purpose (listed when --verbose): years and fiscal/academic-year ranges, dates, URLs, file paths, code spans and fenced code,
@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "reports/results.json"
-TEXT_FILES = [ROOT / "memo/memo.md", ROOT / "README.md"]
+TEXT_FILES = [f for f in (ROOT / "memo/memo.md", ROOT / "README.md", ROOT / "assets/linkedin/post.md") if f.exists()]
 APP = ROOT / "app/app.py"
 NUM = re.compile(r"(?<![\w./-])[+\-−]?\$?\d[\d,]*(?:\.\d+)?(?:%|×|x)?(?![\w/])")
 YEARish = re.compile(r"^(19|20)\d\d$")
